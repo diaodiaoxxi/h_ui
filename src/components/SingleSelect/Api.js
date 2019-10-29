@@ -162,10 +162,6 @@ export const SingleSelectBlockApi = {
       type: Array,
       default: () => [],
     }
-    // disabled: {
-    //   type: Boolean,
-    //   default: false
-    // }
   },
   events: {
 

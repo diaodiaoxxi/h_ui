@@ -181,7 +181,12 @@ export default {
       if(this.collapse) return;
       if (items.length) {
         items.forEach(item => {
-          if (this.openName.indexOf(item.name) > -1) item.opened = true;
+          if (this.openName.indexOf(item.name) > -1) {
+            item.opened = true
+          } else {
+            if (this.accordion) item.opened = false
+          }
+
         });
       }
     }

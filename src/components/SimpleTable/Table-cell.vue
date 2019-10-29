@@ -70,7 +70,7 @@ export default {
     checked:Boolean,
     prefixCls:String,
     titleEllipsis:Boolean,
-     // 是否进行过滤，无限滚动加载数据的场景不适用， 仅支持通过simpleTable显式分页的场景
+    // 是否进行过滤，无限滚动加载数据的场景不适用， 仅支持通过simpleTable显式分页的场景
     isFilter: {
       type: Boolean,
       default: false
@@ -147,7 +147,7 @@ export default {
           width = column._width - 16 <= 24 ? 24 : column._width - 16
         }
         // o45最后一列不设置width
-        if(column.width === undefined ) {
+        if(column.width === undefined || column.width === '') {
           width = width - getScrollBarSize()
         }
         // if(window.isO45) {

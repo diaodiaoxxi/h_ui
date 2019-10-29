@@ -48,7 +48,9 @@
           this.$hMessage.info('导入表格无数据')
         }
       },
-      handleChange (){
+      handleChange (s, f){
+        console.log(s)
+        console.log(f)
         // this.$set(this.importConfig, 'loading', status)
       }
     }

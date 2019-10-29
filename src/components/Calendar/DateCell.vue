@@ -65,6 +65,12 @@ export default {
       if (this.isEmptyCell || this.data.disabled) return
       this.dispatch('Calendar', 'on-cell-mouseout', this.data)
     },
+    mouseDown() {
+      this.dispatch('Calendar', 'on-mouse-down', this.data)
+    },
+    mouseUp() {
+      this.dispatch('Calendar', 'on-mouse-up', this.data)
+    },
     click(evt) {
       if (this.isEmptyCell || this.data.disabled) return
       // 鼠标左键被按下
@@ -129,6 +135,8 @@ export default {
       {
         class: this.cellClass,
         on: {
+          mousedown: this.mouseDown,
+          mouseup: this.mouseUp,
           mouseover: this.mouseOver,
           mouseout: this.mouseOut,
           dblclick: this.dblClick,

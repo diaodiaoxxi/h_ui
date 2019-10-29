@@ -24,7 +24,7 @@
 <script>
 let tData =require('../assets/simpleTreeGird.json')
 let bigData = []
-for(var i=0;i<5;i++){
+for(var i=0;i<15;i++){
   let obj =  {
     id: i,
     expand: 'false',
@@ -68,13 +68,14 @@ export default {
         {
           title:'index',
           key: 'index',
-          type: 'index'
+          type: 'index',
+          fixed: 'left'
         },
         {
           title: 'name',
           key: 'name',
           width: 200,
-//          fixed: 'left'
+          fixed: 'left'
         },
         {
           title: 'age',
@@ -97,7 +98,7 @@ export default {
           width: 100,
           key: 'cardId',
           hiddenCol: false,
-          fixed: 'right'
+//          fixed: 'right'
         },
         {
           title: 'city',

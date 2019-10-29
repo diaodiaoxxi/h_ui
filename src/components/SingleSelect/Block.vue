@@ -3,7 +3,7 @@
        @scroll="handleBodyScroll"
        :class="blockCls">
     <div v-if="showHeader.length"
-         :class="`${prefixCls}-item-header`">
+         :class="[prefixCls+'-item-header']">
       <span v-for="(item, index) in showHeader"
             :key="index"
             class="item-header"
@@ -51,13 +51,13 @@ import Locale from '../../mixins/locale'
 import Checkbox from '../Checkbox/Checkbox.vue'
 import { SingleSelectBlockApi } from './Api'
 import { deepCopy, getBarBottom, getScrollBarSize} from '../../util/tools'
-const prefixCls = 'h-select-block'
 
 export default {
   mixins: [Locale, SingleSelectBlockApi],
   components: { Checkbox },
   data() {
     return {
+      prefixCls: 'h-select-block',
       multiple: false,
       hideMult: false,
       visibleData: [],
@@ -86,11 +86,11 @@ export default {
     },
     blockCls() {
       return [
-        `${prefixCls}-drop`,
+        `${this.prefixCls}-drop`,
         {
-          [`${prefixCls}-multiple`]: this.multiple,
-          [`${prefixCls}-show-bottom`]: this.showBottom,
-          [`${prefixCls}-hideMult`]: this.hideMult && this.multiple
+          [`${this.prefixCls}-multiple`]: this.multiple,
+          [`${this.prefixCls}-show-bottom`]: this.showBottom,
+          [`${this.prefixCls}-hideMult`]: this.hideMult && this.multiple
         }
       ]
     },
@@ -111,11 +111,11 @@ export default {
   methods: {
     classes(item) {
       return [
-        `${prefixCls}-item`,
+        `${this.prefixCls}-item`,
         {
-          [`${prefixCls}-disabled`]: item.disabled || false,
-          [`${prefixCls}-selected`]: item.selected || false,
-          [`${prefixCls}-focus`]: item.focus || false
+          [`${this.prefixCls}-disabled`]: item.disabled || false,
+          [`${this.prefixCls}-selected`]: item.selected || false,
+          [`${this.prefixCls}-focus`]: item.focus || false
         }
       ]
     },
@@ -126,11 +126,7 @@ export default {
       if (item.disabled) {
         return false
       }
-      if (this.multiple) {
-        this.$parent.$parent.selectBlockMultiple(item.value,item)
-      } else {
-        this.$parent.$parent.selectBlockSingle(item.value, false, 'click', false)
-      }
+      this.$parent.$parent.selectBlockSingle(item.value, false, 'click', false)
     },
     checkChange(val, item) {
       this.$parent.$parent.selectBlockMultiple(item.value,item)
@@ -190,7 +186,6 @@ export default {
       }else if(val !==''&&this.$parent.$parent.isSingleSelect&&!isEffective&&!states) {//query不为空但未匹配到任何项
         this.$parent.$parent.selectBlockSingle('', true)
       }
-      this.dispatch('SimpleSelect', 'on-options-visible-change', { data: this.cloneData })
       this.dispatch('SingleSelect', 'on-options-visible-change', { data: this.cloneData })
       this.showEmpty = status
       if (val) {
@@ -321,8 +316,6 @@ export default {
       .replace('false', '')
       .replace('true', '')
       .trim()
-    // this.searchLabel =str.slice(Number(str.indexOf('</label>')+9));
-    this.dispatch('SimpleSelect', 'append')
     this.$on('on-select-close', () => {
       this.isFocus = false
     })
@@ -332,8 +325,6 @@ export default {
     this.$on('on-select-top', (status) => {
       this.selectedTop(status)
     })
-
-    // v20190321
     this.$on('on-focus-index-change', index => {
       this.cloneData.filter(item => !item.hidden).forEach((item, i) => {
         item.focus = false
@@ -365,7 +356,6 @@ export default {
         } else {
           this.showEmpty = false
         }
-
         // this.$nextTick(() => {//viewValue获取时机
         this.cloneData = deepCopy(this.data)
         this.cloneData.forEach((item,i) => {
@@ -377,7 +367,6 @@ export default {
           this.lastScollTop = val.length*this.itemHeight-210
         }
         this.updateVisibleData()
-
         // })
       }
     },
@@ -391,7 +380,6 @@ export default {
     },
   },
   destroyed() {
-    this.dispatch('Select', 'remove')
   }
 }
 </script>

@@ -1,58 +1,41 @@
 <template>
   <div :class="classes" ref="select" :style="singleStyle" v-clickoutside="{trigger: 'mousedown', handler: handleClose}">
-    <div :class="selectionClass" ref="reference" >
-      <!--<span :class="[prefixCls + '-selected-value']"-->
-            <!--v-show="!showPlaceholder && !filterable">{{ selectedSingle }}</span>-->
-      <input type="text"
-             v-model="query"
-             :disabled="disabled"
-             :readonly="!editable||readonly"
-             :class="[prefixCls + '-input']"
-             :placeholder="showPlaceholder?localePlaceholder:''"
-             @focus="handleFocus"
-             @blur="handleBlur"
-             @keydown="handleInputKeyDown"
-             @keyup="handleInputKeyup"
-             :tabindex="tabindex"
-             :title="selected"
-             ref="input">
-      <Icon name="unfold" :class="[prefixCls + '-arrow']" @click.native.stop="arrowClick" ref="arrowb"></Icon>
+    <div :class="[`${prefixCls}-selection`, 'single-selection']" ref="reference" >
+      <input ref="input" type="text" v-model="query"
+             :disabled="disabled" :readonly="!editable||readonly"
+             :class="[`${prefixCls}-input`]" :title="selected"
+             :placeholder="showPlaceholder?localePlaceholder:''" :tabindex="tabindex"
+             @focus="handleFocus" @blur="handleBlur"
+             @keydown="handleInputKeyDown" @keyup="handleInputKeyup">
+      <Icon name="unfold" :class="[`${prefixCls}-arrow`]" @click.native.stop="arrowClick"></Icon>
     </div>
     <div v-if="animated">
       <transition :name="transitionName">
-        <Drop :class="dropdownCls"
-              :dropWidth="dropWidth"
-              v-show="dropVisible"
-              :placement="fPlacement"
-              :data-transfer="transfer"
-              :widthAdaption="widthAdaption"
-              :maxDropWidth="maxDropWidth"
-              ref="dropdown"
+        <Drop ref="dropdown" v-show="dropVisible"
+              :class="dropdownCls" :placement="fPlacement"
+              :dropWidth="dropWidth" :maxDropWidth="maxDropWidth"
+              :widthAdaption="widthAdaption" :data-transfer="transfer"
               v-transfer-dom>
           <div :class="[`${prefixCls}-dropdown-noline-content`]" ref="content">
-            <div id="blockWrapper" :class="[prefixCls + '-dropdown-list']" ref='blockWrapper'>
+            <div id="blockWrapper" :class="[`${prefixCls}-dropdown-list`]" ref='blockWrapper'>
               <slot></slot>
             </div>
-            <div v-show="loading" :class="[prefixCls+'-block-loading']">{{localeLoadingText}}</div>
+            <div v-show="loading" :class="[`${prefixCls}-block-loading`]">{{localeLoadingText}}</div>
           </div>
         </Drop>
       </transition>
     </div>
     <div v-else>
-      <Drop :class="dropdownCls"
-            :dropWidth="dropWidth"
-            v-show="dropVisible"
-            :placement="fPlacement"
-            :data-transfer="transfer"
-            :widthAdaption="widthAdaption"
-            :maxDropWidth="maxDropWidth"
-            ref="dropdown"
+      <Drop ref="dropdown" v-show="dropVisible"
+            :class="dropdownCls" :placement="fPlacement"
+            :dropWidth="dropWidth" :maxDropWidth="maxDropWidth"
+            :widthAdaption="widthAdaption" :data-transfer="transfer"
             v-transfer-dom>
         <div :class="[`${prefixCls}-dropdown-noline-content`]" ref="content">
-          <div :class="[prefixCls + '-dropdown-list']" ref='blockWrapper'>
+          <div :class="[`${prefixCls}-dropdown-list`]" ref='blockWrapper'>
             <slot></slot>
           </div>
-          <div v-show="loading" :class="[prefixCls+'-block-loading']">{{localeLoadingText}}</div>
+          <div v-show="loading" :class="[`${prefixCls}-block-loading`]">{{localeLoadingText}}</div>
         </div>
       </Drop>
     </div>
@@ -68,7 +51,7 @@ import { getScrollBarSize, getStyle } from '../../util/tools'
 import Emitter from '../../mixins/emitter'
 import Locale from '../../mixins/locale'
 import { SingleSelectApi } from './Api'
-const prefixCls = 'h-selectTable'
+
 export default {
   name: 'SingleSelect',
   mixins: [Emitter, Locale, SingleSelectApi],
@@ -76,7 +59,7 @@ export default {
   directives: { clickoutside, TransferDom },
   data() {
     return {
-      prefixCls: prefixCls,
+      prefixCls: 'h-selectTable',
       visible: false,
       fPlacement: this.placement,
       options: [],
@@ -100,19 +83,14 @@ export default {
     },
     classes() {
       return [
-        `${prefixCls}`,`${prefixCls}-single`,
+        `${this.prefixCls}`,`${this.prefixCls}-single`,
         {
-          [`${prefixCls}-visible`]: this.visible,
-          [`${prefixCls}-disabled`]: this.disabled,
-          [`${prefixCls}-readonly`]: this.readonly,
-          [`${prefixCls}-editable`]: !this.editable,
-          [`${prefixCls}-${this.size}`]: !!this.size
+          [`${this.prefixCls}-visible`]: this.visible,
+          [`${this.prefixCls}-disabled`]: this.disabled,
+          [`${this.prefixCls}-readonly`]: this.readonly,
+          [`${this.prefixCls}-editable`]: !this.editable,
+          [`${this.prefixCls}-${this.size}`]: !!this.size
         }
-      ]
-    },
-    selectionClass() {
-      return [
-        `${prefixCls}-selection`,'single-selection'
       ]
     },
     dropdownCls() {
@@ -152,8 +130,7 @@ export default {
     dropVisible() {
       let status = true
       const options = this.$slots.default || []
-      if (!this.loading && this.remote && this.query === '' && !options.length)
-        status = false
+      if (!this.loading && this.remote && this.query === '' && !options.length) status = false
       return this.visible && status
     }
   },
@@ -165,9 +142,6 @@ export default {
 //          this.isQuerySelect = false
 //        }
         this.model = val
-//        if (val !== '' && !this.visible) {
-//          this.isQuerySelect = false
-//        }
       }
     },
     model(val) {
@@ -237,7 +211,6 @@ export default {
     },
     visible(val) {
       if (val) {
-        // 显示前才计算位置
         this.setPlacement()
         this.$nextTick(() => {
           let content = this.$refs.content
@@ -261,7 +234,6 @@ export default {
         setTimeout(() => {
           this.dispatch('Msgbox', 'on-esc-real-close', true)
         }, 0)
-        // this.broadcast('Drop', 'on-destroy-popper');
       }
       this.$emit('on-drop-change', val)
     },
@@ -295,12 +267,10 @@ export default {
     },
     focus() {
       this.isInputFocus = true
+      this.$refs.input.focus()
       this.$nextTick(() => {
-        this.$refs.input.focus()
+        this.$refs.input.select()
       })
-    },
-    select() {
-      this.$refs.input.select()
     },
     blur() {
       this.$refs.input.blur()
@@ -309,6 +279,8 @@ export default {
       this.isQuerySelect = false
       let flag = false
       if (this.model === '' && this.query !== '') {
+        // o45证券代码不自动选择匹配项
+//        if(!this.accuFilter) return
         // 先选值，左右键切换，再删除一个字符仍然有匹配项时
         for(let i in this.availableOptions) {
           if(this.query.toString().split(' ')[0] === this.availableOptions[i].label) {
@@ -569,7 +541,7 @@ export default {
         if (this.visible) {
           this.fold()
           //下拉框弹出，ESC收起面板后，焦点在输入框，内容全选
-          this
+          this.blur()
           this.focus()
         }
       }

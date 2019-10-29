@@ -71,8 +71,8 @@ import Drawer from './components/Drawer'
 import Log from './components/Log'
 import SimpleTreeGird from './components/SimpleTreeGird'
 import Calendar from './components/Calendar'
-import SingleSelect from './components/SingleSelect';
-// import FileImport from './components/FileImport';
+import SingleSelect from './components/SingleSelect'
+// import FileImport from './components/FileImport'
 // import FileExport from './components/FileExport';
 import Tag from './components/Tag'
 import Schedule from './components/Schedule'
@@ -226,8 +226,8 @@ const h_ui = {
   hTableOption:SelectTable.Option,
   TableOption:SelectTable.Option,
   FastDate:FastDate,
-  hFastDate:FastDate, 
-  SplicePanel:SplicePanel,   
+  hFastDate:FastDate,
+  SplicePanel:SplicePanel,
   hSplicePanel:SplicePanel,
   FieldPanel:FieldPanel,
   hFieldPanel:FieldPanel,
@@ -235,16 +235,16 @@ const h_ui = {
   hSimpleTable:SimpleTable,
   TransferTable:TransferTable,
   hTransferTable:TransferTable,
-  FormGird:FormGird,    
+  FormGird:FormGird,
   hFormGird:FormGird,
   Rate:Rate,
-  hRate:Rate,  
+  hRate:Rate,
   Textdiff,
   hTextdiff: Textdiff,
   TypefieldRange,
   hTypefieldRange:TypefieldRange,
-  Split:Split,  
-  hSplit:Split,  
+  Split:Split,
+  hSplit:Split,
   Drawer:Drawer,
   hDrawer:Drawer,
   Log:Log,
@@ -259,7 +259,8 @@ const h_ui = {
   hSimpleGroupTable: SimpleGroupTable,
   hMultiSelect:SimpleMultiSelect,
   hMultiBlock:SimpleMultiSelect.Block,
-  hSingleSelect:SingleSelect
+  hSingleSelect:SingleSelect,
+  hSingleBlock:SingleSelect.Block,
   // FileImport:FileImport,
   // hFileImport:FileImport,
   // FileExport: FileExport,

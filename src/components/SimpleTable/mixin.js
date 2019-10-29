@@ -24,7 +24,7 @@ export default {
         }
       ]
     },
-    setCellWidth(column, index, top) {
+    setCellWidth(column, index, top) {// top:表头、汇总行true;表体false
       let width = ''
       let lastInx = this.cloneColumns.length-1
       while(this.cloneColumns[lastInx].fixed=='right'){
@@ -40,11 +40,14 @@ export default {
       // when browser has scrollBar,set a width to resolve scroll position bug
       if (lastInx === index&& this.bodyHeight !== 0&& width!='') {
         if(!this.data.length) return
-        if(this.tableWidth+1>=this.initWidth-this.scrollBarWidth&&top) {
-          width += this.scrollBarWidth
-        }else if(this.contentHeight<this.height) {
-          width += this.scrollBarWidth
+        if(!top && this.isScrollY) {
+          width -= this.scrollBarWidth
         }
+        // if(this.tableWidth+1>=this.initWidth-this.scrollBarWidth&&top) {
+        //   width += this.scrollBarWidth
+        // }else if(this.contentHeight<this.height) {
+        //   width += this.scrollBarWidth
+        // }
       }
       if (width === '0') width = ''
       return width

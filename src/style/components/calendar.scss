@@ -1,9 +1,9 @@
 $calendar-prefix-cls: "#{$css-prefix}calendar";
 .#{$calendar-prefix-cls} {
-  
+
   &-top-change &-top-icon,
   &-top-change &-top-text {
-    
+
     display: inline-block;
     vertical-align: middle;
     font-size: $calendar-top-text-font-size;
@@ -27,7 +27,7 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
     position: relative;
   }
 
- 
+
   &-month-content {
     display: flex;
     flex-wrap: wrap;
@@ -44,12 +44,17 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
     border-color:$calendar-month-content-border-color;
   }
   &-month-content-item {
+    // 日历控件中为了鼠标划选
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
     font-size: $calendar-month-content-item-font-size;
     width: 14.28%;
     height: $calendar-month-content-item-height;
     text-align: center;
     color: $calendar-month-content-item-color;
-    position: relative; 
+    position: relative;
     line-height: $calendar-month-content-item-height;
     padding: auto;
     display: flex;
@@ -58,7 +63,7 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
     /* border:2px solid #fff; */
     border: $calendar-month-content-item-boder;
     border-width: $calendar-month-content-item-border-width;
-    
+
     .h-badge {
       width: 0;
       height: 0;
@@ -70,7 +75,7 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
   }
   &-month-content-item:nth-child(7n + 1){
     border-width: $calendar-month-content-item-nth-child-border-width;
-  
+
   }
   &-month-week {
     background: $calendar-month-content-background;
@@ -82,7 +87,7 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
   &-month-content.#{$calendar-prefix-cls}-month-day &-month-content-item {
     cursor: pointer;
     background: $calendar-month-content-item-bg;
-    
+
   }
   &-month-content.#{$calendar-prefix-cls}-month-day &-month-content-item.#{$calendar-prefix-cls}-month-item-empty {
     background: none;
@@ -110,7 +115,7 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
     float: left;
     flex: 0 0 auto;
     border-radius: 2px;
-    
+
     // height: 330px;
     & > div {
       box-shadow: $calendar-month-div-box-shadow;
@@ -124,7 +129,7 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
     text-align: center;
     background:$calendar-month-content-background;
     border-radius:$calendar-month-title-border-radius;
- 
+
   }
   &-wrapper {
 
@@ -163,4 +168,24 @@ $calendar-prefix-cls: "#{$css-prefix}calendar";
       background: $calendar-handle-item-hover-background;
       color: $calendar-handle-item-hover-color;
   }
+
+  -webkit-user-select:none;
+
+  -moz-user-select:none;
+
+  -ms-user-select:none;
+
+  user-select:none;
+
+  ::selection {
+    background: transparent;
+    opacity: 0.1;
+  }
+  ::-moz-selection {
+    background: transparent;
+  }
+  //::-webkit-selection {
+  //  background:#DDDDDE;
+  //}
 }
+

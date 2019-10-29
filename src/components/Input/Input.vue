@@ -9,7 +9,7 @@
       <Icon name="close" :style="clearstyle"
             :class="[prefixCls + '-icon',prefixCls + '-clear']"
             v-if="clearable&&type!='textarea'" v-show="hasvalue"
-            @on-click="handleClear"></Icon>
+            @on-mouse-down="handleClear"></Icon>
       <Icon :name="icon"
             :class="[prefixCls + '-icon',prefixCls + '-icon-normal']" :style="iconStyle"
             v-if="icon&&type!='textarea'"
@@ -392,6 +392,10 @@ export default {
       // 这个功能本是浏览器的安全策略行为，如果要生效，需要 Web 端应用程序首次启动前关闭浏览器的记住密码设置
       if(this.editable && !this.readonly && this.autocomplete === "off") {
         this.$refs.input && this.$refs.input.removeAttribute("readonly")
+
+        // fix IE requires double click to input
+        const len = (this.value + "").length
+        this.$refs.input && this.$refs.input.setSelectionRange(len, len + 1)
       }
       if (this.focusAllSelect && this.type === 'text') {
         this.$refs.input.select()

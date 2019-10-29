@@ -1,5 +1,5 @@
 <template>
-	<i :class="iconCls" :style="styleCls" @click="iconClick"></i>
+	<i :class="iconCls" :style="styleCls" @click="iconClick" @mousedown="iconMousedown"></i>
 </template>
 <script>
   const prefixCls = 'h-icon'
@@ -40,7 +40,11 @@
 		methods:{
 			iconClick(e){
 				this.$emit("on-click",e)
-			}
+      },
+      iconMousedown(e) {
+        // Bug125945 require fast click sometimes, not exposed as an api for now
+        this.$emit("on-mouse-down", e)
+      }
 		}
 	}
 </script>

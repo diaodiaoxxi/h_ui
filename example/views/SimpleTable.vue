@@ -7,9 +7,9 @@
     <Button @click="changeData">切换数据</Button>
     <Button @click="adddata">添加数据</Button>
     <h-simple-table :columns="columnsBig1" :data="bigData" :addData="addData" :loading="loading" :row-class-name="rowClassName"
-                    bodyAlgin="left" width="1200" height="500" canDrag border stripe rowSelectOnly
+                    bodyAlgin="left" height="500" canDrag border stripe rowSelectOnly :summationData="summationData"
                     @on-select="select" @on-select-cancel="select" @on-drag="onDrag"
-                    @on-select-all='change' @on-scroll="change" @on-selection-change="change">
+                    @on-select-all='change' @on-selection-change="change">
       <span slot="loading">我是自定义加载！！！</span>
     </h-simple-table>
     <h-button @click="setLoading">切换状态</h-button>
@@ -17,13 +17,13 @@
     <h-button @click="delSelected">删除所选</h-button>
     <h2>不带边线 单选 on-current-change</h2>
 
-    <div style="width: 1000px;overflow: hidden;">
-      <h-simple-table ref="simTable" canMove :summationRender="false" @on-right-click="rightClick" rowSelectOnly
-                      :summationData="summationData" :columns="columnsBig1" border :data="bigData2" height="300"
-                      highlight-row @on-sort-change="sortchange" @on-selection-change="selsetChange" @on-row-dblclick="dblclick">
-      </h-simple-table>
+    <!--<div style="width: 1000px;overflow: hidden;">-->
+      <!--<h-simple-table ref="simTable" canMove :summationRender="false" @on-right-click="rightClick" rowSelectOnly-->
+                      <!--:summationData="summationData" :columns="columnsBig1" border :data="bigData2" :height="customHeight"-->
+                      <!--highlight-row @on-selection-change="selsetChange" @on-row-dblclick="dblclick">-->
+      <!--</h-simple-table>-->
       <h-button type="dashed" @click="addrow">新增一列</h-button>
-    </div>
+    <!--</div>-->
 
     <h-button @click='changeClo'>改变冻结列</h-button>
     <h-button type="primary" size="large" @click="exportData(1)"><h-icon type="ios-download-outline"></h-icon> 导出原始数据</h-button>
@@ -69,7 +69,7 @@ import TexpandRow from './Texpand-row.vue'
 let jsonData=[]
 let tData =require('../assets/aa.json')
 for (let i = 0; i < 1; i++) {
-  jsonData =tData.slice(0,10)
+  jsonData =tData.slice(0,5)
 }
 let ind = 1
 export default {
@@ -129,26 +129,27 @@ export default {
         {
           title: '银行',
           key: 'securityName',
-          width:200,
+//          width:200,
           showTitle:true
         },
-        {
-          title: '年龄',
-          key: 'tradeDir',
-          width: 200,
-        },
-        {
-          title: '数量',
-          ellipsis:true,
-          sortable:true,
-          key: 'tradeQuantity',
-        },
-        {
-          title: '邀请人数',
-          key: 'investType',
-          width: 200,
-          fixed:'left'
-        },
+//        {
+//          title: '年龄',
+//          key: 'tradeDir',
+//          width: 200,
+//        },
+//        {
+//          title: '数量',
+//          ellipsis:true,
+//          sortable:true,
+//          width: 200,
+//          key: 'tradeQuantity',
+//        },
+//        {
+//          title: '邀请人数',
+//          key: 'investType',
+////          width: 200,
+////          fixed:'left'
+//        },
       ],
       columns1: [
         {
@@ -448,6 +449,16 @@ export default {
       }],
     }
   },
+  computed: {
+    customHeight() {
+      let lng = this.bigData2.length
+      if(lng == 0) {
+        lng = 1
+      }
+      lng++
+      return lng * 40
+    }
+  },
   methods:{
     addrow() {
       this.bigData2 = tData.slice(0,ind)
@@ -502,6 +513,9 @@ export default {
     onMove(i,j){
       console.log(i);
       console.log(j);
+    },
+    handleScrollChange(num, e) {
+      console.log(num, e)
     },
     change(e){
       console.log(e);
@@ -648,7 +662,8 @@ export default {
   background-color: #7eb8f1;
   text-align: center;
 }
-.ceshi{
-  background: red !important;
+.h-table-cell{
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 </style>

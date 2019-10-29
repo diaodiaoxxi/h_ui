@@ -29,6 +29,7 @@
     "async-validator": "^1.6.7",
     "core-js": "^2.4.1",
     "deepmerge": "^1.4.3",
+    "element-resize-detector": "^1.1.15",
     "encoding": "0.1.12",
     "iconv-lite": "0.4.24",
     "js-calendar": "^1.2.3"

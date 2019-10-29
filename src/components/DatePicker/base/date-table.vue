@@ -79,8 +79,7 @@ export default {
       const today = clearHours(new Date()) // timestamp of today
       const selectedDays = this.dates.filter(Boolean).map(clearHours) // timestamp of selected days
       const [minDay, maxDay] = this.dates.map(clearHours)
-      const rangeStart =
-        this.rangeState.from && clearHours(this.rangeState.from)
+      const rangeStart = this.rangeState.from && clearHours(this.rangeState.from)
       const rangeEnd = this.rangeState.to && clearHours(this.rangeState.to)
 
       const isRange = this.selectionMode === 'range'

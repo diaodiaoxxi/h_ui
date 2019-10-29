@@ -108,8 +108,8 @@
         let that = this
         if (this.accept != '' && this.accept.indexOf(file[0].type) < 0) {
           this.$hMessage.warning('文件类型不正确')
-          return 
-        } 
+          return
+        }
         this.fileName = file[0].name
         fileReader.onload = (ev) => {
           try {
@@ -156,7 +156,7 @@
                 }
               }
             }
-            /* 
+            /*
              * sheetData格式
              * {sheetname: dataObj}
              * tableColumnsTitle格式
@@ -181,11 +181,11 @@
         this.readExcel(e.dataTransfer.files)
       },
       handleChange (e) {
-        // 已选择数据，开始加载
-        this.$emit('on-change', true)
         const files = e.target.files
         if (!files) return
         this.readExcel(files)
+        // 已选择数据，开始加载
+        this.$emit('on-change', true, this.fileName)
         this.$refs.input.value = null
       },
     }

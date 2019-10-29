@@ -257,6 +257,7 @@ import { on, off } from '../../util/dom'
 import Csv from '../../util/csv'
 import ExportCsv from './export-csv'
 import Locale from '../../mixins/locale'
+import elementResizeDetectorMaker from 'element-resize-detector';
 
 const prefixCls = 'h-table'
 
@@ -530,7 +531,7 @@ export default {
           [`${prefixCls}-border`]: this.border,
           [`${prefixCls}-stripe`]: this.stripe,
           [`${prefixCls}-with-fixed-top`]: !!this.height,
-          [`${prefixCls}-not-width`]: !!this.notSetWidth
+          [`${prefixCls}-not-width`]: this.notSetWidth && !this.autoHeadWidth
         }
       ]
     },
@@ -709,7 +710,7 @@ export default {
         let height = this.patibleHeight
           ? this.bodyHeight - this.scrollBarWidth + this.fixedBodyClientHeight
           : this.bodyHeight + this.fixedBodyClientHeight
-        if (this.tableWidth < this.initWidth) {
+        if (this.tableWidth <= this.initWidth) {
           height = height + this.scrollBarWidth - 1
         }
         // height不存在时bodyheight为0
@@ -892,8 +893,8 @@ export default {
       this.$emit('on-drag', width, key)
       this.$nextTick(() => {
         this.fixedBodyClientHeight = -1
-        this.bodyRealHeight =
-          parseInt(getStyle(this.$refs.tbody.$el, 'height')) || 0
+        this.bodyRealHeight = parseInt(getStyle(this.$refs.tbody.$el, 'height')) || 0
+        this.handleResize()
       })
     },
     handleMouseLeave() {},
@@ -904,7 +905,7 @@ export default {
           this.columnsWidth = {}
           this.tableWidth = 0
         }
-        setTimeout(() => {
+        // setTimeout(() => {
           let columnsWidth = {}
           let tableWidth = ''
           let $td = null
@@ -977,7 +978,7 @@ export default {
           }
           this.columnsWidth = columnsWidth
           this.$emit('on-table-width-change', this.tableWidth)
-        }, 0)
+        // }, 0)
         return
       }
 
@@ -2076,6 +2077,26 @@ export default {
     })
     //window.addEventListener('resize', this.handleResize, false);
     on(window, 'resize', this.handleResize)
+
+    /**
+     On notSetWidth, I gotta detect the width change of content for thead or tbody to make sure handleResize work accurately.
+     I don't think this is good enough, for now, let's just keep this way util we find a better one.
+     By the way, element-resize-detector is fast enough for detection, or we are dead.
+     */
+    this.observer = elementResizeDetectorMaker();
+    this.observer.listenTo(this.$el, () => {
+      setTimeout(() => {
+        this.handleResize();
+      }, 0);
+    });
+    if(this.notSetWidth) {
+      this.observer.listenTo(this.showHeader ? this.$refs.thead.$el : this.$refs.tbody.$el, () => {
+        setTimeout(() => {
+          this.handleResize();
+        }, 0);
+      });
+    }
+
     this.$on('on-visible-change', val => {
       if (val) {
         this.handleResize()
@@ -2162,6 +2183,11 @@ export default {
       if (val.length == 2) {
         this.selectRange()
       }
+    },
+    showScroll() {
+      setTimeout(() => {
+        this.handleResize();
+      }, 0);
     }
   }
 }

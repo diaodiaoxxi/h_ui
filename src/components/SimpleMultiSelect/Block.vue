@@ -7,7 +7,7 @@
       <li
         v-for="(item, inx) in visualData"
         v-show="!item.hidden"
-        :key="inx"
+        :key="item.value === undefined ? inx : item.value"
         :class="genItemCls(item)"
         @click.stop="onItemClick(item)"
       >
@@ -128,6 +128,7 @@ export default {
     genItemCls(item) {
       return [
         `${this.prefixCls}-item`,
+        `${this.prefixCls}-option-item`,
         {
           [`${this.prefixCls}-disabled`]: item.disabled || false,
           [`${this.prefixCls}-selected`]: item.selected || false,

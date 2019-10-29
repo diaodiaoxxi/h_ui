@@ -177,10 +177,10 @@ export default {
       default:false
     },
     iconLeftClassName: {
-      type:Function
+      type:String
     },
     iconRightClassName: {
-      type:Function
+      type:String
     }
   },
   data() {

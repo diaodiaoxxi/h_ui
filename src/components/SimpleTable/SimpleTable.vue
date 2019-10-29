@@ -249,10 +249,10 @@
         <table cellspacing="0"
                cellpadding="0"
                border="0"
-               :style="tableStyle">
+               :style="headStyles">
           <colgroup>
             <col v-for="(column, index) in cloneColumns"
-                 :width="setCellWidth(column, index, false)"
+                 :width="setCellWidth(column, index, true)"
                  :key="index">
           </colgroup>
           <tbody :class="[prefixCls + '-tbody']">
@@ -705,10 +705,10 @@ export default {
         if (this.bodyHeight === 0) {
           width = this.tableWidth
         } else {
-          if (this.data.length == 0) {
-            width = this.tableWidth
-          } else {
+          if (this.data.length !== 0 && this.isScrollY) {
             width = this.tableWidth - this.scrollBarWidth
+          } else {
+            width = this.tableWidth
           }
         }
         style.width = `${width}px`
@@ -717,10 +717,14 @@ export default {
     },
     headStyles() {
       //深拷贝
-      const style = Object.assign({}, this.tableStyle)
-      const width = this.data.length == 0 ? parseInt(this.tableStyle.width)
-        : parseInt(this.tableStyle.width) + this.scrollBarWidth
-      style.width = `${width}px`
+//      const style = Object.assign({}, this.tableStyle)
+//      const width = this.data.length == 0 ? parseInt(this.tableStyle.width) : parseInt(this.tableStyle.width) + this.scrollBarWidth
+//      const width = parseInt(this.tableStyle.width)
+      let style = {}
+      if(this.tableWidth !== 0) {
+        let width = this.tableWidth
+        style.width = `${width}px`
+      }
       return style
     },
     fixedHeadStyles() {
@@ -1260,12 +1264,7 @@ export default {
         if (this.$refs.leftContent) {
           this.$refs.leftContent.style.transform = `translateY(${transformTop}px))`
         }
-        let width = this.$refs.body.getBoundingClientRect().width
-        let conentWidth = this.$refs.body.scrollWidth
-        let height = this.$refs.body.getBoundingClientRect().height
-        let conentHeight = this.$refs.body.scrollHeight
-        this.isScrollX = conentWidth + this.scrollBarWidth > width ? true : false
-        this.isScrollY = conentHeight > height ? true : false
+
         if (this.cloneColumns.length == 0) return
         const allWidth = !this.columns.some(cell => !cell.width && cell.width !== 0) // each column set a width
         if (allWidth) {
@@ -1273,15 +1272,27 @@ export default {
         } else {
           this.tableWidth = parseInt(getStyle(this.$el, 'width')) - 1
         }
-//        console.log('开始设置总宽:::'+this.tableWidth)
         this.columnsWidth = {}
         this.$nextTick(() => {
+          let width = this.$refs.body.getBoundingClientRect().width
+          let conentWidth = this.$refs.body.scrollWidth
+          this.isScrollX = conentWidth + this.scrollBarWidth > width ? true : false
+          let height = this.$refs.body.getBoundingClientRect().height
+          let conentHeight = this.$refs.body.scrollHeight
+          this.isScrollY = conentHeight > height ? true : false
           let columnsWidth = {}
           let autoWidthIndex = -1
           let totalWidth = 0
           // if (allWidth) autoWidthIndex = this.cloneColumns.findIndex(cell => !cell.width);//todo 这行可能有问题
 //          if (allWidth) // 这边写的不理解每列都设置了width为何还找需要自动设宽的项
+
+          const allWidth = !this.columns.some(cell => !cell.width && cell.width !== 0) // each column set a width
+          if (allWidth) {
+            this.tableWidth = this.columns.map(cell => cell.width).reduce((a, b) => a + b)
+          } else {
+            this.tableWidth = parseInt(getStyle(this.$el, 'width')) - 1
             autoWidthIndex = findInx(this.cloneColumns, cell => !cell.width)
+          }
           if (this.data.length) {
             const $td = this.$refs.tbody.querySelectorAll('tbody tr')[0].querySelectorAll('td')
             let errorNum = 0
@@ -1295,9 +1306,9 @@ export default {
                 width = width + 1
                 errorNum = errorNum - 1
               }
-              if (i === autoWidthIndex) {
-                width = width - 1
-              }
+//              if (i === autoWidthIndex) {
+//                width = width - 1
+//              }
               if (column.width) {
                 width = column.width || ''
               } else {  // 自适应列设置最小宽度100（拖拽后除外）
@@ -1308,37 +1319,30 @@ export default {
 
 //              this.tableWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
               totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
-
               if(totalWidth < this.tableWidth) {
                 if(i === autoWidthIndex) {
                   let lastW = this.tableWidth - totalWidth + width
-//                  console.log('设置最后一列宽度:::'+ lastW)
-                  this.$set(this.cloneColumns[autoWidthIndex], 'width', this.tableWidth - totalWidth + width)
-                  this.$set(this.cloneColumns[autoWidthIndex], '_width', this.tableWidth - totalWidth + width)
+//                  this.$set(this.cloneColumns[autoWidthIndex], 'width', lastW)
+                  this.$set(this.cloneColumns[autoWidthIndex], '_width', lastW)
+                  totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
                 }
               }
-//              console.log('加载数据,totalW:::'+ totalWidth)
               columnsWidth[column._index] = {
                 width: width
               }
             }
             this.columnsWidth = columnsWidth
             this.tableWidth = totalWidth
-            // 判断是否有滚动条
-            if(!this.isScrollY) {
-              this.tableWidth = this.tableWidth - this.scrollBarWidth
-            }
           } else {
-            // o45出现问题可先把上面注释掉只走下面的逻辑
             const $th = this.$refs.thead.querySelectorAll('thead .cur-th')[0].querySelectorAll('th')
             for (let i = 0; i < $th.length; i++) {
               // can not use forEach in Firefox
               const column = this.cloneColumns[i]
               let curWidth = parseInt(getStyle($th[i], 'width'))
               let width = parseInt(curWidth)
-              if (i === autoWidthIndex) {
-                width = width - 1
-              }
+//              if (i === autoWidthIndex) {
+//                width = width - 1
+//              }
               // 自适应列在表格宽度较小时显示异常，为自适应列设置最小宽度100（拖拽后除外）
               if (column.width) {
                 width = column.width || ''
@@ -1348,21 +1352,24 @@ export default {
               }
               this.cloneColumns[i]._width = width || ''
               totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
+              if(totalWidth < this.tableWidth) {
+                if(i === autoWidthIndex) {
+                  let lastW = this.tableWidth - totalWidth + width
+//                  this.$set(this.cloneColumns[autoWidthIndex], 'width', lastW)
+                  this.$set(this.cloneColumns[autoWidthIndex], '_width', lastW)
+                  totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
+                }
+              }
               columnsWidth[column._index] = {
                 width: width
               }
             }
-
             this.columnsWidth = columnsWidth
             this.tableWidth = totalWidth
-//            console.log('无数据时总宽:::'+this.tableWidth)
           }
-//          console.log('实际设置总宽:::'+this.tableWidth)
           // get table real height,for fixed when set height prop,but height < table's height,show scrollBarWidth
-          this.bodyRealHeight =
-            parseInt(getStyle(this.$refs.tbody, 'height')) || 0
-          this.headerRealHeight =
-            parseInt(getStyle(this.$refs.header, 'height')) || 0
+          this.bodyRealHeight = parseInt(getStyle(this.$refs.tbody, 'height')) || 0
+          this.headerRealHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0
           this.initWidth = parseInt(getStyle(this.$refs.tableWrap, 'width')) || 0
           if(this.$refs.content){
             this.$nextTick(()=>{
@@ -1976,24 +1983,17 @@ export default {
     fixedHeader() {
       if (this.height) {
         this.$nextTick(() => {
-          const titleHeight =
-            parseInt(getStyle(this.$refs.title, 'height')) || 0
+          const titleHeight = parseInt(getStyle(this.$refs.title, 'height')) || 0
           if (titleHeight > 0) {
             if (this.$refs.leftF)
               this.$refs.leftF.style.marginTop = titleHeight + 'px'
             if (this.$refs.rightF)
               this.$refs.rightF.style.marginTop = titleHeight + 'px'
           }
-
           // 兼容 columns 异步生成
-          const headerHeight =
-            this.headerRealHeight ||
-            parseInt(getStyle(this.$refs.header, 'height')) ||
-            0
-          const footerHeight =
-            parseInt(getStyle(this.$refs.footer, 'height')) || 0
-          this.bodyHeight =
-            this.height - titleHeight - headerHeight - footerHeight
+          const headerHeight = this.headerRealHeight || parseInt(getStyle(this.$refs.header, 'height')) || 0
+          const footerHeight = parseInt(getStyle(this.$refs.footer, 'height')) || 0
+          this.bodyHeight = this.height - titleHeight - headerHeight - footerHeight
         })
       } else {
         this.bodyHeight = 0
@@ -2530,12 +2530,10 @@ export default {
     this.$nextTick(() => {
       this.ready = true
       this.initWidth = parseInt(getStyle(this.$refs.tableWrap, 'width')) || 0
-      this.visibleCount =
-        Math.ceil(this.height / this.itemHeight) - (this.showHeader ? 0 : -1)
-        this.updateVisibleData()
+      this.visibleCount = Math.ceil(this.height / this.itemHeight) - (this.showHeader ? 0 : -1)
+      this.updateVisibleData()
       // this.focusIndex = this.defaultFocusIndex
     })
-    //window.addEventListener('resize', this.handleResize, false);
     on(window, 'resize', this.handleResize)
     on(window, 'resize', this.initResize)
     on(window, 'resize', this.getLeftWidth)
@@ -2550,7 +2548,6 @@ export default {
     on(document, 'keyup', this.keySelect)
   },
   beforeDestroy() {
-    //window.removeEventListener('resize', this.handleResize, false);
     off(window, 'resize', this.handleResize)
     off(window, 'resize', this.initResize)
     off(window, 'resize', this.getLeftWidth)
@@ -2559,6 +2556,20 @@ export default {
     off(document, 'keyup', this.keySelect)
   },
   watch: {
+//    bodyHeight(newVal, oldVal) {
+//      if(newVal !== oldVal) {
+//        let height = this.$refs.body.getBoundingClientRect().height
+//        let conentHeight = this.$refs.body.scrollHeight
+//        let oldIsScrollY = this.isScrollY
+//        if(!oldIsScrollY && conentHeight < height) {
+//          this.isScrollY = false
+//        }else if(oldIsScrollY && conentHeight > height) {
+//          this.isScrollY = true
+//        }else if(!oldIsScrollY && conentHeight > height) {
+//          this.isScrollY = true
+//        }
+//      }
+//    },
     toScrollTop() {
       this.privateToScrollTop = this.toScrollTop
     },

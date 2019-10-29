@@ -20,7 +20,8 @@
     </h-row>
     <br>
     <h1>tabs</h1>
-    <h-tabs ref="remove" type="line" @on-tab-remove="handleTabRemove1" showArrow arrowOnRight closable>
+    <h-tabs ref="remove" type="line" @on-tab-remove="handleTabRemove1" showArrow arrowOnRight closable :iconLeftClassName="'icon-left icon-arrow'">
+      <h-spin size="large"></h-spin>
       <h-tab-pane v-for="tab in tabs" :key="tab" :name="'标签' + tab" :label="'标签' + tab">
         标签{{ tab }}的内容
       </h-tab-pane>
@@ -30,7 +31,7 @@
     <br>
     <h1>buttonGroup</h1>
     <h-button-group>
-      <h-button @click="showBox = true" style="margin-right: 10px;">打开弹窗</h-button>
+      <h-button @on-click="handleShowBox" style="margin-right: 10px;">打开弹窗</h-button>
       <h-button type="primary" @on-click="changeShow">打开弹框</h-button>
     </h-button-group>
     <h1>checkboxGroup</h1>
@@ -52,45 +53,50 @@
       title="普通的Modal对话框标题"
       @on-ok="ok"
       @on-cancel="cancel">
-      <p>对话框内容</p>
-      <p>对话框内容</p>
-      <p>对话框内容</p>
+      <p>{{curValue}}</p>
+      <h-single-select ref="singlesel" v-model="curValue" :dropWidth="230" :maxDropWidth="300"
+                       widthAdaption filterable remote :remote-method="remoteMethod"
+                       showFirstLabelOnly :accuFilter="false" :animated="false"
+                       @on-keydown="handleKeyDown">
+        <h-select-block :data="bigData" :showCol="showCol" :colWidth="colWidth"></h-select-block>
+      </h-single-select>
     </h-msg-box>
     <h-msg-box v-model="show" escClose :mask-closable="false" maximize width="600" height="400">
       <h-form ref="formValidate" :model="formValidate" cols="2" :label-width="80" showTipsOnlyFocus>
-        <h-form-item label="singleSelect" prop="stockCode" required>
-          {{formValidate.stockCode}}
+        <h-form-item label="stockCode" prop="stockCode" required>
           <h-single-select ref="stockCode" v-model="formValidate.stockCode" placeholder="请选择所在地" class="curItemClass"
                            remote :loading="isLoading" :remote-method="remoteMethod1" transfer autoPlacement
                            :width="200" widthAdaption :dropWidth="220" :maxDropWidth="250"
                            @on-keydown="handlekeydown" @on-change="handlevaluechange">
             <h-select-block :data="remoteData" :showCol="showCol" :colWidth="colWidth"></h-select-block>
           </h-single-select>
+          {{formValidate.stockCode}}
         </h-form-item>
-        <h-form-item label="selecttree" prop="selecttree">
-          {{formValidate.selecttree}}
-          <h-select-tree v-model="formValidate.selecttree" :data="selectTreeData" ref="selecttree" filterable	showCheckbox :firstValue="firstValue"></h-select-tree>
+        <h-form-item label="input" prop="name" required :tipWidth="200">
+          <h-input v-model="formValidate.name" placeholder="请输入姓名" class="curItemClass" ></h-input>
         </h-form-item>
         <h-form-item prop="time" label="time" required upward>
           <h-time-picker type="time" placeholder="选择时间" v-model="formValidate.time" class="curItemClass" ></h-time-picker>
         </h-form-item>
         <h-form-item prop="date" label="date" required>
-          <h-date-picker type="date" placeholder="选择日期" v-model="formValidate.date" class="curItemClass" iconVisible></h-date-picker>
+          <h-date-picker type="date" placeholder="选择日期" showToday v-model="formValidate.date" class="curItemClass" iconVisible></h-date-picker>
         </h-form-item>
         <!--<h-form-item label="fastdate" prop="fastdate" required>-->
           <!--<h-fast-date class="curItemClass" v-model="formValidate.fastdate" format="yyyy-MM-dd"></h-fast-date>-->
         <!--</h-form-item>-->
-
-        <h-form-item label="input" prop="name" required :tipWidth="200">
-          <h-input v-model="formValidate.name" placeholder="请输入姓名" class="curItemClass" ></h-input>
-        </h-form-item>
-        <h-form-item label="typefield" prop="mail" required>
-          <h-typefield v-model="formValidate.mail" placeholder="请输入邮箱" class="curItemClass" ></h-typefield >
-        </h-form-item>
-        <h-form-item label="select" prop="city">
-          <h-select v-model="formValidate.city" class="curItemClass" filterable transfer placement="top" @on-keyup="selectKeyup">
-            <h-option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</h-option>
-          </h-select>
+        <!--<h-form-item label="typefield" prop="mail" required>-->
+          <!--<h-typefield v-model="formValidate.mail" placeholder="请输入邮箱" class="curItemClass" ></h-typefield >-->
+        <!--</h-form-item>-->
+        <!--<h-form-item label="select" prop="city">-->
+          <!--<h-select v-model="formValidate.city" class="curItemClass" filterable transfer placement="top" @on-keyup="selectKeyup">-->
+            <!--<h-option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</h-option>-->
+          <!--</h-select>-->
+        <!--</h-form-item>-->
+        <h-form-item label="selecttree" prop="selecttree">
+          <h-select-tree v-model="formValidate.selecttree" :data="selectTreeData" ref="selecttree"
+                         checkIndeter filterable	showCheckbox :firstValue="firstValue">
+          </h-select-tree>
+          {{formValidate.selecttree}}
         </h-form-item>
         <!--<h-form-item label="tree" prop="tree">-->
           <!--<h-select-tree v-model="formValidate.tree" class="curItemClass" :data="treeData" ref="tree" filterable></h-select-tree>-->
@@ -144,16 +150,16 @@
         <h-input type="text" v-model="formCustom.age" number></h-input>
       </h-form-item>
       <h-form-item label="日期">
-        <h-date-picker type="date" ref="datepicker" placeholder="选择日期" showToday autoPlacement v-model="formCustom.date" class="curItemClass"></h-date-picker>
-      </h-form-item>
-      <h-form-item label="fastdate">
-        <h-fast-date type="date" placeholder="选择日期" ref="datepicker" class="curItemClass"></h-fast-date>
+        <h-date-picker type="daterange" ref="datepicker" placeholder="选择日期" :pickMode="'move'" autoPlacement v-model="formCustom.date" class="curItemClass"></h-date-picker>
       </h-form-item>
       <h-form-item>
         <h-button type="primary" @click="handleSubmit('formCustom')">提交</h-button>
         <h-button type="ghost" @click="handleReset('formCustom')" style="margin-left: 8px;">重置</h-button>
       </h-form-item>
     </h-form>
+    <h1>calendar</h1>
+    <h-calendar ref="calendar" :disableDate="disableDate" @on-select-change="getSelectDate">
+    </h-calendar>
     <h1>table</h1>
     <h-table :columns="columns" :data="data0" :summationData="summationData1" :loading="loading"
              border :highlight-row="true"  headAlgin="center" bodyAlgin="left"
@@ -297,6 +303,8 @@ export default {
     };
 
     return {
+      curValue: '',
+      dataList: [],
       btncheck:[],
       loading: false,
       showBox: false,
@@ -418,6 +426,7 @@ export default {
             }
           ] }
       ],
+      firstValue: [],
       ruleCustom: {
         face_balance: [{
           validator: (rule, value, callback)=>{
@@ -445,6 +454,11 @@ export default {
         ]
       },
       columns: [
+        {
+          title: '',
+          key: 'index',
+          type: 'index'
+        },
         {
           title: '姓名',
           key: 'name',
@@ -817,6 +831,42 @@ export default {
     }
   },
   methods: {
+    handleShowBox() {
+      this.showBox = true
+      this.curValue = 'value1'
+      this.$refs.singlesel.focus()
+
+    },
+    remoteMethod(query, done) {
+      let reqTime = new Date().getTime();
+      this.reqTime = reqTime;
+      setTimeout(()=>{
+        if(this.reqTime != reqTime) {
+          return;
+        }
+        new Promise(resolve=>{
+          setTimeout(()=>{
+            this.dataList = [ {
+              value: '110002',
+              label: '110002',
+              label1: '国债110002',
+            }, {
+              value: '010007',
+              label: '010007',
+              label1: '国债010007',
+            } ];
+//            this.$nextTick(()=>{ this.curValue = '110002'; })
+            done();
+            this.curValue = '110002';
+          }, 800)
+        })
+      }, 600)
+    },
+    handleKeyDown(e) {
+      if(window.event.keyCode == 13) {
+        this.$refs.select.blur();
+      }
+    },
     selectKeyup(val, e) {
       console.log(val)
       console.log(e)
@@ -884,6 +934,7 @@ export default {
     changeShow(){
       this.$refs.formValidate.resetFields()
       this.show=true
+//      this.formValidate.stockCode = 'value1'
       this.$refs.formValidate.firstNodeFocused()
       this.firstValue = ['child1-1-1','child1-1-2','child1-2-1']
     },
@@ -950,6 +1001,16 @@ export default {
         this.$set(this.$refs.repoEditGrid.rebuildData[y], "mortgage_ratio", data)
       }
     },
+    disableDate(date) {
+      return (
+        date &&
+        date.valueOf() < Date.now() &&
+        date.valueOf() >= Date.now() - 86400000
+      )
+    },
+    getSelectDate(e) {
+      console.log(e)
+    }
   },
   created() {
     window.isO45 = false

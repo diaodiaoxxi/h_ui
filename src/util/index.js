@@ -5,6 +5,7 @@ import isArrayLike from "./isArrayLike";
 import isArrayLikeObject from "./isArrayLikeObject";
 import isKeyMatch from "./isKeyMatch";
 import isObject from "./isObject";
+import isUndefined from "./isUndefined";
 import noop from "./noop";
 import Popper from "./popper.min";
 
@@ -13,5 +14,5 @@ import Popper from "./popper.min";
  * @example import _ from "@/util"; _.isKeyMatch(event, "Enter");
  * @author yangyc21550@hundsun.com
  */
-export default { deepCloneAs, debounce, throttle, isArrayLike, isArrayLikeObject, isKeyMatch, isObject, noop };
+export default { deepCloneAs, debounce, throttle, isArrayLike, isArrayLikeObject, isKeyMatch, isObject, isUndefined, noop };
 export { Popper };

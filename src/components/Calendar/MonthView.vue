@@ -21,7 +21,8 @@
                      :prefixCls="prefixCls"
                      :data="item"
                      :dateRender="dateRender"
-                     :badges="badges"></date-cell>
+                     :badges="badges">
+          </date-cell>
         </div>
       </div>
     </div>

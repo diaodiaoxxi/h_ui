@@ -50,7 +50,6 @@ import clickoutside from '../../directives/clickoutside.js'
 import locale from '../../mixins/locale'
 import MonthView from './MonthView'
 import dateUtil from '../../util/date'
-
 const prefixCls = 'h-calendar'
 
 export default {
@@ -65,7 +64,9 @@ export default {
       selectedDate: [],
       /* 当前视图所有日期 */
       dateList: [],
-      handledDate: [] //已处理数据
+      handledDate: [], //已处理数据,
+      pickStartDate: '',
+      pickEndDate: ''
     }
   },
   props: {
@@ -186,7 +187,6 @@ export default {
         selectedDate.push(dateObj)
       }
       this.$emit('on-select', date.getMonth() + 1, date.getDate())
-      console.log(selectedDate)
     },
     handleCtxMenu(event) {
       if (this.enableCtxMenu) {
@@ -326,6 +326,43 @@ export default {
         }
       }
       return select
+    },
+    handleMouseDown(dateObj) {
+      const date = dateObj.date
+      this.pickStartDate = date.getTime()
+    },
+    handleMouseUp(dateObj) {
+      if(!dateObj || !this.multiSelect) {
+        return
+      }
+      const date = dateObj.date
+      this.pickEndDate = date.getTime()
+      if(this.pickEndDate === this.pickStartDate) {
+        return
+      }
+      if(this.pickEndDate < this.pickStartDate) {
+        let temp = this.pickStartDate
+        this.pickStartDate = this.pickEndDate
+        this.pickEndDate = temp
+      }
+      const disabledDate = this.disableDate
+      const shouldDisabled = typeof disabledDate === 'function' || Array.isArray(disabledDate)
+      let dateList = new Array()
+      const now = new Date()
+      const day = 24*60*60*1000
+      for(let i = this.pickStartDate; i <= this.pickEndDate; i+=day) {
+        let disabled = false
+        let date = new Date(i)
+        let obj = {
+          date: date,
+          disabled: shouldDisabled && disabled,
+          workFlag: date.getDay() === 6 || date.getDay() === 0 ? 0 : 1,
+          isToday: now.toDateString() === date.toDateString()
+        }
+        dateList.push(obj)
+      }
+      this.selectedDate = dateList
+      this.$emit('on-select-change', this.getSelectDate())
     }
   },
   created() {
@@ -335,6 +372,8 @@ export default {
     this.$on('on-cell-mouseout', this.handleCellMouseOut)
     this.$on('on-cell-dblclick', this.handleCellDblClick)
     this.$on('on-cell-badge-click', this.handleBadgeClick)
+    this.$on('on-mouse-down', this.handleMouseDown)
+    this.$on('on-mouse-up', this.handleMouseUp)
   }
 }
 </script>
