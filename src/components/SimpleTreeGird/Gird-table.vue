@@ -268,6 +268,10 @@ export default {
       default () {
         return '';
       }
+    },
+    getHeaderHeightFlag: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -303,13 +307,17 @@ export default {
     fixedBodyStyle () {
       let style = {};
       if (this.bodyHeight !== 0) {
-        let height =this.bodyHeight-this.scrollBarWidth;
+//        let height = this.bodyHeight - 1
+//        if(this.$refs.body.scrollWidth > this.$refs.body.clientWidth) {
+//          height =this.bodyHeight-this.scrollBarWidth;
+//        }
+        let height =this.bodyHeight-this.scrollBarWidth
         if (this.tableWidth < this.initWidth+1) {
           height = height + this.scrollBarWidth-1;
         }
-        style.height = this.scrollBarWidth > 0 ? `${height}px` : `${height}px`;
+        style.height = `${height}px`
       }
-      return style;
+      return style
     },
     fixedTableStyle () {
       let style = {};
@@ -770,12 +778,12 @@ export default {
     },
     fixedHeader () {
       if (this.height) {
-          this.$nextTick(() => {
+        this.$nextTick(() => {
               this.headerRealHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0
               // const headerHeight = this.headerRealHeight;
               const headerHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0
               this.bodyHeight = this.height - headerHeight;
-          });
+        });
       } else {
           this.bodyHeight = 0;
       }
@@ -1009,8 +1017,13 @@ export default {
       },
       deep: true
     },
+    getHeaderHeightFlag(val) {
+      if(val) {
+        this.fixedHeader()
+      }
+    },
     height () {
-        this.fixedHeader();
+      this.fixedHeader();
     },
     buttomNum (val) {
       this.$emit('on-scroll',val);

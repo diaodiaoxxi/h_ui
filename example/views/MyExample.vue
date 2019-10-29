@@ -1,33 +1,33 @@
 <template>
   <div>
     <h1>Grid</h1>
-    <h-row>
-      <h-col span="12" style="background:red">col-12</h-col>
-      <h-col span="12" style="background:blue">col-12</h-col>
-    </h-row>
-    <br>
-    <h-row>
-      <h-col span="8" style="background:yellow">col-8</h-col>
-      <h-col span="8" style="background:green">col-8</h-col>
-      <h-col span="8" style="background:pink">col-8</h-col>
-    </h-row>
-    <br>
-    <h-row>
-      <h-col span="6" style="background:gray">col-6</h-col>
-      <h-col span="6" style="background:black">col-6</h-col>
-      <h-col span="6" style="background:grey">col-6</h-col>
-      <h-col span="6" style="background:black">col-6</h-col>
-    </h-row>
+    <!--<h-row>-->
+      <!--<h-col span="12" style="background:red">col-12</h-col>-->
+      <!--<h-col span="12" style="background:blue">col-12</h-col>-->
+    <!--</h-row>-->
+    <!--<br>-->
+    <!--<h-row>-->
+      <!--<h-col span="8" style="background:yellow">col-8</h-col>-->
+      <!--<h-col span="8" style="background:green">col-8</h-col>-->
+      <!--<h-col span="8" style="background:pink">col-8</h-col>-->
+    <!--</h-row>-->
+    <!--<br>-->
+    <!--<h-row>-->
+      <!--<h-col span="6" style="background:gray">col-6</h-col>-->
+      <!--<h-col span="6" style="background:black">col-6</h-col>-->
+      <!--<h-col span="6" style="background:grey">col-6</h-col>-->
+      <!--<h-col span="6" style="background:black">col-6</h-col>-->
+    <!--</h-row>-->
     <br>
     <h1>tabs</h1>
-    <h-tabs ref="remove" type="line" @on-tab-remove="handleTabRemove1" showArrow arrowOnRight closable :iconLeftClassName="'icon-left icon-arrow'">
-      <h-spin size="large"></h-spin>
-      <h-tab-pane v-for="tab in tabs" :key="tab" :name="'标签' + tab" :label="'标签' + tab">
-        标签{{ tab }}的内容
-      </h-tab-pane>
-    </h-tabs>
-    <h-button type="ghost" @click="handleTabsAdd(true)" size="small" slot="extra">增加</h-button>
-    <h-button type="ghost" @click="handleTabsAdd(false)" size="small" slot="extra">减少</h-button>
+    <!--<h-tabs ref="remove" type="line" @on-tab-remove="handleTabRemove1" showArrow arrowOnRight closable :iconLeftClassName="'icon-left icon-arrow'">-->
+      <!--<h-spin size="large"></h-spin>-->
+      <!--<h-tab-pane v-for="tab in tabs" :key="tab" :name="'标签' + tab" :label="'标签' + tab">-->
+        <!--标签{{ tab }}的内容-->
+      <!--</h-tab-pane>-->
+    <!--</h-tabs>-->
+    <!--<h-button type="ghost" @click="handleTabsAdd(true)" size="small" slot="extra">增加</h-button>-->
+    <!--<h-button type="ghost" @click="handleTabsAdd(false)" size="small" slot="extra">减少</h-button>-->
     <br>
     <h1>buttonGroup</h1>
     <h-button-group>
@@ -75,12 +75,13 @@
         <h-form-item label="input" prop="name" required :tipWidth="200">
           <h-input v-model="formValidate.name" placeholder="请输入姓名" class="curItemClass" ></h-input>
         </h-form-item>
+        <h-form-item prop="date" label="date" required>
+          <h-date-picker type="date" placeholder="选择日期" showToday v-model="formValidate.date" class="curItemClass"></h-date-picker>
+        </h-form-item>
         <h-form-item prop="time" label="time" required upward>
           <h-time-picker type="time" placeholder="选择时间" v-model="formValidate.time" class="curItemClass" ></h-time-picker>
         </h-form-item>
-        <h-form-item prop="date" label="date" required>
-          <h-date-picker type="date" placeholder="选择日期" showToday v-model="formValidate.date" class="curItemClass" iconVisible></h-date-picker>
-        </h-form-item>
+
         <!--<h-form-item label="fastdate" prop="fastdate" required>-->
           <!--<h-fast-date class="curItemClass" v-model="formValidate.fastdate" format="yyyy-MM-dd"></h-fast-date>-->
         <!--</h-form-item>-->
@@ -158,29 +159,111 @@
       </h-form-item>
     </h-form>
     <h1>calendar</h1>
-    <h-calendar ref="calendar" :disableDate="disableDate" @on-select-change="getSelectDate">
-    </h-calendar>
+    <!--<h-calendar ref="calendar" :disableDate="disableDate" @on-select-change="getSelectDate">-->
+    <!--</h-calendar>-->
     <h1>table</h1>
-    <h-table :columns="columns" :data="data0" :summationData="summationData1" :loading="loading"
-             border :highlight-row="true"  headAlgin="center" bodyAlgin="left"
-             canDrag :lastColWidth="150" :minDragWidth="40" :minColWidth="60" notSetWidth autoHeadWidth
-             @on-sort-change="sortchange" @on-table-width-change="widthChange">
-      <span slot="loading">我是自定义加载！！！</span>
-    </h-table>
+    <!--<h-table :columns="columns" :data="data0" :summationData="summationData1" :loading="loading"-->
+             <!--border :highlight-row="true"  headAlgin="center" bodyAlgin="left"-->
+             <!--canDrag :lastColWidth="150" :minDragWidth="40" :minColWidth="60" notSetWidth autoHeadWidth-->
+             <!--@on-sort-change="sortchange" @on-table-width-change="widthChange">-->
+      <!--<span slot="loading">我是自定义加载！！！</span>-->
+    <!--</h-table>-->
     <h1>tree</h1>
-    <h-tree :data="baseData" show-checkbox></h-tree>
+    <!--<h-tree :data="baseData" show-checkbox></h-tree>-->
     <h1>simpleTreeGrid</h1>
-    <h-button type="primary" @click="expandAll">展开</h-button>
-    <h-button @click="fold">收起</h-button>
-    <h-simple-tree-gird :columns="columns1" ref="treeGrid" :data="treedata" canDrag :height="400" @on-expand="expand"></h-simple-tree-gird>
+    <!--<h-button type="primary" @click="expandAll">展开</h-button>-->
+    <!--<h-button @click="fold">收起</h-button>-->
+    <!--<h-simple-tree-gird :columns="columns1" ref="treeGrid" :data="treedata" canDrag :height="250" @on-expand="expand"></h-simple-tree-gird>-->
     <h1>editGird</h1>
-    <h-edit-gird ref="repoEditGrid" border height="400" size="small" showEditInput
-                 :columns="columnsEdit" :data="dataEdit" :disabled-hover="true" :highlight-row="true"
-                 @on-money-blur="on_money_blur">
-    </h-edit-gird>
+    <!--<h-edit-gird ref="repoEditGrid" border height="400" size="small" showEditInput-->
+                 <!--:columns="columnsEdit" :data="dataEdit" :disabled-hover="true" :highlight-row="true"-->
+                 <!--@on-money-blur="on_money_blur">-->
+    <!--</h-edit-gird>-->
+    <h-edit-gird ref="editGird" :columns="columns2" :data="tData" size="small" :disabled-hover="true" :highlight-row="true"
+                 @on-current-change="click1" :showEditInput="true" height="200" :option="options1" :treeOption="treeOption" ></h-edit-gird>
   </div>
 </template>
 <script>
+  var tData= [
+    {
+      name: '王小明',
+      age: 18,
+      address: '北京市朝阳区芍药居',
+      money: '120.00',
+      cardId: '6223 5678 1234 5678',
+      city: '北京',
+      dating:'2018-01-09T16:00:00.000Z',
+      timing:'16:00:00.00',
+      tree:'leaf1'
+      // _highlight: true//默认选择当前项
+    },
+    {
+      name: '张小刚',
+      age: 25,
+      address: '北京市海淀区西二旗',
+      money: '130.00',
+      cardId: '6223 5678 1234 5678',
+      city: '北京',
+      dating:'2018-01-09T16:00:00.000Z',
+      timing:'16:00:00.00',
+      tree:'leaf1'
+    },
+    {
+      name: '李小红',
+      age: 30,
+      address: '上海市浦东新区世纪大道',
+      money: '140.00',
+      cardId: '6223 5678 1234 5678',
+      city: '北京',
+      dating:'2018-01-09T16:00:00.000Z',
+      timing:'16:00:00.00',
+      tree:'leaf1'
+    },
+    {
+      name: '周小伟',
+      age: 26,
+      address: '深圳市南山区深南大道',
+      money: '150.00',
+      cardId: '6223 5678 1234 5678',
+      city: '北京',
+      dating:'2018-01-09T16:00:00.000Z',
+      timing:'16:00:00.00',
+      tree:'leaf1'
+    },
+    {
+      name: '张小刚',
+      age: 25,
+      address: '北京市海淀区西二旗',
+      money: '130.00',
+      cardId: '6223 5678 1234 5678',
+      city: '北京',
+      dating:'2018-01-09T16:00:00.000Z',
+      timing:'16:00:00.00',
+      tree:'leaf1'
+    },
+    {
+      name: '李小红',
+      age: 30,
+      address: '上海市浦东新区世纪大道',
+      money: '140.00',
+      cardId: '6223 5678 1234 5678',
+      city: '北京',
+      dating:'2018-01-09T16:00:00.000Z',
+      timing:'16:00:00.00',
+      tree:'leaf1'
+    },
+    {
+      name: '周小伟',
+      age: 26,
+      address: '深圳市南山区深南大道',
+      money: '150.00',
+      cardId: '6223 5678 1234 5678',
+      city: '北京',
+      dating:'2018-01-09T16:00:00.000Z',
+      timing:'16:00:00.00',
+      tree:'leaf1'
+    }
+  ];
   let bigTreeData = [];
   for(var i=0;i<30;i++){
     let obj =  {
@@ -630,7 +713,7 @@ export default {
           key: 'name',
           width: 300,
           ellipsis:true,
-          // hiddenCol:true,
+          fixed: 'left'
         },
         {
           title: '年龄',
@@ -669,7 +752,126 @@ export default {
       ],
       baseTreeData: [],
       treedata: [],
-      columns2: [],
+//      columns2: [],
+      tData: tData,
+      columns2: [
+        {
+          type: 'text',
+          title: '姓名',
+          key: 'name',
+          width: 200,
+          rule: [{ required: true, message: '姓名不能为空'},
+            {validator:function (rule, val, callback) {
+              if(val == 'test'){
+                callback()
+              }else{
+                callback(new Error("不是test"))
+              }
+            }}
+          ]
+        },
+        {
+          type: 'text',
+          title: '年龄',
+          width: 200,
+          key: 'age',
+          hiddenCol:false,
+          rule:  [
+            { required: true, message: '姓名不能为空' },
+            { pattern: /^-?[1-9]\d*$|^0/, message: '只能输入数字格式' }
+          ],
+        },
+        {
+          type: 'textArea',
+          rows: 2,
+          width: 200,
+          title: '地址',
+          key: 'address',
+          rule: { required: true, message: '地址不能为空'},
+        },
+        {
+          type: 'money',
+          title: '金额',
+          width: 200,
+          integerNum: 3,
+          suffixNum: 2,
+          bigTips: true,
+          key: 'money',
+          rule: { required: true, message: '金额不能为空'},
+        },
+        {
+          type: 'card',
+          title: '卡号',
+          width: 200,
+          key: 'cardId',
+          rule: { required: true, message: '卡号不能为空'},
+        },
+        {
+          type: 'select',
+          title: '地区',
+          width: 200,
+          key: 'city',
+          multiple:false,
+          option: [
+            {value:"北京"},
+            {value:"上海"},
+            {value:"天津"},
+            {value:"沈阳"},
+            {value:"杭州"},
+            {value:"武汉"},
+          ],
+          rule:{ required: true, message: '请选择城市', trigger: 'blur,change' }
+        },
+        {
+          type: 'date',
+          title: '日期',
+          width: 200,
+          key: 'dating',
+          dateType:'date',
+          format: 'yyyy-MM-dd',
+          rule:{ required: true, message: '请选择日期', trigger: 'blur,change' }
+        },
+        {
+          type: 'time',
+          title: '时间',
+          width: 200,
+          key: 'timing',
+          dateType:'time',
+          format: 'HH:mm:ss',
+          steps: [],
+          rule:{ required: true, message: '请选择时间', trigger: 'blur,change' }
+        },
+        {
+          type: 'selectTree',
+          title: '下拉树',
+          width: 200,
+          key: 'tree',
+          treeData:[{
+            expand: true,
+            title: 'parent 1',
+            children: [{
+              title: 'parent 1-0',
+              expand: true,
+              children: [{
+                title: 'leaf1',
+                disableCheckbox: true
+              }, {
+                title: 'leaf2',
+              }]
+            }, {
+              title: 'parent 1-1',
+              expand: true,
+              checked: true,
+              children: [{
+                title: 'leaf3',
+              }]
+            }]
+          }],
+          showCheckbox: false,
+          checkStrictly: false,
+          rule:{ required: true, message: '请选择子节点', trigger: 'blur,change' }
+        }
+      ],
       data1: [{id: 0}, {id:1}, {id:2}],
       columnsEdit: [
         {
