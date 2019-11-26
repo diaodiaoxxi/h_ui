@@ -17,7 +17,7 @@
     <h-page :total="100" show-total></h-page>
     <p>迷你型</p>
     <h-page :total="40" size="small"></h-page>
-    <h-page :total="40" size="small" show-elevator show-sizer></h-page>
+    <h-page :total="40" size="small" show-elevator show-sizer isLoadAll></h-page>
     <h-page :total="40" size="small" show-total></h-page>
     <p>简洁版</p>
     <h-page :current="2" :total="50" simple show-sizer showSizerLabel fastArrival></h-page>
@@ -34,9 +34,9 @@
       </h-button-group>
       </br>
       </br>
-      <h-table :data="tData" :columns="columns" @on-row-click="rowClick"></h-table>
+      <h-table :data="[...tData, ...tData]" :columns="columns" @on-row-click="rowClick"></h-table>
       </br>
-      <h-page :total="totalNum" @on-change="dataChange" show-sizer show-elevator show-total @on-page-size-change="pickerChange" :pageSizeOpts="pageSizeOpts"></h-page>
+      <h-page :total="totalNum" @on-change="dataChange" show-sizer show-elevator show-total @on-page-size-change="pickerChange" :pageSizeOpts="pageSizeOpts" :isLoadAll="true"></h-page>
     </div>
     <h-msg-box v-model="addMsg" width="800" >
       <p slot="header">

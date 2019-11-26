@@ -52,10 +52,16 @@
                v-if="!footerHide"
                ref="msgFooter">
             <slot name="footer">
+               <h-button type="primary"
+                        v-if="isOkLeft"
+                        size="large"
+                        :loading="buttonLoading"
+                        @click="ok">{{ localeOkText }}</h-button>
               <h-button type="text"
                         size="large"
                         @click="cancel">{{ localeCancelText }}</h-button>
               <h-button type="primary"
+                        v-if="!isOkLeft"
                         size="large"
                         :loading="buttonLoading"
                         @click="ok">{{ localeOkText }}</h-button>
@@ -192,6 +198,10 @@ export default {
     },
     /* 是否开启内容懒加载 */
     lazyload: {
+      type: Boolean,
+      default: false
+    },
+    isOkLeft: {
       type: Boolean,
       default: false
     }
@@ -383,9 +393,11 @@ export default {
       const obj = this.$refs.content
       const width = parseInt(this.curWidth)
       if (this.allHeight >= this.WindosInnerHeight) {
-        this.$refs.wrap.style.display = 'block'
+        if(!this.$refs.wrap)
+          this.$refs.wrap.style.display = 'block'
       } else if (Number(this.top) <= 0) {
-        this.$refs.wrap.style.display = 'flex'
+        if(!this.$refs.wrap)
+          this.$refs.wrap.style.display = 'flex'
       }
       if (this.isMax) {
         obj.style.top = '0px'

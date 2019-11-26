@@ -24,33 +24,33 @@ export default {
         }
       ]
     },
-    setCellWidth(column, index, top) {// top:表头、汇总行true;表体false
-      let width = ''
-      let lastInx = this.cloneColumns.length-1
-      while(this.cloneColumns[lastInx].fixed=='right'){
-        lastInx--
+    setCellWidth(column, index, top) {
+      const { width, _width } = column;
+      let columnWidth = "",
+        lastInx = this.cloneColumns.length - 1;
+
+      while (this.cloneColumns[lastInx] && this.cloneColumns[lastInx].fixed === "right") {
+        lastInx--;
       }
-      if (column.width) {
-        width = column.width
-      } else if (this.cloneColumns[column._index]) {
-        width = this.cloneColumns[column._index]._width
-        // else if (this.columnsWidth[column._index]) {
-        // width = this.columnsWidth[column._index].width
+
+      if (width) {
+        columnWidth = width;
+      } else if (_width) {
+        columnWidth = _width;
       }
+
       // when browser has scrollBar,set a width to resolve scroll position bug
-      if (lastInx === index&& this.bodyHeight !== 0&& width!='') {
-        if(!this.data.length) return
-        if(!top && this.isScrollY) {
-          width -= this.scrollBarWidth
+      if (lastInx === index && this.bodyHeight !== 0 && width != "") {
+        if (this.data.length > 0 && !top && this.isScrollY) {
+          columnWidth -= this.scrollBarWidth;
         }
-        // if(this.tableWidth+1>=this.initWidth-this.scrollBarWidth&&top) {
-        //   width += this.scrollBarWidth
-        // }else if(this.contentHeight<this.height) {
-        //   width += this.scrollBarWidth
-        // }
       }
-      if (width === '0') width = ''
-      return width
+
+      if (columnWidth === "0") {
+        columnWidth = "";
+      }
+
+      return columnWidth;
     }
   }
 }

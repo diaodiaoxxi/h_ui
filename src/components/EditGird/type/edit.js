@@ -1,6 +1,7 @@
 import GirdTable from '../Gird-table.vue';
 
 export default {
+  // name: 'edit-gird',
   mixins: [GirdTable],
   props: {
     typeName:{

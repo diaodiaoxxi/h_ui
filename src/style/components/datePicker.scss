@@ -5,13 +5,25 @@ $date-picker-cells-width: 196px;
 $date-picker-cells-width-with-weeknumbers: 226px;
 
 .#{$date-picker-prefix-cls} {
-  height: $form-component-height;
+  height: $input-height-base;
   position: relative;
   // display: inline-block;
   line-height: normal;
   width: 100%;
   display: inline-block;
   vertical-align: middle;
+  &.#{$date-picker-prefix-cls}-small {
+    height: $input-height-small;
+    .h-input-type {
+      height: $input-height-small;
+    }
+  }
+  &.#{$date-picker-prefix-cls}-large {
+    height: $input-height-large;
+    .h-input-type {
+      height: $input-height-large;
+    }
+  }
   &-rel{
     position: relative;
   }

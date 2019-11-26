@@ -1,5 +1,5 @@
 <template>
-  <div :class="[prefixCls]"
+  <div :class="{[prefixCls]: true, [prefixCls + '-small']: size === 'small', [prefixCls + '-large']: size === 'large'}"
        v-clickoutside="handleClose"
        ref='wrapper'>
     <div ref="reference"
@@ -50,7 +50,7 @@
                      :format="format"
                      :value="internalValue"
                      :start-date="startDate"
-                     :split-panels="splitPanels"
+                     :unlink-panels="unlinkPanels"
                      :show-week-numbers="showWeekNumbers"
                      :picker-type="type"
                      :showTwoPanel="this.showTwoPanel"
@@ -82,7 +82,6 @@ import { on, off } from '../../util/dom'
 import { DEFAULT_FORMATS, TYPE_VALUE_RESOLVER_MAP, formatDate } from './util'
 import Emitter from '../../mixins/emitter'
 import Locale from '../../mixins/locale'
-
 const prefixCls = 'h-date-picker'
 const isEmptyArray = val =>
   val.reduce(
@@ -244,16 +243,28 @@ export default {
     valueTypeArr: {
       type: Boolean,
       default: false,
+    },
+    unlinkPanels: {
+      type: Boolean,
+      default: false
     }
-
   },
   data() {
+    let value = this.value;
     const isRange = this.type.indexOf('range') > -1 ? true : false
+    if (typeof this.value === 'string' && this.type.includes('range') ) value = this.value.split(' - ')
+
     const emptyArray = isRange ? [null, null] : [null]
-    let initialValue = isEmptyArray((isRange ? this.value : [this.value]) || [])
+    let initialValue = isEmptyArray((isRange ? value : [value]) || [])
       ? emptyArray
-      : this.parseDate(this.value)
-    if (this.name == 'splicePanel') initialValue = this.parseDate(this.value)
+      : this.parseDate(value)
+    if (this.name == 'splicePanel') initialValue = this.parseDate(value)
+
+    // const emptyArray = isRange ? [null, null] : [null]
+    // let initialValue = isEmptyArray((isRange ? this.value : [this.value]) || [])
+    //   ? emptyArray
+    //   : this.parseDate(this.value)
+    // if (this.name == 'splicePanel') initialValue = this.parseDate(this.value)
     return {
       prefixCls: prefixCls,
       showClose: false,
@@ -276,6 +287,7 @@ export default {
       if (this.multiple) {
         return this.internalValue.slice()
       } else {
+        if (isEmptyArray(this.internalValue) && this.type.includes('range')) return []
         // const isRange = this.type.includes('range');
         const isRange = this.type.indexOf('range') > -1 ? true : false
         let val = this.internalValue.map(date =>
@@ -288,9 +300,11 @@ export default {
     publicStringValue() {
       const { formatDate, publicVModelValue, type } = this
       if (type.match(/^time/)) return publicVModelValue
-      return Array.isArray(publicVModelValue)
-        ? publicVModelValue.map(formatDate)
-        : formatDate(publicVModelValue)
+      if (Array.isArray(publicVModelValue)){
+        const arr = publicVModelValue.map(formatDate)
+        return (isEmptyArray(arr) && this.type.includes('range')) ? [] : arr
+      }
+      return formatDate(publicVModelValue)
     },
     //    opened() {
     //      return this.open === null ? this.visible : this.open
@@ -507,6 +521,7 @@ export default {
       this.$refs.input.select()
     },
     handleBlur() {
+      console.log('handleBlur----')
       this.visible = false
       this.onSelectionModeChange(this.type)
 
@@ -527,7 +542,6 @@ export default {
      */
     checkLegality(text, date) {
       if (
-        this.clearOnIllegal &&
         ['date', 'daterange', 'datetime', 'datetimerange'].indexOf(this.type) >
           -1
       ) {
@@ -569,19 +583,11 @@ export default {
       }
     },
     handleInputChange(event) {
-      // if (value==''||String(value).length==0) {
-      //   this.handleClear();
-      //   return false;
-      // }
-      // const isArrayValue = this.type.includes('range') || this.multiple;
       const isArrayValue =
         this.type.indexOf('range') > -1 ? true : false || this.multiple
       const oldValue = this.visualValue
       const newValue = event.target.value
       let newDate = this.parseDate(newValue)
-      // if(newDate[0] == null || !newDate || newDate == []) {
-      //   newDate = this.internalValue
-      // }
       const disabledDateFn =
         this.options &&
         typeof this.options.disabledDate === 'function' &&
@@ -735,23 +741,21 @@ export default {
       // 自动适配逻辑调整
       if (this.autoPlacement) {
         let clientHeight = document.documentElement.clientHeight
-        let clienWidth = document.documentElement.clientWidth
+        let clientWidth = document.documentElement.clientWidth
         let rect = this.$refs.wrapper.getBoundingClientRect()
         let curbottom = clientHeight - rect.top - rect.height
-        let bottomNum = this.confirm ? 300 : 250
-
+        let bottomNum = (this.confirm || this.showToday) ? 300 : 250
         let rightNum = this.type.indexOf('range') > -1 ? 436 : 220
         let isShortcuts =
           this.options &&
           this.options.shortcuts &&
           this.options.shortcuts.length > 0
         rightNum = isShortcuts ? rightNum + 95 : rightNum
-
         if (curbottom < bottomNum && rect.right < rightNum && rect.top > bottomNum ) {
           this.fPlacement = 'top-end'
         } else if (curbottom < bottomNum && rect.top > bottomNum) {
           this.fPlacement = 'top-start'
-        } else if (clienWidth - rect.left < rightNum) {
+        } else if (clientWidth - rect.left < rightNum) {
           this.fPlacement = 'bottom-end'
         } else {
           this.fPlacement = 'bottom-start'
@@ -771,6 +775,7 @@ export default {
       if(keyCode === 46) {
         e.preventDefault()
         this.handleClear()
+        this.focus()
       }
     },
     handleLongDate() {
@@ -851,7 +856,7 @@ export default {
       if (shouldEmitInput) {
         this.$emit('input', strValue) // to update v-model
         if (this.type.includes('range') && this.showFormat && this.valueTypeArr) {
-          this.$emit('input', this.publicStringValue) 
+          this.$emit('input', this.publicStringValue)
         }
         this.$emit('on-change', this.publicStringValue)
         // this.$emit('input', now); // to update v-model
@@ -866,9 +871,9 @@ export default {
       this.picker.$destroy()
     }
     this.$refs.drop.destroy()
-    off(document, 'keydown', this.handleKeydown)
+    off(this.$refs.reference, 'keydown', this.handleKeydown)
     if(!window.isO45) {
-      off(document, 'keyup', this.keyUpHandler)
+      off(this.$refs.reference, 'keyup', this.keyUpHandler)
     }
   },
   mounted() {
@@ -885,9 +890,9 @@ export default {
       }
     }
     if (this.open !== null) this.visible = this.open
-    on(document, 'keydown', this.handleKeydown)
+    on(this.$refs.reference, 'keydown', this.handleKeydown)
     if(!window.isO45) {
-      on(document, 'keyup', this.keyUpHandler)
+      on(this.$refs.reference, 'keyup', this.keyUpHandler)
     }
   }
 }

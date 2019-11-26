@@ -185,6 +185,11 @@
     </h-msg-box>
     <h-button @click="showModal2 = true">弹窗</h-button>
     <h-button @click="modal6 = true">iframe</h-button>
+    <br>
+   <h-button @click="testIsOkLeft = true">isOkLeft 测试</h-button>
+   <h-msg-box v-model="testIsOkLeft" isOkLeft>
+      isOkLeft 测试
+    </h-msg-box>
   </div>
 </template>
 <script>
@@ -192,6 +197,7 @@ export default {
   name: 'MsgBoxs',
   data() {
     return {
+      testIsOkLeft: false,
       modal1: false,
       modal2: false,
       modal_loading: false,

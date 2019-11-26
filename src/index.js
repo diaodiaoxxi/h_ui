@@ -22,7 +22,6 @@ import Gobottom from './components/GoBottom'
 import Icon from './components/Icon'
 import Input from './components/Input'
 import InputNumber from './components/InputNumber'
-// import Scroll from './components/scroll';
 import LoadingBar from './components/LoadingBar'
 import Menu from './components/Menu'
 import Message from './components/Message'
@@ -32,7 +31,7 @@ import Page from './components/Page'
 import Poptip from './components/Poptip'
 import Progress from './components/Progress'
 import Radio from './components/Radio'
-// import Rate from './components/rate';
+import Rate from './components/Rate'
 import SelectTree from './components/SelectTree'
 import Slider from './components/Slider'
 import Spin from './components/Spin'
@@ -40,7 +39,7 @@ import Steps from './components/Steps'
 import Switch from './components/Switch'
 import Table from './components/Table'
 import Tabs from './components/Tabs'
-// import Tag from './components/tag';
+import Tag from './components/Tag'
 import Timeline from './components/Timeline'
 import TimePicker from './components/TimePicker'
 import Tooltip from './components/Tooltip'
@@ -63,7 +62,6 @@ import SimpleTable from './components/SimpleTable'
 import SimpleGroupTable from './components/SimpleGroupTable'
 import TransferTable from './components/TransferTable'
 import FormGird from './components/FormGird'
-import Rate from './components/Rate'
 import Textdiff from './components/Textdiff'
 import TypefieldRange from './components/TypefieldRange'
 import Split from './components/Split'
@@ -74,11 +72,11 @@ import Calendar from './components/Calendar'
 import SingleSelect from './components/SingleSelect'
 // import FileImport from './components/FileImport'
 // import FileExport from './components/FileExport';
-import Tag from './components/Tag'
+// import Scroll from './components/scroll';
 import Schedule from './components/Schedule'
 import locale from './locale'
 import SimpleMultiSelect from './components/SimpleMultiSelect'
-
+import StockSelect from './components/StockSelect'
 
 const h_ui = {
   Affix,
@@ -261,6 +259,7 @@ const h_ui = {
   hMultiBlock:SimpleMultiSelect.Block,
   hSingleSelect:SingleSelect,
   hSingleBlock:SingleSelect.Block,
+  hStockSelect:StockSelect,
   // FileImport:FileImport,
   // hFileImport:FileImport,
   // FileExport: FileExport,

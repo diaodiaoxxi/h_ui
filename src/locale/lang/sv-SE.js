@@ -82,6 +82,7 @@ export default {
             prev5: 'Föregående 5 sidor',
             next5: 'Nästa 5 sidor',
             page: '/page',
+            showAll: 'Ladda alla',
             goto: 'Gå till',
             p: ''
         },

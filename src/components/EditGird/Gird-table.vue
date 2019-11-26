@@ -52,6 +52,7 @@
                    @on-editselect-change="editselectChange"
                    @on-editinput-change="editinputChange"
                    @on-editinput-blur="editinputBlur"
+                   @on-editinput-enter="editinputEnter"
                    @on-editarea-change="editAreaChange"
                    @on-editarea-blur="editAreaBlur"></gird-body>
       </div>
@@ -113,6 +114,7 @@
                      @on-editselect-change="editselectChange"
                      @on-editinput-change="editinputChange"
                      @on-editinput-blur="editinputBlur"
+                     @on-editinput-enter="editinputEnter"
                      @on-editarea-change="editAreaChange"
                      @on-editarea-blur="editAreaBlur"></gird-body>
         </div>
@@ -154,6 +156,7 @@
                      @on-editselect-change="editselectChange"
                      @on-editinput-change="editinputChange"
                      @on-editinput-blur="editinputBlur"
+                     @on-editinput-enter="editinputEnter"
                      @on-editarea-change="editAreaChange"
                      @on-editarea-blur="editAreaBlur"></gird-body>
         </div>
@@ -1505,6 +1508,9 @@ export default {
     editinputBlur(val, i, j) {
       this.$emit('on-editinput-blur', val, i, j)
     },
+    editinputEnter(val, i, j) {
+      this.$emit('on-editinput-enter', val, i, j)
+    },
     editAreaChange(val, i, j) {
       this.$emit('on-editarea-change', val, i, j)
     },
@@ -1516,6 +1522,9 @@ export default {
     },
     typefieldChange(val, i, j) {
       this.$emit('on-money-change', val, i, j)
+    },
+    typefieldEnter(val, i, j) {
+      this.$emit('on-money-enter', val, i, j)
     },
     editdateChange(val, i, j) {
       this.$emit('on-editdate-change', val, i, j)

@@ -79,6 +79,7 @@
                   @on-select-change="selectChange"
                   @on-check-change="checkChange"
                   @on-toggle-expand="toggleExpand"
+                  :filter-node-method="handleTreeFilter" 
                   v-show="remote && !loading || !remote"
                   isFormSelect
                   :render="render">
@@ -235,7 +236,11 @@ export default{
       type:Boolean,
       default:false
     },
-    render: Function
+    render: Function,
+    isTreeFilter: { // 是否进行下拉树过滤，不能与remote同时使用,需配置filterable,placement=bottom
+      type:Boolean,
+      default:false
+    }
   },
   data(){
     return{
@@ -368,6 +373,10 @@ export default{
     }
   },
   methods:{
+    /* 下拉树输入时进行过滤 */
+    handleTreeFilter (val,data,node) {
+      return val == '' || node.title.indexOf(val)!==-1
+    },
     handleclick(e){
       e.stopPropagation()
     },
@@ -455,6 +464,8 @@ export default{
       return idx
     },
     nodeSelect(node) {
+      // 如果node 不存在，直接返回（当前节点disable的情况）
+      if (!node) return 
       if (this.showCheckbox) {
         this.$refs.tree.handleCheck({
           checked: !node.checked,
@@ -610,7 +621,8 @@ export default{
     },
     handleBlur() {
       // 单选，回填input值
-      if (this.query !== this.viewValue && !this.showCheckbox && !this.showBottom) {
+      // 添加对viewValue是否为null 的判断
+      if (this.viewValue && this.query !== this.viewValue && !this.showCheckbox && !this.showBottom) {
         if (this.query === '') {
           this.model = ''
           if (this.remote) {
@@ -662,7 +674,8 @@ export default{
     },
     handleInputDelete() {
       if (this.multiple && this.model.length && this.query === '') {
-        this.removeTag(this.model.length - 1)
+        // 无匹配方法，故先注释
+        // this.removeTag(this.model.length - 1)
       }
     },
     handleKeydown(e) {
@@ -804,9 +817,13 @@ export default{
     },
     query(val) {
       let query = val || this.lastquery
+      // 输入框的长度需要与query同步增长--多选
+      this.inputLength = val && val.length ? val.length * 5 + 20 : 20
       //  query改变时触发remote，兼容check选中后（lastquery有值）重复触发
       if (this.remote && this.remoteMethod && (!this.model || this.model.length == 0)) {
         this.remoteMethod(query)
+      } else if (this.isTreeFilter) {
+        this.$refs.tree.filter(val, true)
       }
       this.$nextTick(()=>{
         let firstItem = this.$refs.tree.$el.querySelectorAll('.h-tree-title-filterable')[0]

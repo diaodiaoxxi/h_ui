@@ -161,7 +161,6 @@ export default {
       this.blockVm.blockData.forEach(({ _index, label, value }) => {
         this.blockVm.$set(this.blockVm.blockData[_index], "selected", newVal.some(item => item.label === label && item.value === value));
       });
-
       this.$nextTick(() => {
         if (this.isInputting) return false;
         else {
@@ -172,16 +171,15 @@ export default {
     magicString(newVal) {
       if (this.isKeyDown) {
         const { keyboardEvent: e } = this;
-        if (!_.isKeyMatch(e, "Esc") && !_.isKeyMatch(e, "Enter")) {
+        if (!_.isKeyMatch(e, "Tab") && !_.isKeyMatch(e, "Esc") && !_.isKeyMatch(e, "Enter")) {
           this.isDropdownVisible = true;
         }
         if (_.isKeyMatch(e, "Space") || (_.isKeyMatch(e, "A") && e.ctrlKey) || (_.isKeyMatch(e, "D") && e.ctrlKey)) _.noop();
         else {
-          this.isInputting = true; // switch on input status, this is a big difference
+          if (!_.isKeyMatch(e, "Esc")) this.isInputting = true; // switch on input status, this is a big difference
         }
         this.isKeyDown = false; // switch off key down status
       }
-
       if (this.isInputting) {
         if (this.remote && this.remoteMethod) {
           const { selectedRecords: originalSelectedRecords, keyword: originalKeyword } = this.resolveMagicString();
@@ -222,9 +220,6 @@ export default {
       } else {
         const { magicString: originalMagicString } = this;
         this.blockVm && this.blockVm.reset(); // reset block vm
-        this.isKeyDown = false; // switch off key down status
-        this.isInputting = false; // switch off input status
-        this.keyboardEvent = null; // reset keyboard event
         this.$emit("on-query-change", "");
         if (this.remote && this.remoteMethod) {
           this.remoteMethod("", () => {
@@ -232,7 +227,12 @@ export default {
               this.magicString = this.selectedRecords.map(item => item.label).join();
               this.blockVm.onQuery();
               this.$nextTick(() => {
-                this.$refs.input.select();
+                if (this.isKeyDown && (_.isKeyMatch(this.keyboardEvent, "Esc") || _.isKeyMatch(this.keyboardEvent, "Enter"))) {
+                  this.$refs.input.select();
+                }
+                this.isKeyDown = false; // switch off key down status
+                this.isInputting = false; // switch off input status
+                this.keyboardEvent = null; // reset keyboard event
               });
             });
           });
@@ -240,7 +240,12 @@ export default {
           this.magicString = this.selectedRecords.map(item => item.label).join();
           this.blockVm.onQuery();
           this.$nextTick(() => {
-            this.$refs.input.select();
+            if (this.isKeyDown && (_.isKeyMatch(this.keyboardEvent, "Esc") || _.isKeyMatch(this.keyboardEvent, "Enter"))) {
+              this.$refs.input.select();
+            }
+            this.isKeyDown = false; // switch off key down status
+            this.isInputting = false; // switch off input status
+            this.keyboardEvent = null; // reset keyboard event
           });
         }
       }
@@ -253,11 +258,9 @@ export default {
     onContainerKeyDown(e) {
       this.isKeyDown = true; // switch on key down status
       this.keyboardEvent = e; // cache current keyboard event
-
       if (this.isDropdownVisible) {
         if (_.isKeyMatch(e, "Esc") || _.isKeyMatch(e, "Enter")) {
           this.isDropdownVisible = false;
-
           // 处理与 MsgBox 的 Esc 事件冲突，处理地并不够好
           this.dispatch("Msgbox", "on-esc-real-close", false);
           setTimeout(() => {
@@ -287,7 +290,9 @@ export default {
       this.dispatch("FormItem", "on-form-focus");
       this.$emit("on-focus");
       this.$emit("on-input-focus");
-      this.$refs.input.select();
+      setTimeout(() => {
+        this.$refs.input.select();
+      },0)
     },
     onInputBlur() {
       this.dispatch("FormItem", "on-form-blur");
@@ -309,7 +314,6 @@ export default {
         this.isDropdownVisible = !this.isDropdownVisible;
       }
     },
-
     /**
      * @description 魔法字符串的解析逻辑
      * @returns {Object} { selectedRecords, model, keyword }

@@ -237,20 +237,24 @@ export default {
           }
         }
       })
-      if(val===''&&this.$parent.$parent.isSingleSelect&&!isEffective&&!states){// 清空query值情况下
-        this.$parent.$parent.selectBlockSingle('', true, '', true)
-      }else if(val !==''&&this.$parent.$parent.isSingleSelect&&!isEffective&&!states) {//query不为空但未匹配到任何项
-        this.$parent.$parent.selectBlockSingle('', true)
+      if (this.$parent.$parent.accuFilter) {
+        if(val===''&&this.$parent.$parent.isSingleSelect&&!isEffective&&!states){// 清空query值情况下
+          this.$parent.$parent.selectBlockSingle('', true, '', true)
+        }else if(val !==''&&this.$parent.$parent.isSingleSelect&&!isEffective&&!states) {//query不为空但未匹配到任何项
+          this.$parent.$parent.selectBlockSingle('', true)
+        }
       }
-      let options = this.cloneData.filter(d => !d.group)
-      this.dispatch('SimpleSelect', 'on-options-visible-change', { data: options })
-      this.dispatch('SingleSelect', 'on-options-visible-change', { data: options })
+      if(this.$parent.$parent.isSingleSelect) {
+        this.dispatch('SingleSelect', 'on-options-visible-change', { data: this.cloneData })
+        this.dispatch('StockSelect', 'on-options-visible-change', { data: this.cloneData })
+      }else {
+        let options = this.cloneData.filter(d => !d.group)
+        this.dispatch('SimpleSelect', 'on-options-visible-change', { data: options })
+      }
       this.showEmpty = status
       if (val) {
         this.dispatch('Drop', 'on-update-popper')
       }
-      this.dispatch("SimpleSelect", "on-options-visible-change", { data: this.cloneData });
-      this.dispatch("SingleSelect", "on-options-visible-change", { data: this.cloneData });
       this.showEmpty = status;
       this.$nextTick(() => {
         if (val) {
@@ -263,51 +267,52 @@ export default {
     },
     handleclick() {},
     handleBodyScroll(event) {
-      let direction = this.lastScollTop !== event.target.scrollTop ? "y" : "x";
+      const direction = this.lastScollTop !== event.target.scrollTop ? "y" : "x";
+      
+      if (direction === "y" && this.lastScollBottom) {
+        this.updateVisibleData(event.target.scrollTop)
+      }
+
       this.lastScollTop = event.target.scrollTop;
-      this.updateVisibleData(event.target.scrollTop);
       this.lastScollBottom = getBarBottom(event.target, getScrollBarSize());
       if (this.lastScollBottom !== null && this.data.length > 0) {
         this.$emit("on-scroll", this.lastScollBottom, this.lastScollTop, direction);
       }
-      // 修复滚动后出现 x 滚动条问题
-      // if (this.$parent.widthAdaption) {
-      //   this.$parent.setWidthAdaption()
-      // }
     },
     updateVisibleData(scrollTop) {
-      // o45 下拉最后一条时闪动问题处理 + 0.01 作为偏移值
-      // 目前仅能在 o45 系统中复现
-      let itemHeight = Number(this.itemHeight) + 0.01;
-      scrollTop = scrollTop == undefined ? this.lastScollTop : scrollTop;
-      this.start = Math.floor(scrollTop / itemHeight);
-      let i = 0;
-      let j = this.start;
-      // 如果存在表头，添加初始偏移量
-      let offset = 0;
-      if (this.start > 0) offset = -this.offset;
-      while (i < this.visibleCount) {
-        if (!this.cloneData[j]) {
-          i = this.visibleCount;
-          j = this.cloneData.length;
-        } else {
-          if (!this.cloneData[j].hidden) {
-            i++;
+      const tmpData = this.cloneData.filter(item => !item.hidden).filter((d, index) => !d.group || (index !== tmpData.length - 1 && !tmpData[index + 1].group));
+      if(tmpData.length <= this.visibleCount) {
+        this.visibleData = tmpData // if tmpData is not much, virtual list doesn't perform well Bug133973
+        this.$nextTick(() => {
+          this.$refs.content.style.transform = `translateY(0px)`;
+        });
+      } else {
+        let itemHeight = Number(this.itemHeight) + 0.01;
+        scrollTop = scrollTop == undefined ? this.lastScollTop : scrollTop;
+        this.start = Math.floor(scrollTop / itemHeight);
+        let i = 0;
+        let j = this.start;
+        // 如果存在表头，添加初始偏移量
+        let offset = 0;
+        if (this.start > 0) offset = -this.offset;
+        while (i < this.visibleCount) {
+          if (!this.cloneData[j]) {
+            i = this.visibleCount;
+            j = this.cloneData.length;
+          } else {
+            if (!this.cloneData[j].hidden) {
+              i++;
+            }
+            j++;
           }
-          j++;
         }
+        this.end = j
+        this.visibleData = tmpData.slice(this.start, this.end)
+        this.$nextTick(() => {
+          this.$refs.content.style.transform = `translateY(${this.start * itemHeight + offset}px)`;
+        });
       }
-      this.end = j
 
-      let tmpData = this.cloneData
-        .filter(item => !item.hidden)
-
-      this.visibleData = tmpData
-        .filter((d, index) => !d.group || (index !== tmpData.length - 1 && !tmpData[index + 1].group))
-        .slice(this.start, this.end)
-      this.$nextTick(() => {
-        this.$refs.content.style.transform = `translateY(${this.start * itemHeight + offset}px)`;
-      });
       this.dispatch("CommonDropdown", "on-static-update"); // update dropdown panel
     },
     selectedTop(status) {

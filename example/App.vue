@@ -243,6 +243,14 @@
         <li>
           <router-link to="/tag">tag</router-link>
         </li>
+        <br>
+        <span>自定义test页面</span>
+        <li>
+          <router-link to="/test">test1</router-link>
+          <router-link to="/test2">test2</router-link>
+          <router-link to="/test3">test3</router-link>
+          <router-link to="/test4">test4</router-link>
+        </li>
       </ul>
     </nav>
     <!-- <keep-alive>

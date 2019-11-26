@@ -430,7 +430,7 @@ export default {
       }
     },
     mouseup(event, column, index) {
-      if (!this.$parent.clickHeadSort && !window.isO45) return
+      if (!this.$parent.clickHeadSort) return
       //拖拽表头排序不触发
       if(this.isDrag(this.beginLocation.clientX, this.beginLocation.clientY, event.clientX, event.clientY)) {
         return

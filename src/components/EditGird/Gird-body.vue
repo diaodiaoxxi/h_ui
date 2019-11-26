@@ -37,10 +37,12 @@
               @on-editselect-change="editselectChange"
               @on-editinput-change="editinputChange"
               @on-editinput-blur="editinputBlur"
+              @on-editinput-enter="editinputEnter"
               @on-editarea-change="editAreaChange"
               @on-editarea-blur="editAreaBlur"
               @on-typefield-blur="typefieldBlur"
               @on-typefield-change="typefieldChange"
+              @on-typefield-enter="typefieldEnter"
               @on-editdate-change="editdateChange"
             ></Cell>
           </td>
@@ -401,6 +403,9 @@
         editinputBlur(val,i,j){
           this.$emit('on-editinput-blur',val,i,j);
         },
+        editinputEnter(val,i,j){
+          this.$emit('on-editinput-enter',val,i,j);
+        },
         editAreaChange(val,i,j){
           this.$emit('on-editarea-change',val,i,j);
         },
@@ -412,6 +417,9 @@
         },
         typefieldChange(val,i,j){
           this.$parent.typefieldChange(val,i,j)
+        },
+        typefieldEnter(val,i,j){
+          this.$parent.typefieldEnter(val,i,j)
         },
         editdateChange(val,i,j){
           this.$parent.editdateChange(val,i,j)

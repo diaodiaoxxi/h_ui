@@ -82,6 +82,7 @@ export default {
             prev5: '이전 5 페이지',
             next5: '다음 5 페이지',
             page: '/페이지',
+            showAll: '모두로드',
             goto: '이동',
             p: ''
         },

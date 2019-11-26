@@ -225,6 +225,10 @@ export const SimpleMultiSelectBlockApi = {
       default: () => {
         return [];
       }
+    },
+    colWidth: {
+      type: Array,
+      default: () => []
     }
   },
   events: {

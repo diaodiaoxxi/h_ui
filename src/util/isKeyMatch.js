@@ -1,5 +1,6 @@
 // 目前支持的键值集合
 const keyInfoMap = new Map([
+  ["Tab", { code: "Tab", which: 9, keyCode: 9}],
   ["Esc", { code: "Escape", which: 27, keyCode: 27 }],
   ["Enter", { code: "Enter", which: 13, keyCode: 13 }],
   ["Space", { code: "Space", which: 32, keyCode: 32 }],

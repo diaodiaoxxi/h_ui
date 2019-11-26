@@ -96,6 +96,7 @@ export default {
             prev5: '向前 5 頁',
             next5: '向後 5 頁',
             page: '條/頁',
+            showAll: '加載全部',
             goto: '跳至',
             p: '頁',
             pageLabel: "每頁顯示" 

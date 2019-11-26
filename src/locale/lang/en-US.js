@@ -104,6 +104,7 @@ export default {
             prev5: 'Previous 5 Pages',
             next5: 'Next 5 Pages',
             page: '/page',
+            showAll: 'load all',
             goto: 'Goto',
             p: '',
             pageLabel: "Per page"

@@ -1,5 +1,13 @@
 import Vue from 'vue'
+import BigNumber from 'bignumber.js'
 const isServer = Vue.prototype.$isServer
+const BIGNUMBER_DEFAULT_FORMAT = {groupSeparator: '', decimalSeparator: '.'}
+const BIGNUMBER_GROUPING_FORMAT = {
+  decimalSeparator: '.',
+  groupSeparator: ',',
+  groupSize: 3
+}
+export { BIGNUMBER_DEFAULT_FORMAT, BIGNUMBER_GROUPING_FORMAT }
 //判断变量类型
 // 注：typeof及instanceof仅针对简单变量
 function is(type, val) {
@@ -1229,10 +1237,9 @@ export function numtochinese(Num,suffixNumber) {
   var newchar = ''
   // 小数点前进行转化
   for (i = part[0].length - 1; i >= 0; i--) {
-    if (part[0].length > 17) {
-    //   alert("");
+    if (part[0].length > 19) {
       return '位数过大，无法计算'
-    }// 若数量超过拾亿单位，提示
+    }
     var tmpnewchar = ''
     var perchar = part[0].charAt(i)
     switch (perchar) {
@@ -1335,20 +1342,26 @@ export function numtochinese(Num,suffixNumber) {
       case 17:
         tmpnewchar = tmpnewchar + '拾'
         break
+      case 18:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '百'
+        break
+      case 19:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '仟'
+        break
     }
     newchar = tmpnewchar + newchar
   }
   // 小数点之后进行转化
   if (Num.indexOf('.') != -1) {
-    if (part[1].length > 2) {
-      //alert("小数点之后只能保留两位,系统将自动截段");
-      var tempNum = parseFloat(Num)
-      Num = tempNum.toFixedSelf(suffixNumber)
-      part = String(Num).split('.')
+    let fraction = part[1]
+    if (fraction.length > 2) {
+      fraction = fraction.substring(0, 2)
     }
-    for (i = 0; i < part[1].length; i++) {
+    for (i = 0; i < fraction.length; i++) {
       tmpnewchar = ''
-      perchar = part[1].charAt(i)
+      perchar = fraction.charAt(i)
       switch (perchar) {
         case '0':
           tmpnewchar = '零' + tmpnewchar
@@ -1441,19 +1454,24 @@ export function numtochinese(Num,suffixNumber) {
  * @param {Number} suffixNum 小数位数
  * @param {Boolean} isround 事否四舍五入
  */
-export function changeTipsVal(value,integerNum,suffixNum,isround){
-  value  = String(value).replace(/[^0-9\.-]/g,'')
-  var firstChar = value.substring(0,1)
-  value = cutNum(value,integerNum)
-  if(value.split('.')[1] && value.split('.')[1].length > 2){
-    if(isround&&isround==true){
-      value = parseFloat(value).toFixedSelf(suffixNum)
-    }else{
-      var suf = value.split('.')[1].substr(0,suffixNum)
-      value = value.split('.')[0]+'.'+suf
-    }
+export function changeTipsVal(value, integerNum, suffixNum, isround){
+  value = String(value).replace(/[^0-9\.-]/g,'')
+  let splitArr = value.split('.')
+  // 整数部分
+  let integer = splitArr.length > 0 ? splitArr[0] : value
+  // 小数部分
+  let fraction = splitArr.length > 1 ? splitArr[1] : ''
+  let isNegative = value[0] === '-'
+  integer = cutNum(integer.replace('-', ''), integerNum)
+  let bn = new BigNumber((isNegative ? '-' + integer : integer) + '.' + fraction)
+
+  let retVal = ''
+  if(fraction && fraction.length > 2 && isround + '' === 'true') {
+    retVal = bn.toFormat(Number(suffixNum), BigNumber.ROUND_HALF_UP, BIGNUMBER_DEFAULT_FORMAT)
+  } else {
+    retVal = bn.toFormat(Number(suffixNum), null, BIGNUMBER_DEFAULT_FORMAT)
   }
-  return numtochinese(value + '',suffixNum)
+  return numtochinese(retVal, suffixNum)
 }
 /**
  * @description 数字千分位分割
@@ -1483,14 +1501,20 @@ export function divideNum(num){
  */
 export function changeTipsNum(value,integerNum,suffixNum,isround){
   value  = String(value).replace(/[^0-9\.-]/g,'')
-  value = cutNum(value,integerNum)
-  if(value.split('.')[1] && value.split('.')[1].length > 2){
-    if(isround&&isround==true){
-      value = parseFloat(value).toFixedSelf(suffixNum)
-    }else{
-      var suf = value.split('.')[1].substr(0,suffixNum)
-      value = value.split('.')[0]+'.'+suf
-    }
+  let splitArr = value.split('.')
+  // 整数部分
+  let integer = splitArr.length > 0 ? splitArr[0] : value
+  // 小数部分
+  let fraction = splitArr.length > 1 ? splitArr[1] : ''
+  let isNegative = value[0] === '-'
+  integer = cutNum(integer.replace('-', ''), integerNum)
+  let bn = new BigNumber((isNegative ? '-' + integer : integer) + '.' + fraction)
+
+  let retVal = ''
+  if(fraction && fraction.length > 2 && isround + '' === 'true') {
+    retVal = bn.toFormat(Number(suffixNum), BigNumber.ROUND_HALF_UP, BIGNUMBER_DEFAULT_FORMAT)
+  } else {
+    retVal = bn.toFormat(Number(suffixNum), null, BIGNUMBER_DEFAULT_FORMAT)
   }
-  return value
+  return retVal
 }

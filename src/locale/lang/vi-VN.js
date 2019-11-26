@@ -82,6 +82,7 @@ export default {
             prev5: '5 trang trước',
             next5: '5 trang kế',
             page: '/trang',
+            showAll: 'Tải tất cả',
             goto: 'Tới trang',
             p: ''
         },

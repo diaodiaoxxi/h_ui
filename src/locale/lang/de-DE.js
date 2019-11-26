@@ -82,6 +82,7 @@ export default {
             prev5: 'vorherigen fünf Seiten',
             next5: 'nächste fünf Seiten',
             page: '/seite',
+            showAll: 'Laden Sie alle',
             goto: 'Gehe zu',
             p: ''
         },

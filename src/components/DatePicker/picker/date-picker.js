@@ -1,19 +1,19 @@
-import Picker from '../picker.vue';
-import DatePickerPanel from '../panel/Date/date.vue';
-import RangeDatePickerPanel from '../panel/Date/date-range.vue';
-import { oneOf } from '../../../util/tools';
+import Picker from '../picker.vue'
+import DatePickerPanel from '../panel/Date/date.vue'
+import RangeDatePickerPanel from '../panel/Date/date-range.vue'
+import { oneOf } from '../../../util/tools'
 
 export default {
   mixins: [Picker],
   props: {
     type: {
       validator(value) {
-        return oneOf(value, ['year', 'month', 'date', 'daterange', 'datetime', 'datetimerange', 'monthrange']);
+        return oneOf(value, ['year', 'month', 'date', 'daterange', 'datetime', 'datetimerange', 'monthrange'])
       },
       default: 'date'
     },
     value: {},
-    splitPanels: {
+    unlinkPanels: {
       type: Boolean,
       default: false
     },
@@ -21,18 +21,18 @@ export default {
   components: { DatePickerPanel, RangeDatePickerPanel },
   computed: {
     panel() {
-      const isRange = this.type === 'daterange' || this.type === 'datetimerange' || this.type === 'monthrange' || this.showTwoPanel;
-      return isRange ? 'RangeDatePickerPanel' : 'DatePickerPanel';
+      const isRange = this.type === 'daterange' || this.type === 'datetimerange' || this.type === 'monthrange' || this.showTwoPanel
+      return isRange ? 'RangeDatePickerPanel' : 'DatePickerPanel'
     },
     ownPickerProps() {
-      return this.options;
+      return this.options
     },
     localePlaceholder() {
       if (this.placeholder === undefined) {
-        return this.t('i.datepicker.selectDate');
+        return this.t('i.datepicker.selectDate')
       } else {
-        return this.placeholder;
+        return this.placeholder
       }
     },
   },
-};
+}

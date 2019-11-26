@@ -151,6 +151,11 @@ export default {
     upward: {
       type: Boolean,
       default: false
+    },
+    // 是否进行校验及重置
+    isNotValid: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -330,6 +335,8 @@ export default {
        *    mustShowFlag: false // 是否必须显示提示，此时showMessage无效 --by 估值:某些校验必须提示，解决：现在遍历rule时保存必须显示校验提示的message，然后在校验完后（返回的error只有message）进行检索比对
        *}
        */
+      // 是否对当前项校验，默认false-校验
+      if (this.isNotValid) return 
       let isString = is('String', rule)
       let isObj = is('Object', rule)
       if (isString) {
@@ -382,8 +389,8 @@ export default {
       this.showModal = true
       if (this.isNotChecked) return
       const rules = this.getFilteredRule(trigger)
-
-      if (!rules || rules.length === 0) {
+      // 是否对当前项校验，默认false-校验
+      if (!rules || rules.length === 0 || this.isNotValid) {
         callback()
         return true
       }
@@ -418,6 +425,8 @@ export default {
       this.validateDisabled = false
     },
     resetField(isResetReadonlyOrDisabled = false) {
+      // 是否对当前项校验，默认false-校验
+      if (this.isNotValid) return 
       this.validateState = ''
       this.validateMessage = ''
       let model = this.form.model
@@ -456,6 +465,8 @@ export default {
      * @description 重置校验结果
      */
     resetValidate(cb) {
+      // 是否对当前项重置，默认false-重置
+      if (this.isNotValid) return 
       this.validateState = ''
       this.validateMessage = ''
       if (cb) cb()
@@ -470,7 +481,10 @@ export default {
       if(this.form.showTipsOnlyFocus || window.isO45) {
         this.forcePass = true
       }
-      this.validate('blur', () => {})
+      if (this.isNotValid) return 
+      this.$nextTick(() => {
+        this.validate('blur', () => {})
+      })
     },
     onFieldChange(val) {
       if (this.validateDisabled) {
@@ -478,6 +492,7 @@ export default {
         return
       }
       if (this.isOnlyBlurRequire) return
+      if (this.isNotValid) return 
       this.validate('change', () => {})
     },
     commonRule(str) {

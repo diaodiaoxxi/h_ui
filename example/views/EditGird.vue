@@ -396,6 +396,8 @@ export default {
           // width: 200,
           transfer:true,
           filterable: true,
+          allowCreate: true,
+          showBottom: true,
           remote:true,
           remoteMethod:this.remoteMethod1,
           // loading:true,

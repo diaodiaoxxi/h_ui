@@ -82,6 +82,7 @@ export default {
             prev5: '前の５ページへ',
             next5: '次の５ページへ',
             page: '件/ページ',
+            showAll: 'すべてロード',
             goto: '',
             p: 'ページ目へ'
         },

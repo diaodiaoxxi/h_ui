@@ -132,7 +132,7 @@ export default {
         }
         field.commonRule()
         field.validate('', errors => {
-          if (errors) {
+          if (errors && !field.isNotValid) {
             valid = false
             unpass.push(field.prop)
           }
@@ -148,7 +148,9 @@ export default {
         this.$nextTick(() => {
           for (var i = 0; i < this.fields.length; i++) {
             if (hasClass(this.fields[i].$el, 'h-form-item-error')) {
-              this.fields[i].$children[0].focus()
+              // 当formItem中有slot label时，输入类型组件是label总个数之后的children
+              let realFocusCom =  this.fields[i].$slots.label && this.fields[i].$slots.label.length > 0 ? this.fields[i].$slots.label.length : 0
+              if (this.fields[i].$children[realFocusCom] && this.fields[i].$children[realFocusCom].focus)this.fields[i].$children[realFocusCom].focus()
               break
             }
           }

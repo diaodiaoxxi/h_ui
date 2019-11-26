@@ -33,12 +33,15 @@
       </template>
       <template v-if="renderType === 'text'">
         <h-input v-model="columnText"
+                  ref="input-edit-gird"
                  :placeholder="column.placeholder"
                  :icon="column.icon"
                  :filterRE="column.filterRE"
                  class="canEdit"
                  @on-change="editinputChange"
-                 @on-blur="editinputBlur"></h-input>
+                 @on-blur="editinputBlur"
+                 @on-enter="editinputEnter"
+                 ></h-input>
       </template>
       <template v-if="renderType === 'textArea'">
         <textarea :value="columnArea"
@@ -66,8 +69,9 @@
                    :immeDivided="column.immeDivided"
                    @input="typefieldChange"
                    @on-blur="typefieldBlur"
+                   @on-enter="typefieldEnter"
                    transfer
-                   class="canEdit"></Typefield>
+                   class="canEdit"></Typefield>     
       </template>
       <template v-if="renderType === 'card'">
         <Typefield v-model="columnCard"
@@ -83,6 +87,8 @@
                   :not-found-text="column.notFoundText"
                   :multiple="column.multiple || false"
                   :filterable="column.filterable||false"
+                  :allowCreate="column.allowCreate || false"
+                  :showBottom="column.showBottom || false"
                   :filterMethod="filterMethod()"
                   :remote="column.remote || false"
                   :remoteMethod="remoteMethod()"
@@ -197,7 +203,10 @@ import {
   deepCopy,
   getYMD,
   getHMS,
-  typeOf
+  typeOf,
+  cutNum,
+  divideNum,
+  findComponentParent
 } from '../../util/tools.js'
 import Emitter from '../../mixins/emitter'
 
@@ -332,6 +341,7 @@ export default {
     }
   },
   methods: {
+    // test() {console.log('test')},
     handleClose() {
       if (this.showEditInput || this.validateState == 'error') return
       if (
@@ -373,23 +383,27 @@ export default {
         switch (str) {
           case 'text':
             this.normalDate = this.columnText
+            if (!_parent.cloneData[this.index]) return
             _parent.cloneData[this.index][this.column.key] = this.columnText
             break
           case 'textArea':
             this.normalDate = this.columnArea
+            if (!_parent.cloneData[this.index]) return
             _parent.cloneData[this.index][this.column.key] = this.columnArea
             break
           case 'number':
             this.normalDate = this.columnNumber
+            if (!_parent.cloneData[this.index]) return
             _parent.cloneData[this.index][this.column.key] = this.columnNumber
             this.syncRebuildData()
             break
           case 'money':
             this.normalDate = this.columnMoney
-            _parent.cloneData[this.index][this.column.key] = this.columnMoney
+            if (_parent.cloneData[this.index])_parent.cloneData[this.index][this.column.key] = this.columnMoney
             break
           case 'card':
             this.normalDate = this.columnCard
+            if (!_parent.cloneData[this.index]) return
             _parent.cloneData[this.index][this.column.key] = this.columnCard
             this.syncRebuildData()
             break
@@ -397,16 +411,19 @@ export default {
             if (this.column.multiple || this.column.singleShowLabel)
               this.isSelectTrans = true
             this.normalDate = this.columnSelect
+            if (!_parent.cloneData[this.index]) return
             _parent.cloneData[this.index][this.column.key] = this.columnSelect
             this.syncRebuildData()
             break
           case 'date':
             this.normalDate = this.columnDate
+            if (!_parent.cloneData[this.index]) return
             _parent.cloneData[this.index][this.column.key] = this.columnDate
             this.syncRebuildData()
             break
           case 'time':
             this.normalDate = this.columnTime
+            if (!_parent.cloneData[this.index]) return
             _parent.cloneData[this.index][this.column.key] = this.columnTime
             this.syncRebuildData()
             break
@@ -418,6 +435,7 @@ export default {
             break
           case 'cascader':
             this.normalDate = this.columnCascader
+            if (!_parent.cloneData[this.index]) return
             // this.normalDate = this.$refs.cascader.displayRender // 类似于selectValToLabel
             _parent.cloneData[this.index][this.column.key] = this.columnCascader
             this.syncRebuildData()
@@ -432,7 +450,8 @@ export default {
       if (this.typeName != 'groupTable') {
         e.stopPropagation()
       }
-      if (this.showEditInput) return
+      // _disEdit 当前行不可编辑
+      if (this.showEditInput || this.row._disEdit) return
       if (
         !this.column.type ||
         this.column.type === 'html' ||
@@ -518,6 +537,19 @@ export default {
         this.columnIndex,
         this.index
       )
+    },
+    editinputEnter() {
+      // let parent= findComponentParent(this, 'EditGird')
+      // console.log('parentFormItem---->', parent)
+      // parent.$emit( 'on-editinput-enter', this.columnArea, this.columnIndex, this.index )
+      this.$emit(
+        'on-editinput-enter', 
+        this.columnText,
+        this.columnIndex,
+        this.index
+      )
+      this.renderType = 'normal'
+      this.editinputBlur()
     },
     editAreaChange(event) {
       let value = event.target.value
@@ -633,6 +665,16 @@ export default {
         this.index
       )
     },
+    typefieldEnter() {
+      this.$emit(
+        'on-typefield-enter', 
+        this.columnMoney,
+        this.columnIndex,
+        this.index
+      )
+      this.renderType = 'normal'
+      this.typefieldBlur()
+    },
     /**
      * 同步单元格编辑内容到rebuildData
      */
@@ -657,6 +699,186 @@ export default {
       let row = find(data, this.row.id)
       if (row) {
         row[this.column.key] = this.normalDate
+      }
+    },
+    /**
+     * 格式化数据 
+     */
+    formatNum(value, integerNum, suffixNum) {
+      value = value.trim().replace(/,/g, "");
+      value = value.replace(/[^0-9\.-]/g, "") || "";
+      var firstChar = value.substring(0, 1) || "";
+    
+      if (firstChar == "-") {
+        value = value.substring(1) || "";
+      }
+      var valArr = value.split(".");
+      var intLength = valArr.length > 0 ? valArr[0].length : value;
+      if (integerNum < 16 || intLength < 16) {
+        value = value.replace("-", "");
+        value = cutNum(value, integerNum);
+        if (value == "") return;
+        if (this.column.isround) {
+          // 7位小数Number会转成科学计数法
+          // value = Number(value).toFixedSelf(suffixNum);
+          let result = this.changeRexNum(Number(value));
+          value = this.toFixed(result, suffixNum);
+        } else {
+          value = this.fillZero(value, Number(suffixNum));
+        }
+        value = this.setNum(value, suffixNum, integerNum);
+        if (firstChar == "-") {
+          value = "-" + value;
+        }
+        if (value.substring(value.length - 1, value.length) == ".") {
+          value = value.substring(0, value.length - 1);
+        }
+      } else {
+        value = this.setBigData(value, valArr);
+        if (firstChar == "-") {
+          value = "-" + value;
+        }
+      }
+      if (this.column.nonNegative) {
+        value = value.replace(/-/, "");
+      }
+      return value;
+    },
+    setBigData(value, arr) {
+      let curInt, curSuffix, val1, val2;
+      let isCarry = false;
+      if (arr.length > 0) {
+        curInt = arr[0].substr(0, this.integerNum);
+        curSuffix = arr[1];
+      } else {
+        curInt = value;
+      }
+      val1 = curInt.slice(0, 8);
+      val2 = curInt.slice(8);
+      let curVal2 = curSuffix ? val2 + "." + curSuffix : val2;
+      if (this.isround) {
+        curVal2 = Number(curVal2).toFixedSelf(this.suffixNum);
+      } else {
+        curVal2 = this.fillZero(curVal2, Number(this.suffixNum));
+        if (this.suffixNum > 0) {
+          var arrNum = curVal2.split(".");
+          curVal2 = arrNum[0] + "." + arrNum[1].substring(0, this.suffixNum);
+        }
+      }
+      let arr2 = curVal2.split(".");
+      if (
+        (arr2.length > 0 && arr2[0].length > val2.length) ||
+        (arr2.length == 0 && curVal2.length > val2.length)
+      ) {
+        isCarry = true;
+        curVal2 = curVal2.slice(1);
+      }
+      val1 = isCarry ? Number(val1) + 1 : val1;
+      value = val1 + curVal2;
+      return value;
+    },
+    // 补足0
+    fillZero(number, bitNum) {
+      /// 小数位不够，用0补足位数
+      var f_x = parseFloat(number);
+      if (isNaN(f_x)) {
+        return;
+      }
+      var s_x = number.toString();
+      var pos_decimal = s_x.indexOf(".");
+      if (pos_decimal < 0) {
+        pos_decimal = s_x.length;
+        s_x += ".";
+      }
+      while (s_x.length <= pos_decimal + bitNum && !this.notFillin) {
+        s_x += "0";
+      }
+      if (bitNum == 0) {
+        s_x = s_x.slice(0, pos_decimal);
+      }
+      return s_x;
+    },
+    setNum(value, suffixNum, integerNum) {
+      if (isNaN(value)) return;
+      if (suffixNum > 0) {
+        var arrNum = value.split(".");
+        var integerNumber = arrNum[0].substring(0, integerNum);
+        value = Number(integerNumber) + "." + arrNum[1].substring(0, suffixNum);
+      } else {
+        value = Number(value) + "";
+      }
+      return value;
+    },
+    // 转换科学技术法为数值---Number(val)会在小数点7位后以科学计数法返回，影响格式化
+    changeRexNum(val) {
+      let e = String(val);
+      let rex = /^([0-9])\.?([0-9]*)e-([0-9])/;
+      if (!rex.test(e)) return val;
+      let numArr = e.match(rex);
+      let n = Number("" + numArr[1] + (numArr[2] || ""));
+      let num =
+        "0." + String(Math.pow(10, Number(numArr[3]) - 1)).substr(1) + n;
+      return num.replace(/0*$/, ""); // 防止可能出现0.0001540000000的情况
+    },
+    // 修正val的小数位，val 为输入值，n为格式化位数【不用Number中的toFixed是因为超过7位小数Number会转换成科学计数法，格式化会报错，因此需要手动转换】
+    toFixed(val, n) {
+      if (n > 20 || n < 0) {
+        throw new RangeError(
+          "toFixed() digits argument must be between 0 and 20"
+        );
+      }
+      // const number = this;
+      if (isNaN(val) || val >= Math.pow(10, 21)) {
+        return val.toString();
+      }
+      if (typeof n == "undefined" || n == 0) {
+        return Math.round(val).toString();
+      }
+      let result = val.toString();
+      const arr = result.split(".");
+      // 整数的情况
+      if (arr.length < 2) {
+        result += ".";
+        for (let i = 0; i < n; i += 1) {
+          result += "0";
+        }
+        return result;
+      }
+      const integer = arr[0];
+      const decimal = arr[1];
+      if (decimal.length == n) {
+        return result;
+      }
+      if (decimal.length < n) {
+        for (let i = 0; i < n - decimal.length; i += 1) {
+          result += "0";
+        }
+        return result;
+      }
+      result = integer + "." + decimal.substr(0, n);
+      const last = decimal.substr(n, 1);
+
+      // 四舍五入，转换为整数再处理，避免浮点数精度的损失
+      if (parseInt(last, 10) >= 5) {
+        const x = Math.pow(10, n);
+        result = (Math.round(parseFloat(result) * x) + 1) / x;
+        result = result.toFixed(n);
+      }
+      return result;
+    },
+     /**
+     * 格式化type=money时显示值
+     */
+    initMoneyViewValue () {
+      let val = this.normalDate
+      if (typeof this.normalDate == 'number') val = String(this.normalDate)
+      if (val && val != '') {
+        val = this.formatNum(
+                  val.replace(/,/g, ""),
+                  this.column.integerNum,
+                  this.column.suffixNum
+                );
+        this.normalDate = divideNum(val.trim());
       }
     }
   },
@@ -738,7 +960,7 @@ export default {
         const key = this.column.key
         const val = newRow[key]
         if (val !== this.normalDate) {
-          this.normalDate = val
+          // this.normalDate = val
           this.columnText = val
           this.columnArea = val
           this.columnNumber = val
@@ -750,6 +972,17 @@ export default {
           this.columnTree = val
           this.columnCascader = val
         }
+        // 格式化 type=money的千分符显示
+        if (this.column.type == 'money' && this.renderType =='normal' && (this.column.divided || this.column.immeDivided)) {
+          this.initMoneyViewValue()
+        } else 
+        if (this.column.type == 'select' && this.renderType =='normal' && (this.column.singleShowLabel || this.column.multiple)) {
+        // 格式化 select
+          this.initValToLabel()
+        } else {
+          this.normalDate = val
+        }
+
       }
     }
   },
@@ -758,11 +991,13 @@ export default {
       this.renderType = 'normal'
     } else {
       if (
-        !this.showEditInput &&
+        // _disEdit 优先级高于showEditInput
+        this.row._disEdit || 
+        (!this.showEditInput &&
         this.column.type !== 'index' &&
         this.column.type !== 'selection' &&
         this.column.type !== 'expand' &&
-        this.column.type !== 'radio'
+        this.column.type !== 'radio')
       ) {
         this.renderType = 'normal'
       } else {
@@ -783,6 +1018,14 @@ export default {
       || (this.column.fixed !== 'left' && this.column.fixed !== 'right' && !this.$parent.$parent.fixed) ) {
         this.dispatch('EditGird', 'on-rule-cell-add', this)
       }
+    }
+    // 格式化 type=money的千分符显示
+    if (this.column.type == 'money' && this.renderType =='normal' && (this.column.divided || this.column.immeDivided)) {
+      this.initMoneyViewValue()
+    }
+    // 格式化 type="select"
+    if (this.column.type == 'select' && this.renderType =='normal' && (this.column.singleShowLabel || this.column.multiple)) {
+      this.initValToLabel()
     }
   },
   mounted() {

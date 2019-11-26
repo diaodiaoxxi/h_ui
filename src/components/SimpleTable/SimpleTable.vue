@@ -19,19 +19,21 @@
                  :key="index">
           </colgroup>
           <thead>
-            <tr v-if="multiLevel"
-                v-for="(colItem,inx) in multiData"
-                :key="inx">
-              <th v-for="(multi, index) in colItem"
-                  :colspan="multi.cols||1"
-                  :rowspan="multi.rows||1"
-                  :key="index"
-                  :class="aliCls(multi)">
-                <div :class="[prefixCls+'-cell']">
-                  <span>{{multi.title}}</span>
-                </div>
-              </th>
-            </tr>
+            <template v-if="multiLevel">
+              <tr
+                  v-for="(colItem,inx) in multiData"
+                  :key="inx">
+                <th v-for="(multi, index) in colItem"
+                    :colspan="multi.cols||1"
+                    :rowspan="multi.rows||1"
+                    :key="index"
+                    :class="aliCls(multi)">
+                  <div :class="[prefixCls+'-cell']">
+                    <span>{{multi.title}}</span>
+                  </div>
+                </th>
+              </tr>
+            </template>
             <tr class="cur-th">
               <th v-for="(column, index) in cloneColumns"
                   :key="index"
@@ -59,8 +61,7 @@
            @scroll="handleBodyScroll"
            v-show="!((!!localeNoDataText && (!data || data.length === 0)) || (!!localeNoFilteredDataText && (!rebuildData || rebuildData.length === 0)))">
         <div :class="[prefixCls + '-phantom']"
-             :style="{height: contentHeight + 'px'}">
-        </div>
+             :style="{height: contentHeight + 'px'}"></div>
         <div class="h-simple-content"
              ref="content">
           <table cellspacing="0"
@@ -314,6 +315,7 @@ import TableTr from './Table-tr.vue'
 import TableCell from './Table-cell.vue'
 import Cell from './Cell.vue'
 import Checkbox from '../Checkbox/Checkbox.vue'
+import elementResizeDetectorMaker from "element-resize-detector";
 const prefixCls = 'h-table'
 let rowKey = 1
 let columnKey = 1
@@ -477,7 +479,11 @@ export default {
       type:Boolean,
       default:false
     },
-    isMulitSort: {  //多列排序
+    clickHeadToSort: { //点击单元格头部触发排序
+      type: Boolean,
+      default: false
+    },
+    isMulitSort: { //多列排序
       type:Boolean,
       default:false,
     },
@@ -553,6 +559,7 @@ export default {
       beginLocation: {},
       isCtrlDown: false,
       curShowFiltersIdx: null,// 当前展示filter的列，防止拖拽滚动条时不隐藏filter poptip
+      keepAliveFlag: false, // 页面是否缓存
     }
   },
   computed: {
@@ -1197,14 +1204,14 @@ export default {
     mouseup(event, column, index) {
       //拖拽表头排序不触发
       // 仅045使用
-      if (!window.isO45) return
+      if (!this.clickHeadToSort || !window.isO45) return
       if(this.isDrag(this.beginLocation.clientX, this.beginLocation.clientY, event.clientX, event.clientY)) {
         return
       }
       if(column.sortable) {
         const type = column._sortType
         // 【TS:201907290145-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】表格2、点击列头时就可以进行排序】 按ctrl+鼠标点击可重置排序
-        if(window.isO45 && this.isCtrlDown) {
+        if(this.isCtrlDown) {
           this.handleSort(index, 'normal')
           return
         }
@@ -1249,135 +1256,156 @@ export default {
       }
       return obj
     },
+
+    /**
+     * @description handleResize refactoring based on https://github.com/iview/iview/blob/2.0/src/components/table/table.vue
+     * @todo need more test for compatibility
+     * @todo make it common
+     */
     handleResize() {
-      this.$nextTick(() => {
-        let transformTop = Math.floor(this.$refs.body.scrollTop / this.itemHeight) * this.itemHeight
-        if(this.$refs.fixedBody){
-          this.$refs.fixedBody.scrollTop =this.$refs.body.scrollTop
-        }
-        if (this.scrollbarToZero) {
-          transformTop = 0
-          this.$refs.body.scrollTop = 0
-        }
-        // 解决数据变动导致滚动条跳动问题
-        this.$refs.content.style.transform = `translateY(${transformTop}px)`
-        if (this.$refs.leftContent) {
-          this.$refs.leftContent.style.transform = `translateY(${transformTop}px))`
-        }
+      const { scrollbarToZero, itemHeight } = this;
+      const { body, content, fixedBody, leftContent } = this.$refs;
+      let transformTop = 0;
 
-        if (this.cloneColumns.length == 0) return
-        const allWidth = !this.columns.some(cell => !cell.width && cell.width !== 0) // each column set a width
-        if (allWidth) {
-          this.tableWidth = this.columns.map(cell => cell.width).reduce((a, b) => a + b)
-        } else {
-          this.tableWidth = parseInt(getStyle(this.$el, 'width')) - 1
-        }
-        this.columnsWidth = {}
-        this.$nextTick(() => {
-          let width = this.$refs.body.getBoundingClientRect().width
-          let conentWidth = this.$refs.body.scrollWidth
-          this.isScrollX = conentWidth + this.scrollBarWidth > width ? true : false
-          let height = this.$refs.body.getBoundingClientRect().height
-          let conentHeight = this.$refs.body.scrollHeight
-          this.isScrollY = conentHeight > height ? true : false
-          let columnsWidth = {}
-          let autoWidthIndex = -1
-          let totalWidth = 0
-          // if (allWidth) autoWidthIndex = this.cloneColumns.findIndex(cell => !cell.width);//todo 这行可能有问题
-//          if (allWidth) // 这边写的不理解每列都设置了width为何还找需要自动设宽的项
+      if (body && scrollbarToZero) {
+        transformTop = 0;
+        this.$refs.body.scrollTop = 0;
+      }
 
-          const allWidth = !this.columns.some(cell => !cell.width && cell.width !== 0) // each column set a width
-          if (allWidth) {
-            this.tableWidth = this.columns.map(cell => cell.width).reduce((a, b) => a + b)
+      if (body && fixedBody) {
+        this.$refs.fixedBody.scrollTop = this.$refs.body.scrollTop;
+      }
+
+      if (body) {
+        transformTop = Math.floor(body.scrollTop / itemHeight) * itemHeight;
+        if (content) {
+          this.$refs.content.style.transform = `translateY(${transformTop}px)`;
+        }
+      }
+
+      if (fixedBody && leftContent) {
+        this.$refs.leftContent.style.transform = `translateY(${transformTop}px))`;
+      }
+
+      const { cloneColumns } = this;
+      if (cloneColumns.length <= 0) return false;
+      else {
+        const tableWidth = this.$el.offsetWidth - 1;
+        let columnsWidth = {};
+        let sumMinWidth = 0;
+        let hasWidthColumns = [];
+        let noWidthColumns = [];
+        let maxWidthColumns = [];
+        let noMaxWidthColumns = [];
+        this.cloneColumns.forEach(col => {
+          if (col.width) {
+            hasWidthColumns.push(col);
           } else {
-            this.tableWidth = parseInt(getStyle(this.$el, 'width')) - 1
-            autoWidthIndex = findInx(this.cloneColumns, cell => !cell.width)
-          }
-          if (this.data.length) {
-            const $td = this.$refs.tbody.querySelectorAll('tbody tr')[0].querySelectorAll('td')
-            let errorNum = 0
-            for (let i = 0; i < $td.length; i++) {
-              // can not use forEach in Firefox
-              const column = this.cloneColumns[i]
-              let curWidth = parseFloat(getStyle($td[i], 'width'))
-              let width = parseInt(curWidth)
-              errorNum = errorNum + curWidth - width
-              if (errorNum > 1) {
-                width = width + 1
-                errorNum = errorNum - 1
-              }
-//              if (i === autoWidthIndex) {
-//                width = width - 1
-//              }
-              if (column.width) {
-                width = column.width || ''
-              } else {  // 自适应列设置最小宽度100（拖拽后除外）
-                let min = column.minWidth?column.minWidth:100
-                if (width < min) width = min
-              }
-              this.cloneColumns[i]._width = width || ''
-
-//              this.tableWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
-              totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
-              if(totalWidth < this.tableWidth) {
-                if(i === autoWidthIndex) {
-                  let lastW = this.tableWidth - totalWidth + width
-//                  this.$set(this.cloneColumns[autoWidthIndex], 'width', lastW)
-                  this.$set(this.cloneColumns[autoWidthIndex], '_width', lastW)
-                  totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
-                }
-              }
-              columnsWidth[column._index] = {
-                width: width
-              }
+            noWidthColumns.push(col);
+            if (col.minWidth) {
+              sumMinWidth += col.minWidth;
+            } else {
+              col.minWidth = 100;
+              sumMinWidth += col.minWidth;
             }
-            this.columnsWidth = columnsWidth
-            this.tableWidth = totalWidth
+            if (col.maxWidth) {
+              maxWidthColumns.push(col);
+            } else {
+              noMaxWidthColumns.push(col);
+            }
+          }
+          col._width = null;
+        });
+
+        let unUsableWidth = hasWidthColumns.map(cell => cell.width).reduce((a, b) => a + b, 0);
+        let usableWidth = tableWidth - unUsableWidth - sumMinWidth - 1;
+        let usableLength = noWidthColumns.length;
+        let columnWidth = 0;
+        if (usableWidth > 0 && usableLength > 0) {
+          columnWidth = parseInt(usableWidth / usableLength);
+        }
+
+        for (let i = 0; i < this.cloneColumns.length; i++) {
+          const column = this.cloneColumns[i];
+          let width = columnWidth + (column.minWidth ? column.minWidth : 0);
+          if (column.width) {
+            width = column.width;
           } else {
-            const $th = this.$refs.thead.querySelectorAll('thead .cur-th')[0].querySelectorAll('th')
-            for (let i = 0; i < $th.length; i++) {
-              // can not use forEach in Firefox
-              const column = this.cloneColumns[i]
-              let curWidth = parseInt(getStyle($th[i], 'width'))
-              let width = parseInt(curWidth)
-//              if (i === autoWidthIndex) {
-//                width = width - 1
-//              }
-              // 自适应列在表格宽度较小时显示异常，为自适应列设置最小宽度100（拖拽后除外）
-              if (column.width) {
-                width = column.width || ''
+            if (column._width) {
+              width = column._width;
+            } else {
+              if (column.minWidth > width) {
+                width = column.minWidth;
+              } else if (column.maxWidth < width) {
+                width = column.maxWidth;
+              }
+
+              if (usableWidth > 0) {
+                usableWidth -= width - (column.minWidth ? column.minWidth : 0);
+                usableLength--;
+                if (usableLength > 0) {
+                  columnWidth = parseInt(usableWidth / usableLength);
+                } else {
+                  columnWidth = 0;
+                }
               } else {
-                let min = column.minWidth?column.minWidth:100
-                if (width < min) width = min
-              }
-              this.cloneColumns[i]._width = width || ''
-              totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
-              if(totalWidth < this.tableWidth) {
-                if(i === autoWidthIndex) {
-                  let lastW = this.tableWidth - totalWidth + width
-//                  this.$set(this.cloneColumns[autoWidthIndex], 'width', lastW)
-                  this.$set(this.cloneColumns[autoWidthIndex], '_width', lastW)
-                  totalWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b)
-                }
-              }
-              columnsWidth[column._index] = {
-                width: width
+                columnWidth = 0;
               }
             }
-            this.columnsWidth = columnsWidth
-            this.tableWidth = totalWidth
           }
-          // get table real height,for fixed when set height prop,but height < table's height,show scrollBarWidth
-          this.bodyRealHeight = parseInt(getStyle(this.$refs.tbody, 'height')) || 0
-          this.headerRealHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0
-          this.initWidth = parseInt(getStyle(this.$refs.tableWrap, 'width')) || 0
-          if(this.$refs.content){
-            this.$nextTick(()=>{
-              this.isHorizontal = this.$refs.content.scrollWidth > this.$refs.content.clientWidth?true:false
-            })
+
+          column._width = width;
+
+          columnsWidth[column._index] = {
+            width: width
+          };
+        }
+        if (usableWidth > 0) {
+          usableLength = noMaxWidthColumns.length;
+          columnWidth = parseInt(usableWidth / usableLength);
+          for (let i = 0; i < noMaxWidthColumns.length; i++) {
+            const column = noMaxWidthColumns[i];
+            let width = column._width + columnWidth;
+            if (usableLength > 1) {
+              usableLength--;
+              usableWidth -= columnWidth;
+              columnWidth = parseInt(usableWidth / usableLength);
+            } else {
+              columnWidth = 0;
+            }
+
+            column._width = width;
+
+            columnsWidth[column._index] = {
+              width: width
+            };
           }
-        })
-      })
+        }
+
+        this.tableWidth = this.cloneColumns.map(cell => cell._width).reduce((a, b) => a + b, 0) + 1;
+        this.columnsWidth = columnsWidth;
+        this.$nextTick(() => {
+          if (!this.$refs.tbody || !this.data || this.data.length === 0) {
+            this.isScrollY = false;
+          } else {
+            let bodyContentEl = this.$refs.tbody;
+            let bodyEl = bodyContentEl.parentElement;
+            let bodyContentHeight = bodyContentEl.offsetHeight;
+            let bodyHeight = bodyEl.offsetHeight;
+
+            this.isScrollX = bodyEl.offsetWidth < bodyContentEl.offsetWidth + (this.isScrollY ? this.scrollBarWidth : 0);
+            this.isScrollY = this.bodyHeight ? bodyHeight - (this.isScrollX ? this.scrollBarWidth : 0) < bodyContentHeight : false;
+          }
+
+          // may not necessary
+          this.bodyRealHeight = parseInt(getStyle(this.$refs.tbody, "height")) || 0;
+          this.headerRealHeight = parseInt(getStyle(this.$refs.header, "height")) || 0;
+          this.initWidth = parseInt(getStyle(this.$refs.tableWrap, "width")) || 0;
+          if (this.$refs.content) {
+            this.isHorizontal = this.$refs.content.scrollWidth > this.$refs.content.clientWidth ? true : false;
+          }
+        });
+      }
     },
     getshiftSelect(_index) {
       this.curShiftIndex = _index
@@ -1724,7 +1752,17 @@ export default {
       })
       return filters
     },
-    handleSort(index, type) {
+    handleSort(_index, type) {
+      // 传入cloneColumns的_index,考虑hiddenCol时与实际的index不匹配，导致有hiddenCol时，排序错乱（作用于另外一个列）
+      let index = 0
+      if (this.cloneColumns && this.cloneColumns.length > 0) {
+        this.cloneColumns.some((item, idx) => {
+          if (item._index == _index) {
+            index = idx 
+            return true
+          }
+        })
+      }
       if (this.cloneColumns[index]._sortType === type) {
         type = 'normal'
       }
@@ -1739,7 +1777,7 @@ export default {
         this.cloneColumns[index]._sortType = type
         return
       }
-      let _index = this.cloneColumns[index]._index
+      // let _index = this.cloneColumns[index]._index
       //【TS:201907290144-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】表格1、勾选框列可以排序，选中的在上面】
       const columnType = this.cloneColumns[index].type
       const key = this.cloneColumns[index].key
@@ -2002,6 +2040,8 @@ export default {
     handleBodyScroll(event) {
       // 修复：拖动滚动条时，无法隐藏显示过滤项
       if (this.curShowFiltersIdx !== null) this.cloneColumns[this.curShowFiltersIdx]._filterVisible = false
+      // 性能优化，横向滚动不更新数据,后续需要开启横向滚动时，在此进行判断
+      if (event.target.scrollTop === this.lastScrollTop) return 
       if (window.requestAnimationFrame) { // 该特性有浏览器限制
         this.updateVisibleAnimate(event)
       } else {
@@ -2021,6 +2061,8 @@ export default {
         )
         if (oldBottomNum !== null && this.buttomNum !== null) {
           this.$emit('on-scroll', this.buttomNum, scrolltop !== this.lastScrollTop ? 'y' : 'x')
+          // 性能优化，横向滚动不更新数据
+          if (scrolltop === this.lastScrollTop) return 
         }
         this.lastScrollTop = scrolltop
         let curtop = Math.floor(scrolltop / this.itemHeight) * this.itemHeight
@@ -2267,11 +2309,21 @@ export default {
         }
         column._index = index
         column._columnKey = columnKey++
-        column._width = column.width ? column.width : '' // update in handleResize()
         column._sortType = 'normal'
         column._filterVisible = false
         column._isFiltered = false
         column._filterChecked = []
+
+        if( typeof column.width === "string" ) {
+          column.width = parseInt(column.width)
+        }
+
+        if( !isNaN(column.width) && column.width > 0 ) {
+          column._width = column.width
+        } else {
+          column._width = ''
+          delete column.width
+        }
 
         if ('filterMultiple' in column) {
           column._filterMultiple = column.filterMultiple
@@ -2522,7 +2574,10 @@ export default {
     this.rebuildData = this.makeDataWithSortAndFilter()
   },
   mounted() {
-    this.handleResize()
+    this.handleResize();
+    this.observer = elementResizeDetectorMaker();
+    this.observer.listenTo(this.$el, this.handleResize);
+    
     this.fixedHeader()
     this.getLeftWidth()
     on(document, 'keydown', this.handleKeydown)
@@ -2556,20 +2611,6 @@ export default {
     off(document, 'keyup', this.keySelect)
   },
   watch: {
-//    bodyHeight(newVal, oldVal) {
-//      if(newVal !== oldVal) {
-//        let height = this.$refs.body.getBoundingClientRect().height
-//        let conentHeight = this.$refs.body.scrollHeight
-//        let oldIsScrollY = this.isScrollY
-//        if(!oldIsScrollY && conentHeight < height) {
-//          this.isScrollY = false
-//        }else if(oldIsScrollY && conentHeight > height) {
-//          this.isScrollY = true
-//        }else if(!oldIsScrollY && conentHeight > height) {
-//          this.isScrollY = true
-//        }
-//      }
-//    },
     toScrollTop() {
       this.privateToScrollTop = this.toScrollTop
     },
@@ -2668,8 +2709,7 @@ export default {
     height() {
       this.fixedHeader()
       this.$nextTick(() => {
-        this.visibleCount =
-          Math.ceil(this.height / this.itemHeight) - (this.showHeader ? 0 : -1)
+        this.visibleCount = Math.ceil(this.height / this.itemHeight) - (this.showHeader ? 0 : -1)
         this.updateVisibleData()
       })
     },

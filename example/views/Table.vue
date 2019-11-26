@@ -184,6 +184,7 @@ export default {
           key: 'name',
           width: 100,
           ellipsis:true,
+          hiddenCol: true,
         },
         {
           title: '姓名1',

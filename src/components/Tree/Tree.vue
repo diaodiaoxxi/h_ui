@@ -368,7 +368,8 @@ export default {
       })
     },
     handleRightClick() {},
-    filter(val) {
+    // childShow: 对于已匹配到的节点，是否将其子节点数据返回【无论子节点是否匹配】--176275 【TS:201910300668-财富经纪业务群_王超-tree组件搜索，匹配到节点后，该节点的子节点全部展示】
+    filter(val, childShow = false) {
       let resultList = []
       let count = 0
       const secNode = (val, node) => {
@@ -379,6 +380,18 @@ export default {
           this.$set(node, 'hidden', false)
           count = count + 1
           resultList.push(node)
+          if (childShow && node.children && node.children.length > 0) {
+            // 显示所有子节点
+            node.children.forEach(item => {
+              this.$set(item, 'hidden', false)
+              if (val == '') { // 下拉树依赖tree, 当搜索值为空时，需要显示所有的节点[遍历所有节点将hidden置为false]
+                secNode(val, item)
+              }
+            })
+            // 搜索值不为空时，将当前搜索到的节点的子节点显示
+            if (val !== '') resultList = resultList.concat(node.children)
+            return 
+          }
         } else {
           this.$set(node, 'hidden', true)
         }

@@ -82,6 +82,7 @@ export default {
             prev5: 'Пред. 5 страниц',
             next5: 'След. 5 страниц',
             page: '/page',
+            showAll: 'Загрузить все',
             goto: 'Идти к',
             p: ''
         },

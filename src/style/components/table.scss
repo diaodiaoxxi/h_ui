@@ -81,6 +81,9 @@ $table-select-item-prefix-cls: "#{$table-prefix-cls}-filter-select-item";
   &-header{
     // width: 100%;
     overflow: hidden;
+    & > table {
+      position: static!important;
+    }
   }
   &-body{
     overflow: auto;

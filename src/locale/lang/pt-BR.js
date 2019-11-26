@@ -82,6 +82,7 @@ export default {
             prev5: 'Voltar 5 Páginas',
             next5: 'Avançar 5 Páginas',
             page: '/page',
+            showAll: 'load all',
             goto: 'Ir para',
             p: ''
         },

@@ -4,7 +4,7 @@
     <template v-else-if="(renderType === 'index' && sum && columnIdx != 0 || renderType === 'selection' && sum && columnIdx != 0)"></template>
     <template v-else-if="renderType === 'index'">{{naturalIndex + 1}}</template>
     <template v-else-if="renderType === 'radio'">
-      <Radio :value="highlight" style="marginRight:-8px"  @click.native.stop="handleClick" @input="clickCurrentRow"></Radio>
+      <Radio :value="highlight" style="marginRight:-8px"  @click.native.stop="handleClick" @input="clickCurrentRow" :disabled="disabled"></Radio>
     </template>
     <template v-else-if="renderType === 'selection'">
       <Checkbox :size="checkboxSize" :value="checked" @click.native.stop="handleClick" @on-change="toggleSelect" :disabled="disabled"></Checkbox>

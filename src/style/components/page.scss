@@ -158,6 +158,7 @@ $page-prefix-cls: "#{$css-prefix}page";
       display: inline-block;
       //float: left;
       margin-right: $page-options-sizer-margin-right;
+      text-align: center;
       .h-select-single{
         height:$page-item-height;
         .h-select-selection{

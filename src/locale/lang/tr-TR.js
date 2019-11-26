@@ -82,6 +82,7 @@ export default {
             prev5: 'Önceki 5 Sayfa',
             next5: 'Sonraki 5 Sayfa',
             page: '/sayfa',
+            showAll: 'Tümünü yükle',
             goto: 'Git',
             p: ''
         },

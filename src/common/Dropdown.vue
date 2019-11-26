@@ -77,7 +77,7 @@ export default {
           eventsEnabled: false, // Whether events (resize, scroll) are initially enabled.
           modifiers: {
             preventOverflow: {
-              escapeWithReference: true // When escapeWithReference is set totrue and reference is completely outside its boundaries, the popper will overflow (or completely leave) the boundaries in order to remain attached to the edge of the reference.
+              escapeWithReference: true // When escapeWithReference is set to true and reference is completely outside its boundaries, the popper will overflow (or completely leave) the boundaries in order to remain attached to the edge of the reference.
             },
             flip: { enabled: false }, // Modifier used to flip the popper’s placement when it starts to overlap its reference element.
             computeStyle: {
@@ -88,7 +88,7 @@ export default {
               enabled: true,
               fn(data) {
                 const { show, allowAnimation, dropWidth, maxDropWidth, widthAdaption } = _this;
-                const {
+                let {
                   instance: { popper: el },
                   offsets: {
                     popper: { width: cWidth },
@@ -96,6 +96,10 @@ export default {
                   },
                   styles
                 } = data;
+
+                // this is a verb job becaue popper can't get the right width of reference in some case
+                // especially when modify the scroll bar of reference
+                pWidth = _this.$parent.$refs.reference.offsetWidth;
 
                 if (widthAdaption) {
                   if (parseFloat(dropWidth) > 0) {
@@ -112,7 +116,6 @@ export default {
                 } else {
                   styles.width = parseFloat(dropWidth) || pWidth;
                 }
-
                 setStyle(el, { display: "block", visibility: "visible", ...styles }); // make sure animation is possible
 
                 if (allowAnimation) {
@@ -174,7 +177,7 @@ export default {
     this.$on("on-static-update", data => {
       if (this.show) {
         this.allowAnimation = false;
-        this.update();
+        this.popper ? this.popper.scheduleUpdate() : this.update();
       }
     });
   }

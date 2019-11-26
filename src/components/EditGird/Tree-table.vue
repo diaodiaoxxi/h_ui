@@ -37,6 +37,7 @@
                       @on-editselect-change="editselectChange"
                       @on-editinput-change="editinputChange"
                       @on-editinput-blur="editinputBlur"
+                      
                       @on-editarea-change="editAreaChange"
                       @on-editarea-blur="editAreaBlur"
                       @on-typefield-blur="typefieldBlur"

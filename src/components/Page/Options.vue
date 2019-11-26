@@ -4,6 +4,7 @@
     <div v-if="showSizer" :class="sizerClasses">
       <h-select v-model="currentPageSize" :size="size" :placement="placement" @on-change="changeSize" :clearable="false">
         <h-option v-for="item in pageSizeOpts" :key="item" :value="item" style="text-align:center;">{{ item }} {{ t('i.page.page') }}</h-option>
+        <h-option v-if="isLoadAll" :value="-1">{{t('i.page.showAll')}}</h-option>
       </h-select>
     </div>
     <div v-if="showCustom&&!showSizer" :class="ElevatorClasses">
@@ -49,6 +50,7 @@
             showCustom:Boolean,
             showSizerLabel: Boolean,
             showReload:Boolean,
+            isLoadAll: Boolean,
         },
         data () {
             return {

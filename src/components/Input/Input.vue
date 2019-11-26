@@ -26,10 +26,10 @@
              :placeholder="placeholder"
              :disabled="disabled"
              :maxlength="maxlength"
-             :readonly="autocomplete === 'off' || autocomplete === 'on' && (!editable || readonly)"
+             :readonly="!editable || readonly"
              :name="name"
              :value="currentValue"
-             :title="type!=='password'?currentValue:null"
+             :title="type!=='password' && titleShow ? currentValue:null"
              :number="number"
              :autofocus="autofocus"
              :spellcheck="spellcheck"
@@ -92,7 +92,7 @@
       </ul>
     </div>
     <div v-if="showWordLimit" :class="[prefixCls + '-word-limit']">
-     {{currentLength}}/{{maxlength}} {{limitTip}}
+     {{currentLength}}/{{showMaxlength}} {{limitTip}}
     </div>
   </div>
 </template>
@@ -227,6 +227,11 @@ export default {
       type: Boolean,
       default: false
     },
+    showWordByByte: {
+      // 传入maxlength字节,实际显示按输入字数【类似maxlength:20, byteNum: 2, 显示为10，输入中文+1，输入英文以2为单位+1】
+      type: Boolean,
+      default: true
+    },
     clearable:{
       type:Boolean,
       default:false
@@ -242,6 +247,10 @@ export default {
         let num = parseInt(value);
         return num <= 32767 && num >= -1;
       }
+    },
+    titleShow: {
+      type: Boolean,
+      default: false,
     }
   },
   data() {
@@ -259,6 +268,14 @@ export default {
     }
   },
   computed: {
+    // 显示限制总长度,设置lengthByByte即按照字节计算长度后，显示限制字符取this.maxlength / this.lengthByByte
+    showMaxlength () {
+      if (this.lengthByByte && this.showWordByByte) {
+        return parseInt(this.maxlength / Number(this.byteNum))
+      } else {
+        return this.maxlength
+      }
+    },
     wrapClasses() {
       return [
         `${prefixCls}-wrapper`,
@@ -319,6 +336,7 @@ export default {
      */
     currentLength() {
       if (this.lengthByByte) {
+        // 需要显示实际字数更符合用户输入习惯，且对于设置了this.byteNum = 2后，<=2个英文字符均为一个字，currentLength+1
         let bytesCount = 0
         for (var i = 0; i < this.value.length; i++) {
           var c = this.value.charAt(i)
@@ -326,11 +344,12 @@ export default {
             //匹配双字节
             bytesCount += 1
           } else {
-            bytesCount += this.byteNum
+            bytesCount += Number(this.byteNum)
           }
         }
-
+        if (this.showWordByByte) return Math.min((parseInt(bytesCount / Number(this.byteNum))) + (bytesCount % Number(this.byteNum) == 0 ? 0 : 1), this.showMaxlength)
         return bytesCount
+
       }
 
       return this.value.length
@@ -388,15 +407,6 @@ export default {
       this.$emit('on-clear',event)
     },
     handleFocus(event) {
-      // IPMS 167437 屏蔽浏览器的记住密码功能，禁止密码回填或者点击选择
-      // 这个功能本是浏览器的安全策略行为，如果要生效，需要 Web 端应用程序首次启动前关闭浏览器的记住密码设置
-      if(this.editable && !this.readonly && this.autocomplete === "off") {
-        this.$refs.input && this.$refs.input.removeAttribute("readonly")
-
-        // fix IE requires double click to input
-        const len = (this.value + "").length
-        this.$refs.input && this.$refs.input.setSelectionRange(len, len + 1)
-      }
       if (this.focusAllSelect && this.type === 'text') {
         this.$refs.input.select()
       }
@@ -491,7 +501,7 @@ export default {
             //匹配双字节
             bytesCount += 1
           } else {
-            bytesCount += this.byteNum
+            bytesCount += Number(this.byteNum)
           }
           if (bytesCount > this.maxlength) {
             value = value.substr(0, i)
@@ -516,7 +526,6 @@ export default {
       this.$emit('on-input-change', event)
     },
     handleSelect(event) {
-      // console.log('sel')
     },
     setCurrentValue(value) {
       if (value === this.currentValue) return

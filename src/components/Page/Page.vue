@@ -105,6 +105,7 @@
         :show-sizer="showSizer"
         :page-size="currentPageSize"
         :page-size-opts="pageSizeOpts"
+        :is-load-all="isLoadAll"
         :placement="placement"
         :show-elevator="showElevator"
         :show-custom="showCustom"
@@ -202,6 +203,10 @@
       showReload:{
         type: Boolean,
         default: false
+      },
+      isLoadAll: {
+        type: Boolean,
+        default: false,
       }
     },
     data () {
