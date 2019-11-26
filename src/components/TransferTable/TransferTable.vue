@@ -56,6 +56,7 @@
             filterPlaceholder: this.localeFilterPlaceholder,
             noEdit:this.noEdit,
             isHide:this.hidelTable,
+            itemHeight: this.itemHeight,
           },
           on: {
             // 'on-checked-keys-change': this.handleLeftCheckedKeysChange
@@ -96,6 +97,7 @@
             filterPlaceholder: this.localeFilterPlaceholder,
             noEdit:this.noEdit,
             isHide:this.hiderTable,
+            itemHeight: this.itemHeight,
           },
           on: {
             // 'on-checked-keys-change': this.handleRightCheckedKeysChange
@@ -104,6 +106,10 @@
       ]);
     },
     props: {
+      itemHeight: {
+        type: Number,
+        default: 40,
+      },
       lColumns:{
         type: Array,
         default () {

@@ -44,6 +44,7 @@
           :rowSelect="rowSelect"
           :highlight-row="highlightRow"
           :height="height"
+          :itemHeight="itemHeight"
           @on-current-change="currentChange"
           @on-selection-change="selectionChange"
           @on-row-click="rowClick"
@@ -83,6 +84,7 @@
       filterMethod: Function,
       noEdit:Boolean,
       isHide:Boolean,
+      itemHeight: Number,
     },
     data () {
         return {
