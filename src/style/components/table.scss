@@ -254,7 +254,8 @@ $table-select-item-prefix-cls: "#{$table-prefix-cls}-filter-select-item";
       line-height: $table-large-title-line-height;
     }
     .#{$table-prefix-cls}-tiptext{
-      height: $table-large-tiptext-height;
+      // height: $table-large-tiptext-height;
+      min-height: $table-large-tiptext-height;
       line-height:$table-large-tiptext-line-height;
     }
   }
@@ -272,6 +273,7 @@ $table-select-item-prefix-cls: "#{$table-prefix-cls}-filter-select-item";
     }
     .#{$table-prefix-cls}-tiptext{
       height: $table-small-title-height;
+      min-height: $table-small-title-height;
       line-height:$table-small-title-line-height;
     }
   }
@@ -468,8 +470,11 @@ $table-select-item-prefix-cls: "#{$table-prefix-cls}-filter-select-item";
   }
   &-tiptext {
     position:absolute;
+    // pointer-events: none;
     text-align:center;
-    height:$table-tiptext-height;
+    overflow-y: auto;
+    min-height: $table-tiptext-height;
+    // height:$table-tiptext-height;
     line-height:$table-tiptext-line-height;
   }
   &__column-resize-proxy{

@@ -1,5 +1,5 @@
 <template>
-  <li :class="classes" @click.stop="select" @mouseout.stop="blur" v-show="!hidden" @keyup.native.stop="select">
+  <li :title="showTitle ? searchLabel : null" :class="classes" @click.stop="select" @mouseout.stop="blur" v-show="!hidden" @keyup.native.stop="select">
     <checkbox v-show="multiple&&!hideMult" notGroup v-model="selected" @click.native.stop="handleclick" :disabled="disabled" @on-change="checkChange" ></checkbox>
     <slot>{{showLabel}}</slot>
   </li>
@@ -16,6 +16,10 @@
     mixins: [ Emitter ],
     components:{Checkbox},
     props: {
+      showTitle: {
+        type: Boolean,
+        default: false,
+      },
       value: {
         type: [String, Number],
         required: true

@@ -1,62 +1,16 @@
 <template>
   <div>
-    <h1>Grid</h1>
-    <!--<h-row>-->
-      <!--<h-col span="12" style="background:red">col-12</h-col>-->
-      <!--<h-col span="12" style="background:blue">col-12</h-col>-->
-    <!--</h-row>-->
-    <!--<br>-->
-    <!--<h-row>-->
-      <!--<h-col span="8" style="background:yellow">col-8</h-col>-->
-      <!--<h-col span="8" style="background:green">col-8</h-col>-->
-      <!--<h-col span="8" style="background:pink">col-8</h-col>-->
-    <!--</h-row>-->
-    <!--<br>-->
-    <!--<h-row>-->
-      <!--<h-col span="6" style="background:gray">col-6</h-col>-->
-      <!--<h-col span="6" style="background:black">col-6</h-col>-->
-      <!--<h-col span="6" style="background:grey">col-6</h-col>-->
-      <!--<h-col span="6" style="background:black">col-6</h-col>-->
-    <!--</h-row>-->
-    <br>
     <h1>tabs</h1>
-    <!--<h-tabs ref="remove" type="line" @on-tab-remove="handleTabRemove1" showArrow arrowOnRight closable :iconLeftClassName="'icon-left icon-arrow'">-->
-      <!--<h-spin size="large"></h-spin>-->
-      <!--<h-tab-pane v-for="tab in tabs" :key="tab" :name="'标签' + tab" :label="'标签' + tab">-->
-        <!--标签{{ tab }}的内容-->
-      <!--</h-tab-pane>-->
-    <!--</h-tabs>-->
-    <!--<h-button type="ghost" @click="handleTabsAdd(true)" size="small" slot="extra">增加</h-button>-->
-    <!--<h-button type="ghost" @click="handleTabsAdd(false)" size="small" slot="extra">减少</h-button>-->
-    <br>
-    <h1>buttonGroup</h1>
-    <h-button-group>
-      <h-button @on-click="handleShowBox" style="margin-right: 10px;">打开弹窗</h-button>
-      <h-button type="primary" @on-click="changeShow">打开弹框</h-button>
-    </h-button-group>
-    <h1>checkboxGroup</h1>
-    <h-checkbox-group v-model="btncheck">
-      <h-checkbtn value="twitter" label="Twitter" disabled>
-      </h-checkbtn>
-      <h-checkbtn value="facebook" label="facebook">
-        <span>Facebook</span>
-      </h-checkbtn>
-      <h-checkbtn value="github" label="github" icon="close">
-        <span>Github</span>
-      </h-checkbtn>
-      <h-checkbtn value="snapchat" label="snapchat">
-        <span>Snapchat</span>
-      </h-checkbtn>
-    </h-checkbox-group>
-    <h-msg-box v-model="showBox" title="普通的Modal对话框标题" :mask-closable="false"
-      @on-ok="ok" @on-cancel="cancel">
-      <p>{{curValue}}</p>
-      <h-stock-select ref="singlesel" v-model="curValue" :dropWidth="230" :maxDropWidth="300"
-                       widthAdaption filterable remote :remote-method="remoteMethod"
-                       @on-keydown="handleKeyDown">
-        <h-select-block :data="dataList" :showCol="showCol" :colWidth="colWidth"></h-select-block>
-      </h-stock-select>
-    </h-msg-box>
+    <h-tabs ref="remove" type="line" @on-tab-remove="handleTabRemove1" showArrow arrowOnRight closable :iconLeftClassName="'icon-left icon-arrow'">
+      <h-spin size="large"></h-spin>
+      <h-tab-pane v-for="tab in tabs" :key="tab" :name="'标签' + tab" :label="'标签' + tab">
+        标签{{ tab }}的内容
+      </h-tab-pane>
+    </h-tabs>
+    <h-button type="ghost" @click="handleTabsAdd(true)" size="small" slot="extra">增加</h-button>
+    <h-button type="ghost" @click="handleTabsAdd(false)" size="small" slot="extra">减少</h-button>
+    <h1>msgBox</h1>
+    <h-button type="primary" @on-click="changeShow">打开弹框</h-button>
     <h-msg-box v-model="show" escClose :mask-closable="false" isOriginal maximize width="600" height="400">
       <h-form ref="formValidate" :model="formValidate" cols="2" :label-width="80" showTipsOnlyFocus>
 
@@ -64,7 +18,7 @@
           <h-multi-select ref="stockInfo" class="curItemClass" v-model="formValidate.stockInfo">
             <h-multi-block :data="bigData" :showCol="showCol" :colWidth="colWidth"></h-multi-block>
           </h-multi-select>
-          {{formValidate.stockInfo}}
+          <!--{{formValidate.stockInfo}}-->
         </h-form-item>
         <h-form-item label="stockCode" prop="stockCode" required>
           <h-single-select ref="stockCode" v-model="formValidate.stockCode" class="curItemClass"
@@ -73,10 +27,10 @@
                            @on-keydown="handlekeydown" @on-change="handlevaluechange">
             <h-select-block :data="remoteData" :showCol="showCol" :colWidth="colWidth" @on-scroll="onscroll"></h-select-block>
           </h-single-select>
-          {{formValidate.stockCode}}
+          <!--{{formValidate.stockCode}}-->
         </h-form-item>
         <h-form-item label="simpleSelect" prop="stockName" required>
-          <h-simple-select v-model="formValidate.stockName" class="curItemClass" :tabindex="2" filterable multiple >
+          <h-simple-select v-model="formValidate.stockName" class="curItemClass" :tabindex="2" filterable  >
             <h-select-block :data="bigData"></h-select-block>
           </h-simple-select>
         </h-form-item>
@@ -128,7 +82,6 @@
         <h-button type="primary" @click="submit">提交</h-button>
       </div>
     </h-msg-box>
-    <br>
     <h1>form</h1>
     <h-form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">
       <h-form-item label="股票代码" prop="stockCode">
@@ -145,7 +98,11 @@
                      integerNum="10" suffixNum="2"  type="money" :step="10">
         </h-typefield>
       </h-form-item>
-
+      <h-form-item label="simpleSelect" prop="stockName" required>
+        <h-simple-select v-model="formCustom.stockName" class="curItemClass" :tabindex="2" filterable multiple >
+          <h-select-block :data="bigData"></h-select-block>
+        </h-simple-select>
+      </h-form-item>
       <h-form-item label="密码" prop="passwd" required>
         <h-poptip trigger="focus" title="提示标题" content="提示内容">
         <h-input class="curItemClass" type="password" v-model="formCustom.passwd"></h-input>
@@ -311,7 +268,6 @@
       };
 
       return {
-        curValue: '',
         dataList: [],
         btncheck:[],
         loading: false,
@@ -398,6 +354,7 @@
           passwdCheck: '',
           age: '',
           stockCode: '',
+          stockName: []
         },
         selectTreeData: [
           {
@@ -796,43 +753,6 @@
 //        console.log(y)
 //        console.log(z)
 
-      },
-      handleShowBox() {
-        this.showBox = true
-//        this.curValue = 'value1'
-        this.$refs.singlesel.focus()
-
-      },
-      remoteMethod(query, done) {
-        let reqTime = new Date().getTime();
-        this.reqTime = reqTime;
-        console.log(query)
-        setTimeout(()=>{
-          if(this.reqTime != reqTime) {
-            return;
-          }
-          new Promise(resolve=>{
-            setTimeout(()=>{
-              this.dataList = [ {
-                value: '110002',
-                label: '110002',
-                label1: '国债110002',
-              }, {
-                value: '010007',
-                label: '010007',
-                label1: '国债010007',
-              },{
-                value: '011002',
-                label: '0110002',
-                label1: '国债0110002'
-              }];
-              done();
-              this.$nextTick(()=>{
-                this.curValue = '110002';
-              })
-            }, 600)
-          })
-        }, 600)
       },
       handleKeyDown(e) {
         if(window.event.keyCode == 13) {

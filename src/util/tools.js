@@ -256,8 +256,12 @@ export function camelcaseToHyphen(str) {
 }
 // For MsgBox scrollBar hidden
 let cached
+let isIe = navigator.userAgent.indexOf("MSIE") >= 0 || navigator.userAgent.indexOf("Trident") >= 0
 export function getScrollBarSize(fresh) {
   if (isServer) return 0
+    // 解决-在目前皮肤设置滚动条7px时，页面刷新会在表格/select初始化时执行获取原生宽度，导致后赋值主题样式后计算错误
+    // 在框架设置皮肤时，将滚动条直接设置到sessionStorage中（chorme下）
+  if (!isIe && window.sessionStorage.getItem('scrollbarWidth') && window.sessionStorage.getItem('scrollbarWidth') != null) cached =  Number(window.sessionStorage.getItem('scrollbarWidth'))
   if (fresh || cached === undefined) {
     const inner = document.createElement('div')
     inner.style.width = '100%'
@@ -376,6 +380,30 @@ function deepCopyEx(data, exAttr) {
   return o
 }
 export { deepCopyEx }
+
+function deepCopySome(data, someAttr) {
+  const t = typeOf(data)
+  let o
+  if (t === 'array') {
+    o = []
+  } else if (t === 'object') {
+    o = {}
+  } else {
+    return data
+  }
+
+  if (t === 'array') {
+    for (let i = 0; i < data.length; i++) {
+      o.push(deepCopy(data[i]))
+    }
+  } else if (t === 'object') {
+    for (let i in data) {
+      if (someAttr.indexOf(i) >= 0) o[i] = deepCopySome(data[i], someAttr)
+    }
+  }
+  return o
+}
+export { deepCopySome }
 // deepCopy
 function deepCopy(data) {
   const t = typeOf(data)

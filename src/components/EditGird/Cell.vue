@@ -234,6 +234,7 @@ export default {
     Cascader
   },
   props: {
+    isValidate: Boolean,
     prefixCls: String,
     row: Object,
     column: Object,
@@ -341,7 +342,6 @@ export default {
     }
   },
   methods: {
-    // test() {console.log('test')},
     handleClose() {
       if (this.showEditInput || this.validateState == 'error') return
       if (
@@ -917,8 +917,13 @@ export default {
     },
     validateState(val) {
       if (val == 'error') {
+        if (this.renderType === 'normal' && this.isValidate) {
+          this.showSlot = false
+          this.renderType = this.column.type
+        }
         this.$nextTick(() => {
           if (this.$refs.verifyTip) {
+            // if (this.renderType === 'normal') return
             let fyTip = this.$refs.verifyTip
             let canEdit = fyTip.parentNode.querySelectorAll('.canEdit')[0]
             let left =
@@ -1012,7 +1017,8 @@ export default {
     this.render = this.column.render ? true : false
     this.hiddenOther = this.column.hiddenOther ? true : false
 
-    if (this.renderType !== 'normal' && this.column.rule) {
+    // if (this.column.rule) {
+    if ((this.renderType !== 'normal' && this.column.rule) || this.isValidate) {
       if ((this.column.fixed === 'left' && this.$parent.$parent.fixed === 'left')
       || (this.column.fixed === 'right' && this.$parent.$parent.fixed === 'right')
       || (this.column.fixed !== 'left' && this.column.fixed !== 'right' && !this.$parent.$parent.fixed) ) {
@@ -1046,7 +1052,7 @@ export default {
     })
   },
   beforeDestroy() {
-    if (this.renderType !== 'normal' && this.column.rule) {
+    if ((this.renderType !== 'normal' && this.column.rule) || this.isValidate) {
       if ((this.column.fixed === 'left' && this.$parent.$parent.fixed === 'left')
       || (this.column.fixed === 'right' && this.$parent.$parent.fixed === 'right')
       || (this.column.fixed !== 'left' && this.column.fixed !== 'right' && !this.$parent.$parent.fixed) ) {

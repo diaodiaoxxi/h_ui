@@ -1,281 +1,271 @@
 <template>
   <div>
-    <h-edit-gird
-      ref="editGird"
-      :columns="columns2"
-      :data="data1"
-      size="small"
-      :disabled-hover="true"
-      :highlight-row="true"
-      @on-current-change="click1"
-      :showEditInput="false"
-      height="200"
-      :loading="false"
-      :option="options1"
-      :treeOption="treeOption"
-      @on-editinput-enter="onEnter"
-      @on-money-enter="moneyChange"
-    ></h-edit-gird>
-    <h-button @click="addDate">新增一行</h-button>
-    <h-button @click="getDate">获取数据</h-button>
+      <h-form ref="formItem1" :model="formItem1" :compareModel="formItem2" :label-width="80" errorFocus cols="2">
+        <h-form-item label="输入框" prop="input" required>
+          <h-input v-model="formItem1.input" placeholder="请输入"></h-input>
+        </h-form-item>
+        <h-form-item label="日期控件">
+          <h-row>
+            <h-col span="11">
+              <h-form-item prop="date" required>
+                <h-datePicker type="date" placeholder="选择日期" v-model="formItem1.date"></h-datePicker>
+              </h-form-item>
+            </h-col>
+            <h-col span="2" style="text-align: center">-</h-col>
+            <h-col span="11">
+              <h-form-item prop="time" required>
+                <h-timePicker type="time" placeholder="选择时间" v-model="formItem1.time"></h-timePicker>
+              </h-form-item>
+            </h-col>
+          </h-row>
+        </h-form-item>
+        <h-form-item label="选择器" prop="select" required>
+          <h-select v-model="formItem1.select" filterable>
+            <h-option value="beijing">北京市</h-option>
+            <h-option value="shanghai">上海市</h-option>
+            <h-option value="shenzhen">深圳市</h-option>
+          </h-select>
+        </h-form-item>
+        <h-form-item label="金额框" prop="money" required>
+          <h-typefield v-model="formItem1.money">
+           <!--  <h-select v-model="select1" slot="prepend" style="width: 80px">
+              <h-option value="http">http://</h-option>
+              <h-option value="https">https://</h-option>
+            </h-select> -->
+
+            <h-select v-model="select2" placeholder="" slot="append" style="width: 45px" :isArrow="false" :clearable="false" :tranfer="true">
+            <h-option value="com">.com</h-option>
+            <h-option value="org">.org</h-option>
+            <h-option value="io">.io</h-option>
+          </h-select>
+          </h-typefield>
+        </h-form-item>
+        <h-form-item label="单选框" prop="radioo" required>
+          <h-radio-group v-model="formItem1.radioo">
+            <h-radio label="male">男</h-radio>
+            <h-radio label="female">女</h-radio>
+          </h-radio-group>
+        </h-form-item>
+        <h-form-item label="多选框" prop="checkbox" required>
+          <h-checkbox-group v-model="formItem1.checkbox">
+              <h-checkbox label="吃饭"></h-checkbox>
+              <h-checkbox label="睡觉"></h-checkbox>
+              <h-checkbox label="跑步"></h-checkbox>
+              <h-checkbox label="看电影"></h-checkbox>
+          </h-checkbox-group>
+        </h-form-item>
+        <h-form-item label="特殊日期" required prop="fatdate" required>
+          <h-fast-date v-model="formItem1.fatdate"></h-fast-date>
+        </h-form-item>
+        <h-form-item label="特殊日期" required prop="fatdate" required>
+          <h-fast-date v-model="formItem1.fatdate"></h-fast-date>
+        </h-form-item>
+        <h-form-item label="特殊日期" required prop="fatdate" required>
+          <h-fast-date v-model="formItem1.fatdate"></h-fast-date>
+        </h-form-item>
+        <h-form-item label="下拉表" prop='slider' required>
+          <h-select-table v-model="formItem1.slider" >
+            <h-table-option border :columns="columns1" :data="data1"></h-table-option>
+          </h-select-table>
+        </h-form-item>
+        <h-form-item label="下拉树" prop='tree' required>
+          <h-select-tree v-model="formItem1.tree" :first-value="firstValc" style="width:200px" :data="baseData1" placement="top" placeholder="你好"></h-select-tree>
+        </h-form-item>
+        <h-form-item label="文本域" prop="textarea" required>
+          <h-input v-model="formItem1.textarea" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></h-input>
+        </h-form-item>
+        <h-form-item label="文本域" prop="cascader" required>
+          <h-cascader v-model="formItem1.cascader" :data="data2" trigger="hover" style="width:200px"></h-cascader>
+        </h-form-item>
+        <h-form-item>
+            <h-button type="primary" @click="handleSubmit('formItem1')">提交</h-button>
+            <h-button type="ghost" style="margin-left: 8px" @click="handleReset('formItem1')">取消</h-button>
+        </h-form-item>
+      </h-form>
   </div>
-</template> 
+</template>
 <script>
-  var tData = [
-    {
-      name: "王小明",
-      age: 18,
-      address: "北京市朝阳区芍药居",
-      money: "120.00",
-      cardId: "6223 5678 1234 5678",
-      city: "北京",
-      dating: "2018-01-09T16:00:00.000Z",
-      timing: "16:00:00.00",
-      tree: "leaf1"
-      // _highlight: true//默认选择当前项
-    },
-    {
-      name: "张小刚",
-      age: 25,
-      address: "北京市海淀区西二旗",
-      money: "130.00",
-      cardId: "6223 5678 1234 5678",
-      city: "北京",
-      dating: "2018-01-09T16:00:00.000Z",
-      timing: "16:00:00.00",
-      tree: "leaf1"
-    },
-    {
-      name: "李小红",
-      age: 30,
-      address: "上海市浦东新区世纪大道",
-      money: "140.00",
-      cardId: "6223 5678 1234 5678",
-      city: "北京",
-      dating: "2018-01-09T16:00:00.000Z",
-      timing: "16:00:00.00",
-      tree: "leaf1"
-    },
-    {
-      name: "周小伟",
-      age: 26,
-      address: "深圳市南山区深南大道",
-      money: "150.00",
-      cardId: "6223 5678 1234 5678",
-      city: "北京",
-      dating: "2018-01-09T16:00:00.000Z",
-      timing: "16:00:00.00",
-      tree: "leaf1"
-    }
-  ];
   export default {
-    data() {
+    data () {
       return {
-        columns2: [
+        model1:'',
+        changeform:false,
+        formItem1: {
+          input: '1',
+          select: [],
+          radioo: '',
+          money: '',
+          checkbox: [],
+          fatdate: '',
+          date: '',
+          time: '',
+          slider: '',
+          tree:'',
+          textarea: '',
+          cascader:[]
+        },
+        formItem2:{
+          input: '1',
+          select: '',
+          radio: '',
+          money: '',
+          checkbox: [],
+          fatdate: '',
+          date: '',
+          time: '',
+          slider: '',
+          tree:'',
+          textarea: '',
+        },
+        data2: [{
+          value: 'beijing',
+          label: '北京',
+          children: [
+            {
+              value: 'gugong',
+              label: '故宫'
+            },
+            {
+              value: 'tiantan',
+              label: '天坛'
+            },
+            {
+              value: 'wangfujing',
+              label: '王府井'
+            }
+          ]
+          }, 
           {
-            type: "text",
-            title: "姓名",
-            key: "name",
-            width: 200,
-            rule: [
+            value: 'jiangsu',
+            label: '江苏',
+            children: [
               {
-                validator: function(rule, value, callback) {
-                  if (!value) {
-                    callback(new Error("姓名必填"));
-                  } else {
-                    callback();
-                  }
-                }
-              },
-              {
-                test: /^c/,
-                message: "姓名要以字母 c 开头"
-              },
-              {
-                pattern: /y$/,
-                message: "姓名要以字母 y 结尾"
-              }
-            ]
-          },
-          {
-            type: "text",
-            title: "年龄",
-            width: 200,
-            key: "age",
-            hiddenCol: false,
-            rule: { required: true, message: "年龄不能为空" }
-          },
-          {
-            type: "textArea",
-            rows: 2,
-            width: 200,
-            title: "地址",
-            key: "address",
-            rule: { required: true, message: "地址不能为空" }
-          },
-          {
-            type: "money",
-            title: "金额",
-            width: 200,
-            integerNum: 3,
-            suffixNum: 2,
-            bigTips: true,
-            key: "money",
-            rule: { required: true, message: "金额不能为空" }
-          },
-          {
-            type: "card",
-            title: "卡号",
-            width: 200,
-            key: "cardId",
-            rule: { required: true, message: "卡号不能为空" }
-          },
-          {
-            type: "select",
-            title: "地区",
-            width: 200,
-            key: "city",
-            multiple: false,
-            transfer: true,
-            option: [
-              { value: "北京" },
-              { value: "上海" },
-              { value: "天津" },
-              { value: "沈阳" },
-              { value: "杭州" },
-              { value: "武汉" }
-            ],
-            rule: { required: true, message: "请选择城市" }
-          },
-          {
-            type: "date",
-            title: "日期",
-            width: 200,
-            key: "dating",
-            dateType: "date",
-            format: "yyyy-MM-dd",
-            rule: { required: true, message: "请选择日期" }
-          },
-          {
-            type: "time",
-            title: "时间",
-            width: 200,
-            key: "timing",
-            dateType: "time",
-            format: "HH:mm:ss",
-            steps: [],
-            rule: { required: true, message: "请选择时间" }
-          },
-          {
-            type: "selectTree",
-            title: "下拉树",
-            width: 200,
-            key: "tree",
-            treeData: [
-              {
-                expand: true,
-                title: "parent 1",
+                value: 'nanjing',
+                label: '南京',
                 children: [
                   {
-                    title: "parent 1-0",
-                    expand: true,
-                    children: [
-                      {
-                        title: "leaf1",
-                        disableCheckbox: true
-                      },
-                      {
-                        title: "leaf2"
-                      }
-                    ]
+                      value: 'fuzimiao',
+                      label: '夫子庙',
+                  }
+                ]
+              },
+              {
+                value: 'suzhou',
+                label: '苏州',
+                children: [
+                  {
+                    value: 'zhuozhengyuan',
+                    label: '拙政园',
                   },
                   {
-                    title: "parent 1-1",
-                    expand: true,
-                    checked: true,
-                    children: [
-                      {
-                        title: "leaf3"
-                      }
-                    ]
+                    value: 'shizilin',
+                    label: '狮子林',
                   }
                 ]
               }
             ],
-            showCheckbox: false,
-            checkStrictly: false,
-            rule: { required: true, message: "请选择子节点" }
           }
         ],
-        data1: tData,
-        options1: [],
-        treeOption: []
-      };
-    },
-    mounted() {
-      this.treeOption[8] = [
-        {
-          expand: true,
-          title: "parent 1",
-          children: [
-            {
-              title: "parent 1-0",
-              expand: true,
-              children: [
-                {
-                  title: "leaf1",
-                  disableCheckbox: true
-                },
-                {
-                  title: "leaf2"
-                }
-              ]
-            },
-            {
-              title: "parent 1-1",
-              expand: true,
-              checked: true,
-              children: [
-                {
-                  title: "leaf3"
-                }
-              ]
-            }
-          ]
-        }
-      ];
-      this.options1[5] = [
-        { value: "Alabama", label: "Alabama" },
-        { value: "beijing", label: "北京" },
-        { value: "Delaware", label: "Delaware" }
-      ];
+        formValid: {
+          user: '你好',
+          stringInput:'',
+          password: '',
+          test1: '',
+          test2: ''
+        },
+        select1:'',
+        select2:'',
+        stringRule:['email'],
+        regRule: [{test:/^[a-zA-Z]+$/, message:'不全是字母',trigger:'blur'}],
+        columns1: [
+          {
+            title: '姓名',
+            key: 'name',
+            ellipsis: true
+          },
+          {
+            title: '年龄',
+            key: 'age',
+            hiddenCol:true
+          },
+          {
+            title: '地址',
+            key: 'address'
+          }
+        ],
+        data1:[
+          {
+            name: '王小明',
+            age: 18,
+            address: '北京市朝阳区芍药居'
+            // _highlight: true//默认选择当前项
+          },
+          {
+            name: '张小刚',
+            age: 25,
+            address: '北京市海淀区西二旗'
+          },
+          {
+            name: '李小红',
+            age: 30,
+            address: '上海市浦东新区世纪大道'
+          },
+          {
+            name: '周小伟',
+            age: 26,
+            address: '深圳市南山区深南大道'
+          },
+        ],
+        baseData1: [
+          {
+            title: 'parent',
+            id: '1-0',
+            children: [
+              {
+                title: 'child1',
+                id: '1-1',
+                children: [
+                  {
+                    title: 'child1-1-1',
+                    id: '1-1-1'
+                  },
+                  {
+                    title: 'child1-1-2',
+                    id: '1-1-2'
+                  }
+                ]
+              },
+              {
+                title: 'child2',
+                id: '1-2',
+                children: []
+              }
+            ]
+          }
+        ],
+        firstValc: 'parent',
+      }
     },
     methods: {
-      click1(s) {
-        // console.log(s);
+      changeform1(){
+        this.changeform = !this.changeform;
       },
-      addDate() {
-        tData = this.data1.push({
-          name: "",
-          age: null,
-          address: "",
-          money: "",
-          cardId: "",
-          city: "",
-          dating: "",
-          timing: "",
-          tree: ""
-        });
+      handleSubmit (name) {
+        let _this=this
+        this.$refs[name].validate((valid) => {
+            if (valid) {
+              _this.$hMessage.success('提交成功!');
+            } else {
+              _this.$hMessage.error('表单验证失败!');
+            }
+        })
       },
-      getDate() {
-        console.log(this.$refs.editGird.cloneData);
+      handleReset (name) {
+        this.$refs[name].resetFields();
       },
-      onEnter(a, b, c) {
-        console.log("on-enter", a, b, c);
+      totest() {
+        this.$refs.changeDrop.focus();
       },
-      moneyChange(a, b, c) {
-        console.log("moneyEnter", a, b, c);
-      }
     }
-  };
+  }
 </script>

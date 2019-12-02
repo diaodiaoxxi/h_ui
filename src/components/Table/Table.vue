@@ -74,14 +74,14 @@
         @scroll="handleBodyScroll"
         :style="bodyStyle"
       >
-        <div :class="[prefixCls + '-tiptext']" :style="textStyle">
-          <slot name="nodata">
-            <span
-              v-text="localeNoDataText"
-              v-if="!data || data.length === 0"
-            ></span>
-            <span v-text="localeNoFilteredDataText" v-else></span>
-          </slot>
+        <div ref="no-data-tiptext" :class="[prefixCls + '-tiptext']" :style="textStyle">
+            <slot name="nodata">
+              <div
+                v-html="localeNoDataText"
+                v-if="!data || data.length === 0"
+              ></div>
+              <div v-html="localeNoFilteredDataText" v-else></div>
+            </slot>            
         </div>
         <table cellspacing="0" cellpadding="0" border="0" :style="tipStyle">
           <tbody>
@@ -452,6 +452,13 @@ export default {
       // 点击单元格头部排序
       type: Boolean,
       default: false
+    },
+    noDataHeight: {
+      type: [Number, String],
+    },
+    adaptiveNoDataHeight: {
+      type: Boolean,
+      default: false,
     }
   },
   data() {
@@ -469,6 +476,8 @@ export default {
       showSlotHeader: true,
       showSlotFooter: true,
       bodyHeight: 0,
+      noDataBodyHeight: 0, //数据为空的body height (主要用于用户自定义表格高度)
+      noDataAdaptiveBodyHeight: 0, //数据为空的body height 自适应高度
       bodyRealHeight: 0,
       scrollBarWidth: getScrollBarSize(),
       currentContext: this.context,
@@ -492,7 +501,7 @@ export default {
       baseInx: null,
       offsetInx: null,
       lastScrollTop: 0,
-      mulitSortList: []
+      mulitSortList: [],
     }
   },
   computed: {
@@ -600,7 +609,11 @@ export default {
         bodyStyleHeight =
           this.tableWidth > this.initWidth
             ? bodyStyleHeight - this.scrollBarWidth
-            : bodyStyleHeight
+            : bodyStyleHeight 
+      }
+      if (this.data.length == 0 && !this.height && !this.maxHeight) {
+        if (this.noDataHeight >0 ) bodyStyleHeight = this.noDataBodyHeight
+        if (this.adaptiveNoDataHeight)  bodyStyleHeight = this.noDataAdaptiveBodyHeight
       }
       return bodyStyleHeight
     },
@@ -743,10 +756,8 @@ export default {
             ? height - this.scrollBarWidth
             : height
       }
-      style.height =
-        this.height || this.maxHeight ? Number(height) + 'px' : null
-      style.lineHeight =
-        this.height || this.maxHeight ? Number(height) + 'px' : null
+        style.height = this.height || this.maxHeight ? Number(height) + 'px' : null
+        style.lineHeight = this.height || this.maxHeight ? Number(height) + 'px' : null
       return style
     },
     leftFixedColumns() {
@@ -1505,8 +1516,9 @@ export default {
     },
     fixedHeader() {
       // height与maxHeight不可同时存在，若同时存在则以height为准
-      if (this.height || this.maxHeight) {
-        let setHeight = parseInt(this.height) || parseInt(this.maxHeight)
+      if (this.height || this.maxHeight || this.noDataHeight ) {
+        let setHeight = parseInt(this.height) || parseInt(this.maxHeight);
+        let setNoDataHeight = parseInt(this.noDataHeight)
         this.$nextTick(() => {
           const titleHeight =
             parseInt(getStyle(this.$refs.title, 'height')) || 0
@@ -1522,8 +1534,8 @@ export default {
           const footerHeight =
             parseInt(getStyle(this.$refs.footer, 'height')) || 0
           // this.bodyHeight = this.height - titleHeight - headerHeight - footerHeight;
-          this.bodyHeight =
-            setHeight - titleHeight - headerHeight - footerHeight
+          this.bodyHeight = setHeight - titleHeight - headerHeight - footerHeight
+          this.noDataBodyHeight = setNoDataHeight - titleHeight - headerHeight - footerHeight
         })
       } else {
         this.bodyHeight = 0
@@ -2125,6 +2137,12 @@ export default {
         this.$refs.tip.scrollLeft = 0
       }
     }
+  },
+  updated: function () {
+    this.$nextTick(function () {
+      // console.log(this.$refs['no-data-tiptext'].clientHeight)
+      this.noDataAdaptiveBodyHeight = this.$refs['no-data-tiptext'].clientHeight
+    })
   },
   created() {
     if (!this.context) this.currentContext = this.$parent

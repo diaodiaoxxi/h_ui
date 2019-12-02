@@ -29,14 +29,14 @@
       </slot>
     </div>
     <transition :name="transition">
-      <Drop @click.native="handleTransferClick"
+      <Drop @click.native.stop="handleTransferClick"
             v-show="opened"
             :class="{ [prefixCls + '-transfer']: transfer }"
             :placement="fPlacement"
             ref="drop"
             :data-transfer="transfer"
             v-transfer-dom>
-        <div @click="handleclick">
+        <div @click.native.stop="handleclick">
           <component :is="panel"
                      ref="pickerPanel"
                      :visible="visible"
@@ -327,7 +327,7 @@ export default {
       const bottomPlaced = this.fPlacement.match(/^bottom/)
       return bottomPlaced ? 'slide-up' : 'slide-down'
     },
-    visualValue() {
+    visualValue(val) {
       this.viewValue = this.formatDate(this.internalValue)
       return this.formatDate(this.internalValue)
     },
@@ -521,8 +521,10 @@ export default {
       this.$refs.input.select()
     },
     handleBlur() {
-      console.log('handleBlur----')
-      this.visible = false
+      // IE下点击滚动条会触发失焦事件
+      if (!(navigator.userAgent.indexOf("MSIE") >= 0 || navigator.userAgent.indexOf("Trident") >= 0)) {
+        this.visible = false
+      }
       this.onSelectionModeChange(this.type)
 
       this.internalValue = this.internalValue.slice() // trigger panel watchers to reset views
@@ -583,6 +585,12 @@ export default {
       }
     },
     handleInputChange(event) {
+      // 解决当用户手动输入时间时，input时间过滤自动计算，但第二次输入时间过滤后的时间跟上次一样，h-input控件内部响应不到其变化，导致不能及时响应
+      // 第一次输入00：00：00  第二次输入24：00：00 由于过滤后为00：00：00，h-input内部watch监听不到value的变化，所以依旧显示24：00：00
+      this.$nextTick(() => {
+        // console.log(this.visualValue)
+        this.$refs.input.setCurrentValue(this.visualValue)
+      }) 
       const isArrayValue =
         this.type.indexOf('range') > -1 ? true : false || this.multiple
       const oldValue = this.visualValue

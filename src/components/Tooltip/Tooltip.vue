@@ -13,7 +13,7 @@
         v-transfer-dom>
         <div :class="[prefixCls + '-content']">
           <div :class="[prefixCls + '-arrow']"></div>
-          <div :class="[prefixCls + '-inner']"><slot name="content">{{ content }}</slot></div>
+          <div :class="[prefixCls + '-inner']" :style="textWrap ? textWrapStyles : ''"><slot name="content">{{ content }}</slot></div>
         </div>
       </div>
     </transition>
@@ -31,6 +31,10 @@
     directives: { TransferDom },
     mixins: [Popper],
     props: {
+      textWrap: {
+        type: Boolean,
+        default: false,
+      },
       placement: {
         validator (value) {
           return oneOf(value, ['top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left', 'left-start', 'left-end', 'right', 'right-start', 'right-end']);
@@ -69,7 +73,17 @@
     data () {
       return {
           prefixCls: prefixCls,
-          visible:false
+          visible:false,
+          // textWrapStyles: 'max-width: 250px; max-height: 72px; white-space: normal; overflow-wrap: break-word; overflow: auto; ',
+          textWrapStyles: {
+            maxWidth: '250px',
+            maxHeight: '72px',
+            whiteSpace: 'normal',
+            overflowWrap: 'break-word',
+            overflow: 'auto',
+            wordWrap: 'break-word',
+          }
+
       };
     },
     methods: {

@@ -34,6 +34,7 @@
               :treeOption="treeOption[inx] ? treeOption[inx] : []"
               :cascaderOption="cascaderOption[inx] ? cascaderOption[inx] : []"
               :height="height"
+              :isValidate="isValidate"
               @on-editselect-change="editselectChange"
               @on-editinput-change="editinputChange"
               @on-editinput-blur="editinputBlur"
@@ -179,6 +180,7 @@
       mixins: [ Mixin ],
       components: { Cell, Expand, TableTr,GroupTr, TreeTable,Icon,CollapseTransition},
       props: {
+        isValidate: Boolean,
         prefixCls: String,
         styleObject: Object,
         typeName: String,

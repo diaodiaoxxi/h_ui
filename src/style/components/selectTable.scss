@@ -138,6 +138,7 @@ $select-group-prefix-cls:  "#{$css-prefix}selectTable-group";
     }
 
     &-multiple &-selection{
+        overflow-x: hidden;
         overflow-y: auto;
         height: $input-height-base;
         padding-left:$selectTable-multiple-selection-padding-left;

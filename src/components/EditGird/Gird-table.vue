@@ -48,6 +48,7 @@
                    :titleRender="titleRender"
                    :clickToSelect="clickToSelect"
                    :height="Number(height)"
+                   :isValidate="isValidate"
                    @on-select-change="selectChange"
                    @on-editselect-change="editselectChange"
                    @on-editinput-change="editinputChange"
@@ -60,10 +61,12 @@
            v-show="((!!localeNoDataText && (!data || data.length === 0)) || (!rebuildData || rebuildData.length === 0))"
            @scroll="handleBodyScroll"
            :style="bodyStyle">
+
         <div class="h-table-tiptext"
              :style="textStyle">
-          <span v-text="localeNoDataText"
-                v-if="!data || data.length === 0"></span>
+          <slot name="nodata">
+              <span v-text="localeNoDataText" v-if="!data || data.length === 0" ></span>
+          </slot>
         </div>
         <table cellspacing="0"
                cellpadding="0"
@@ -110,6 +113,7 @@
                      :treeOption="treeOptions"
                      :cascaderOption="cascaderOption"
                      :clickToSelect="clickToSelect"
+                     :isValidate="isValidate"
                      @on-select-change="selectChange"
                      @on-editselect-change="editselectChange"
                      @on-editinput-change="editinputChange"
@@ -182,6 +186,7 @@
                    :cascaderOption="cascaderOption"
                    :isCheckbox="false"
                    :clickToSelect="false"
+                   :isValidate="isValidate"
                    :height="Number(height)"></gird-body>
       </div>
       <div class="h-table__column-resize-proxy"
@@ -205,6 +210,21 @@
         <div v-text="loadingText"></div>
       </slot>
     </Spin>
+    <!-- <slot name="nodata">
+     <div :class="[prefixCls + '-tip']"
+           @scroll="handleBodyScroll"
+           :style="bodyStyle">
+        <div class="h-table-tiptext" :style="textStyle"> <span v-text="localeNoDataText" ></span> </div>
+        <table cellspacing="0" cellpadding="0" border="0" :style="tipStyle">
+          <tbody>
+            <tr>
+              <td :style="{ 'height': bodyStyle.height }">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </slot> -->
   </div>
 </template>
 <script>
@@ -227,6 +247,11 @@ export default {
   mixins: [Locale, Mixin, Emitter],
   components: { GirdHead, GirdBody },
   props: {
+    // 当showEditInput=false 支持可编辑表格validate验证规则
+    isValidate: {
+      type: Boolean,
+      default: false,
+    },
     typeName: {
       type: String
     },

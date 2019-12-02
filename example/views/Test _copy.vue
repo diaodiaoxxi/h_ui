@@ -1,173 +1,475 @@
 <template>
-<div>
-  
-    <!-- <h-row>
-      <h2>基本用法</h2>
-      <p>设置属性 type 为 date 或 daterange 分别显示选择单日和选择范围类型。<br>
-        设置属性 placement 可以更改选择器出现的方向</p>
-      <h-col span="12">
-      </h-col>
-      <h-col span="12">
-        {{model2}}
-        <h-date-picker v-model="model2" type="daterange" format="yyyy-MM-dd HH:mm"  @on-change="handleChange1"  placement="bottom-end" placeholder="选择日期" valueTypeArr> </h-date-picker>
-       <br><br><br>
-       {{value1}}
-        <h-date-picker :value="value1" format="yyyy年MM月dd日" type="date" placeholder="选择日期" style="width: 200px"></h-date-picker>
-      </h-col>
-    </h-row> -->
-      <h-table :columns="columns" :data="data1" headAlgin="center" border :highlight-row="true" @on-current-change="click1" :loading="loading" bodyAlgin="left">
-        <span slot="loading">我是自定义加载！！！</span>
-      </h-table>
-    
-</div>
+  <div>
+    <h-button @click="test">hiddenCol</h-button>
+    <h-button @click="hiddenOneCol">隐藏一列</h-button>
+    <!-- <h-table :columns="columns" :data="data1" :notSetWidth="notSetWidth"></h-table> -->
+    <h-table border :columns="columns" :data="[]" notSetWidth></h-table>
+  </div>
 </template>
 <script>
-let jsonData =require('../assets/aa.json');
 export default {
-    data () {
-        return {
-            //  model2:["2018-08-16", "2018-08-23"],
-            model2:"2017-11-13 00:00:00 - 2018-08-23 00:00:00 ",
-            value1: '2016-01-01',
-            model3:"2018-08-16 - 2018-08-24",
-            jsonData:jsonData,
-            columns: [
-              {
-                title: '姓名',
-                key: 'name',
-                width: 100,
-                ellipsis:true,
-                hiddenCol: true,
-              },
-              {
-                title: '姓名1',
-                key: 'name',
-                ellipsis:true,
-              },
-              {
-                title: '年龄',
-                key: 'age',
-                width: 100,
-                ellipsis:true,
-                sortable: true
-              },
-              {
-                title: '年龄1',
-                key: 'age',
-                ellipsis:true,
-                sortable: true
-              },
-              {
-                title: '省份',
-                key: 'province',
-                width: 100,
-                ellipsis:true,
-                sortable: true
-              },{
-                title: '省份1',
-                key: 'province',
-                ellipsis:true
-              },
-              {
-                title: '市区',
-                key: 'city',
-                width: 100,
-                ellipsis:true,
-                sortable: true
-              },{
-                title: '市区1',
-                key: 'city',
-                ellipsis:true
-              },
-              {
-                type: 'text',
-                title: '地址',
-                key: 'address',
-                width: 200,
-                ellipsis:true
-              },{
-                type: 'text',
-                title: '地址1',
-                key: 'address',
-                ellipsis:true
-              },
-              {
-                title: '邮编',
-                key: 'zip',
-                width: 120,
-                ellipsis:true,
-                headerTooltip: true
-              },
-              {
-                title: '邮编1',
-                key: 'zip',
-                ellipsis:true,
-                headerTooltip: true
-              },
-              {
-                title: '操作',
-                key: 'action',
-                render: (h, params) => {
-                  return h('div', [
-                    h('h-button', {
-                      props: {
-                        type: 'info',
-                        size: 'small'
-                      }
-                    }, '查看'),
-                    h('h-button', {
-                      props: {
-                        type: 'text',
-                        size: 'small'
-                      }
-                    }, '编辑')
-                  ]);
-                },
-                ellipsis:true
-              },
-              {
-                title: '邮编1',
-                key: 'zip',
-                ellipsis:true,
-                headerTooltip: true,
-                hiddenCol: true,
-              },
-            ],
-            data1: [
-              {
-                name: 0,
-                age: 18,
-                address: '北京市朝阳区\r芍药居',
-                // _disabled:true,
-                _checked:true,
-              },
-              {
-                name: 0,
-                age: 25,
-                address: '北京市海淀区西二旗'
-              },
-              {
-                name: '李小红',
-                age: 30,
-                address: '上海市浦东新区世纪大道'
-              },
-              {
-                name: '周小伟',
-                age: 26,
-                address: '深圳市南山区深南大道'
-              }
-            ],
+  data() {
+    return {
+      notSetWidth:true,
+      columns: [
+        // 列表配置
+        {
+          type: "selection",
+          width: 70,
+          align: "center",
+          fixed: "left"
+        },
+        {
+          title: "序号",
+          width: 70,
+          type: "index",
+          align: "center",
+          fixed: "left"
+        },
+        {
+          title: "用户姓名",
+          key: "user_name",
+          fixed: "left",
+          hiddenCol: false,
+        },
+        {
+          title: "登录名称",
+          key: "user_id",
+          hiddenCol: false,
+        },
+        {
+          title: "所属机构",
+          key: "tenant_name"
+        },
+        {
+          title: "所属部门",
+          key: "org_name"
+        },
+        {
+          title: "手机号码",
+          key: "mobile"
+        },
+        {
+          title: "固定电话",
+          key: "phone"
+        },
+        {
+          title: "邮件地址",
+          key: "email"
+        },
 
-
+        {
+          title: "用户状态",
+          key: "user_status",
+        },
+        {
+          title: "角色名称",
+          key: "role_names"
+        },
+        {
+          title: "授权产品",
+          key: "authorized_product"
+        },
+        {
+          title: "最后登录时间",
+          key: "last_login_time"
+        },
+        {
+          title: "创建时间",
+          key: "create_date_time"
+        },
+        {
+          title: "锁定时间",
+          key: "lock_time"
+        },
+        {
+          title: "锁定经办",
+          key: "locked_in"
+        },
+        {
+          title: "创建经办",
+          key: "creator"
+        },
+        {
+          title: "创建机构",
+          key: "create_institution"
+        },
+        {
+          title: "注销时间",
+          key: "logout_time"
+        },
+        {
+          title: "注销经办",
+          key: "cancellation"
+        },
+        {
+          title: "操作",
+          key: "action",
+          fixed: "right",
+          align: "center",
+          width: 150,
+          // render: (h, params) => {
+          //   return h("div", 'xiangqing');
+          // }
         }
+      ],
+      data1: [
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        },
+        {
+          authorized_product: "SM0922广发天鸿5号投资投私募基金",
+          cancel_handle: "程芳",
+          cancel_time: "1989-05-16  10:00:51",
+          cancellation: "黄强",
+          create_date_time: "2007-01-18  14:57:05",
+          create_institution: "投资投私募基金",
+          creator: "什专与放科养构白查强",
+          email: "8762802@email.com",
+          index: 0,
+          last_login_time: "2016-06-01  01:32:01",
+          lock_handle: "贾丽",
+          lock_time: "2002-11-20  03:54:29",
+          locked_in: "叶伟",
+          logout_time: "1972-03-25  08:56:14",
+          mobile: "17766668888",
+          org_name: "别今下何实定积段则整",
+          phone: "020-66668888",
+          role_names: "基金管理 | 披露0",
+          tenant_name: "质组时王压都",
+          user_id: "黄丽",
+          user_name: "秦静",
+          user_status: "1"
+        }
+      ],
+      hiddenColIndex: 0
+    };
+  },
+  methods: {
+    test() {     
+      // this.columns.map((v, index) => {
+      //   this.$set(this.columns[index], 'hiddenCol', true)
+      //   if ([1,2,4,6].includes(index)) this.$set(this.columns[index], 'hiddenCol', false)
+      // })
+      let me = this
+      me.columns.map((v, index) => {
+        me.$set(me.columns[index], 'hiddenCol', false)
+        if (![1,2,3,4].includes(index) && index !== me.columns.length - 1) {
+          me.$set(me.columns[index], 'hiddenCol', true)
+        }
+      })
+      return
+      // let me = this
+      // me.columns.map((v, index) => {
+      //   me.$set(me.columns[index], 'hiddenCol', true)
+      //   if (![1,2,3,4].includes(index) && index !== me.columns.length - 1) {
+      //     me.$set(me.columns[index], 'hiddenCol', true)
+      //   }
+      // })
     },
-    methods: {
-      handleChange1(val) {
-        // console.log('handleChange---->', val)
-      },
-      click1() {
 
-      },
+    hiddenOneCol(){
+      let me = this
+      me.columns.map((v, index) => {
+        if(index === me.hiddenColIndex){
+          me.$set(me.columns[me.hiddenColIndex], 'hiddenCol', true)
+        }
+      })
+       --me.hiddenColIndex
     }
-}
+  },
+
+  mounted(){
+    this.hiddenColIndex = this.columns.length -1
+    let me = this
+    me.columns.map((v, index) => {
+        me.$set(me.columns[index], 'hiddenCol', false)
+    })
+  }
+};
 </script>
