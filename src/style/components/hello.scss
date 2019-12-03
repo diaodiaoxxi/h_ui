@@ -1,8 +1,0 @@
-$hello-prefix-cls: "#{$css-prefix}hello" ;
-.#{$hello-prefix-cls}{
-	width: 48px;
-	height: 24px;
-	&-hello {
-		color: red;
-	}
-}
