@@ -1,0 +1,14 @@
+{
+  "name": "hui-component",
+  "main": "index.js",
+  "repository": "https://gitlab.hundsun.com/HUI/hui-component.git",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^3.19.0"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "clean": "lerna clean -y"
+  }
+}
