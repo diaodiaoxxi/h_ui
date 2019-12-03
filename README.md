@@ -1,4 +1,8 @@
 # h_ui
 
-h_ui dev branch
-----
+## Usage
+
+1. run `yarn clean`
+2. run `yarn bootstrap`
+3. run `cd packages/hui` and `yarn link`
+4. run `cd packages/hui-test` and `yarn link i-venus`
