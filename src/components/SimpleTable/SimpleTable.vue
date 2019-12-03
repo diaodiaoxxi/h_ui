@@ -2041,7 +2041,7 @@ export default {
       // 修复：拖动滚动条时，无法隐藏显示过滤项
       if (this.curShowFiltersIdx !== null) this.cloneColumns[this.curShowFiltersIdx]._filterVisible = false
       // 性能优化，横向滚动不更新数据,后续需要开启横向滚动时，在此进行判断
-      if (event.target.scrollTop === this.lastScrollTop) return 
+      // if (event.target.scrollTop === this.lastScrollTop) return 
       if (window.requestAnimationFrame) { // 该特性有浏览器限制
         this.updateVisibleAnimate(event)
       } else {
@@ -2051,6 +2051,8 @@ export default {
         this.$refs.header.scrollLeft = event.target.scrollLeft
         if (this.isSummation) this.sumMarginLeft = event.target.scrollLeft
         if (this.$refs.fixedBody) this.$refs.fixedBody.scrollTop = scrolltop
+        // 性能优化，横向滚动不更新数据,后续需要开启横向滚动时，在此进行判断
+        if (event.target.scrollTop === this.lastScrollTop) return 
         let oldBottomNum = this.buttomNum
         this.buttomNum = getBarBottomS(
           event.target,
@@ -2091,6 +2093,8 @@ export default {
         this.$refs.header.scrollLeft = event.target.scrollLeft
         if (this.isSummation) this.sumMarginLeft = event.target.scrollLeft
         if (this.$refs.fixedBody) this.$refs.fixedBody.scrollTop = scrolltop
+        // 性能优化，横向滚动不更新数据,后续需要开启横向滚动时，在此进行判断
+        if (event.target.scrollTop === this.lastScrollTop) return
         let oldBottomNum = this.buttomNum
         this.buttomNum = getBarBottomS(
           event.target,

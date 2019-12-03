@@ -308,7 +308,8 @@ export default {
         `${prefixCls}`,
         {
           [`${prefixCls}-disabled`]: this.disabled,
-          [`${prefixCls}-noresize`]: !this.canResize
+          [`${prefixCls}-noresize`]: !this.canResize,
+          [`${prefixCls}-readonly`]: this.readonly,
         }
       ]
     },
