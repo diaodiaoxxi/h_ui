@@ -1,27 +1,39 @@
 <template>
-  <div :class="classes" :style="multiplestyle" ref="select" v-clickoutside="{trigger: 'mousedown', handler: handleClose}">
+  <div
+    :class="classes"
+    :style="multiplestyle"
+    ref="select"
+    v-clickoutside="{trigger: 'mousedown', handler: handleClose}"
+  >
     <div
       :class="[prefixCls + '-selection']"
       ref="reference"
       :tabindex="tabIndex"
       @click="toggleMenu"
       @keyup="keyup"
-      @keydown="keydown">
+      @keydown="keydown"
+    >
       <!-- 多选时输入框内选中值模拟 -->
       <div class="h-tag" v-for="(item, index) in selectedMultiple" :key="index">
         <span class="h-tag-text">{{ item }}</span>
         <!-- <Icon name="close" @click.native.stop="removeTag(index)"></Icon>  -->
       </div>
       <!-- 输入框模拟 -->
-      <span :class="[prefixCls + '-placeholder']" v-show="showPlaceholder && (!filterable ||showBottom)">{{ localePlaceholder }}</span>
-      <span :class="[prefixCls + '-selected-value']" v-show="!showPlaceholder && !showCheckbox && (!filterable ||showBottom)">{{ selectedSingle }}</span>
+      <span
+        :class="[prefixCls + '-placeholder']"
+        v-show="showPlaceholder && (!filterable ||showBottom)"
+      >{{ localePlaceholder }}</span>
+      <span
+        :class="[prefixCls + '-selected-value']"
+        v-show="!showPlaceholder && !showCheckbox && (!filterable ||showBottom)"
+      >{{ selectedSingle }}</span>
       <!-- 模糊匹配输入框模拟 -->
       <input
         type="text"
         v-if="filterable && !showBottom"
         v-model="query"
         :disabled="disabled"
-        :readonly = "!editable||readonly"
+        :readonly="!editable||readonly"
         :class="[prefixCls + '-input']"
         :placeholder="showPlaceholder?localePlaceholder:''"
         :style="inputStyle"
@@ -33,57 +45,68 @@
         @keydown.down="handleArrowDown"
         @keydown.enter="handleEnter"
         :tabindex="tabIndex"
-        ref="input">
+        ref="input"
+      />
       <!-- 单选时清空按钮 -->
-      <Icon name="close" :class="[prefixCls + '-arrow']" v-show="showCloseIcon" @click.native.stop="clearSingleSelect"
-      ref="close"></Icon>
+      <Icon
+        name="close"
+        :class="[prefixCls + '-arrow']"
+        v-show="showCloseIcon"
+        @click.native.stop="clearSingleSelect"
+        ref="close"
+      ></Icon>
       <Icon name="unfold" :class="[prefixCls + '-arrow']" ref="arrowb" v-if="!remote"></Icon>
     </div>
     <transition :name="transitionName">
-      <Drop v-show="dropVisible"
+      <Drop
+        v-show="dropVisible"
         :placement="fPlacement"
         :dropWidth="dropWidth"
         :class="dropdownCls"
         :data-transfer="transfer"
         ref="dropdown"
-        v-transfer-dom>
+        v-transfer-dom
+      >
         <!--  <ul v-show="notFountShow" :class="[prefixCls + '-not-found']"><li>{{ localeNotFoundText }}</li></ul> -->
         <div :class="[prefixCls + '-dropdown-content']" ref="content" @click="handleclick">
-          <div :class="searchClass" ref='search' v-if="filterable && showBottom">
+          <div :class="searchClass" ref="search" v-if="filterable && showBottom">
             <input
-                type="text"
-                v-model="query"
-                :disabled="disabled"
-                :readonly = "!editable||readonly"
-                :class="[prefixCls + '-input']"
-                :placeholder="localeSearchHolder"
-                :style="inputStyle"
-                @focus="handleFocus"
-                @blur="handleBlur"
-                @input="handleInputDown"
-                @keydown.delete="handleInputDelete"
-                @keydown.up="handleArrowUp"
-                @keydown.down="handleArrowDown"
-                @keydown.enter="handleEnter"
-                :tabindex="tabIndex"
-                ref="input">
+              type="text"
+              v-model="query"
+              :disabled="disabled"
+              :readonly="!editable||readonly"
+              :class="[prefixCls + '-input']"
+              :placeholder="localeSearchHolder"
+              :style="inputStyle"
+              @focus="handleFocus"
+              @blur="handleBlur"
+              @input="handleInputDown"
+              @keydown.delete="handleInputDelete"
+              @keydown.up="handleArrowUp"
+              @keydown.down="handleArrowDown"
+              @keydown.enter="handleEnter"
+              :tabindex="tabIndex"
+              ref="input"
+            />
           </div>
           <div class="h-selectTree-dropdown-list" ref="list" :style="listStyle">
-            <Tree ref="tree"
-                  :data="baseDate"
-                  :show-checkbox="showCheckbox"
-                  :multiple="multiple"
-                  :isAlwaysSelect="isAlwaysSelect"
-                  :checkStrictly="checkStrictly"
-                  :showIndeterminate="!checkIndeter"
-                  @on-select-change="selectChange"
-                  @on-check-change="checkChange"
-                  @on-toggle-expand="toggleExpand"
-                  :filter-node-method="handleTreeFilter" 
-                  v-show="remote && !loading || !remote"
-                  isFormSelect
-                  :render="render">
-            </Tree>
+            <Tree
+              ref="tree"
+              :data="baseDate"
+              :show-checkbox="showCheckbox"
+              :multiple="multiple"
+              :isAlwaysSelect="isAlwaysSelect"
+              :checkStrictly="checkStrictly"
+              :showIndeterminate="!checkIndeter"
+              @on-select-change="selectChange"
+              @on-check-change="checkChange"
+              @on-toggle-expand="toggleExpand"
+              :filter-node-method="handleTreeFilter"
+              :selectToCheck="selectToCheck"
+              v-show="remote && !loading || !remote"
+              isFormSelect
+              :render="render"
+            ></Tree>
           </div>
           <!-- 远程搜索loading -->
           <ul v-show="loading" :class="[prefixCls + '-loading']">{{ localeLoadingText }}</ul>
@@ -93,43 +116,52 @@
   </div>
 </template>
 <script>
-import Icon from '../Icon/Icon.vue'
-import Drop from '../Select/Dropdown.vue'
-import Tree from '../Tree/Tree.vue'
-import clickoutside from '../../directives/clickoutside'
-import TransferDom from '../../directives/transfer-dom'
-import { oneOf, findComponentChildren,getScrollBarSize, getStyle,hasClass,typeOf,scrollAnimate,deepCopy} from '../../util/tools'
-import Emitter from '../../mixins/emitter'
-import Locale from '../../mixins/locale'
-const prefixCls = 'h-selectTree'
-export default{
-  name:'SelectTree',
-  mixins:[Emitter,Locale],
-  directives:{clickoutside,TransferDom},
-  components:{Icon,Drop,Tree},
-  props:{
+import Icon from "../Icon/Icon.vue";
+import Drop from "../Select/Dropdown.vue";
+import Tree from "../Tree/Tree.vue";
+import clickoutside from "../../directives/clickoutside";
+import TransferDom from "../../directives/transfer-dom";
+import {
+  oneOf,
+  findComponentChildren,
+  getScrollBarSize,
+  getStyle,
+  hasClass,
+  typeOf,
+  scrollAnimate,
+  deepCopy
+} from "../../util/tools";
+import Emitter from "../../mixins/emitter";
+import Locale from "../../mixins/locale";
+const prefixCls = "h-selectTree";
+export default {
+  name: "SelectTree",
+  mixins: [Emitter, Locale],
+  directives: { clickoutside, TransferDom },
+  components: { Icon, Drop, Tree },
+  props: {
     value: {
       type: [String, Number, Array],
-      default: ''
+      default: ""
     },
-    firstValue:{
+    firstValue: {
       type: [String, Number, Array],
-      default: ''
+      default: ""
     },
     placeholder: {
       type: String
     },
-    searchHolder:{
-      type:String
+    searchHolder: {
+      type: String
     },
     clearable: {
       type: Boolean,
       default: true
     },
-    data:{
+    data: {
       type: Array,
       default() {
-        return []
+        return [];
       }
     },
     multiple: {
@@ -137,45 +169,58 @@ export default{
       default: false
     },
     //父子组件关联
-    checkStrictly:{
-      type:Boolean,
-      default:false
+    checkStrictly: {
+      type: Boolean,
+      default: false
     },
     showCheckbox: {
       type: Boolean,
       default: false
     },
-    showIndeterminate:{
-      type:Boolean,
+    showIndeterminate: {
+      type: Boolean,
       default: true
     },
     size: {
       validator(value) {
-        return oneOf(value, ['small', 'large', 'default'])
+        return oneOf(value, ["small", "large", "default"]);
       },
-      default: 'default'
+      default: "default"
     },
     placement: {
       validator(value) {
-        return oneOf(value, ['top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left', 'left-start', 'left-end', 'right', 'right-start', 'right-end'])
+        return oneOf(value, [
+          "top",
+          "top-start",
+          "top-end",
+          "bottom",
+          "bottom-start",
+          "bottom-end",
+          "left",
+          "left-start",
+          "left-end",
+          "right",
+          "right-start",
+          "right-end"
+        ]);
       },
-      default: 'bottom'
+      default: "bottom"
     },
     filterable: {
       type: Boolean,
       default: false
     },
-    disabled:{
-      type:Boolean,
-      default:false
+    disabled: {
+      type: Boolean,
+      default: false
     },
-    readonly:{
-      type:Boolean,
-      default:false
+    readonly: {
+      type: Boolean,
+      default: false
     },
-    editable:{
-      type:Boolean,
-      default:true,
+    editable: {
+      type: Boolean,
+      default: true
     },
     width: {
       type: [String, Number]
@@ -188,27 +233,30 @@ export default{
       type: Boolean,
       default: false
     },
-    formatValue:{//设置v-model返回的值
-      type:String,
-      default:'title'
+    formatValue: {
+      //设置v-model返回的值
+      type: String,
+      default: "title"
     },
-    isString:{//多选专用，v-model输入输出值以逗号隔开
-      type:Boolean,
-      default:false,
+    isString: {
+      //多选专用，v-model输入输出值以逗号隔开
+      type: Boolean,
+      default: false
     },
-    dropWidth:{//下拉框的宽度
-      type:[String,Number],
+    dropWidth: {
+      //下拉框的宽度
+      type: [String, Number]
     },
-    searchHolder:{
-      type:String,
+    searchHolder: {
+      type: String
     },
-    showBottom:{
-      type:Boolean,
-      default:false,
+    showBottom: {
+      type: Boolean,
+      default: false
     },
-    expanLevel:{
-      type:[Number,String],
-      default:2,
+    expanLevel: {
+      type: [Number, String],
+      default: 2
     },
     remote: {
       type: Boolean,
@@ -224,57 +272,63 @@ export default{
     loadingText: {
       type: String
     },
-    onlyChild:{
-      type:Boolean,
-      default:false,
+    onlyChild: {
+      type: Boolean,
+      default: false
     },
-    checkIndeter:{//显示半选中状态，并选中
-      type:Boolean,
-      default:false
+    checkIndeter: {
+      //显示半选中状态，并选中
+      type: Boolean,
+      default: false
     },
     isAlwaysSelect: {
-      type:Boolean,
-      default:false
+      type: Boolean,
+      default: false
     },
     render: Function,
-    isTreeFilter: { // 是否进行下拉树过滤，不能与remote同时使用,需配置filterable,placement=bottom
-      type:Boolean,
-      default:false
+    isTreeFilter: {
+      // 是否进行下拉树过滤，不能与remote同时使用,需配置filterable,placement=bottom
+      type: Boolean,
+      default: false
+    },
+    selectToCheck: {
+      type: Boolean,
+      default: false,
     }
   },
-  data(){
-    return{
+  data() {
+    return {
       prefixCls: prefixCls,
       visible: false,
-      selectedSingle: '',
+      selectedSingle: "",
       selectedMultiple: [],
-      query:'',
+      query: "",
       inputLength: 20,
       notFound: false,
       model: this.value,
       currentLabel: this.label,
-      scrollBarWidth:getScrollBarSize(),
+      scrollBarWidth: getScrollBarSize(),
       isFocus: false,
       isFirst: false,
-      baseDate:[],
-      tabIndex:0,
-      lastquery: '',
+      baseDate: [],
+      tabIndex: 0,
+      lastquery: "",
       lastDataCopy: [],
-      fPlacement:this.placement,
-      viewValue:null,
+      fPlacement: this.placement,
+      viewValue: null,
       /* 过滤匹配节点数据 */
       filterData: [],
       focusIndex: 0
-    }
+    };
   },
-  computed:{
-    listStyle(){
-      let style = {}
-      style.paddingTop=this.showBottom?'30px':'0'
-      return style
+  computed: {
+    listStyle() {
+      let style = {};
+      style.paddingTop = this.showBottom ? "30px" : "0";
+      return style;
     },
-    searchClass(){
-      return `${prefixCls}-search`
+    searchClass() {
+      return `${prefixCls}-search`;
     },
     classes() {
       return [
@@ -289,652 +343,689 @@ export default{
           [`${prefixCls}-show-clear`]: this.showCloseIcon,
           [`${prefixCls}-${this.size}`]: !!this.size
         }
-      ]
+      ];
     },
     dropdownCls() {
       return {
-        ['h-select-dropdown-transfer']: this.transfer,
+        ["h-select-dropdown-transfer"]: this.transfer,
         // [prefixCls + '-multiple']: this.multiple && this.transfer,
-        ['h-auto-complete']: this.autoComplete,
-      }
+        ["h-auto-complete"]: this.autoComplete
+      };
     },
     showPlaceholder() {
-      let status = false
-      if ((typeof this.model) === 'string') {
-        if (this.model === '') {
-          status = true
+      let status = false;
+      if (typeof this.model === "string") {
+        if (this.model === "") {
+          status = true;
         }
       } else if (Array.isArray(this.model)) {
         if (!this.model.length) {
-          status = true
+          status = true;
         }
-      } else if( this.model === null){
-        status = true
+      } else if (this.model === null) {
+        status = true;
       }
-      return status
+      return status;
     },
     showCloseIcon() {
-      return this.clearable && !this.showPlaceholder
+      return this.clearable && !this.showPlaceholder;
     },
     inputStyle() {
-      let style = {}
+      let style = {};
       if (this.multiple) {
         if (this.showPlaceholder) {
-          style.width = '100%'
+          style.width = "100%";
         } else {
-          style.width = `${this.inputLength}px`
+          style.width = `${this.inputLength}px`;
         }
       }
-      return style
+      return style;
     },
     localePlaceholder() {
       if (this.placeholder === undefined) {
-        return this.t('i.select.placeholder')
+        return this.t("i.select.placeholder");
       } else {
-        return this.placeholder
+        return this.placeholder;
       }
     },
     localeSearchHolder() {
       if (this.searchHolder === undefined) {
-        return this.t('i.select.searchHolder')
+        return this.t("i.select.searchHolder");
       } else {
-        return this.searchHolder
+        return this.searchHolder;
       }
     },
     localeNotFoundText() {
       if (this.notFoundText === undefined) {
-        return this.t('i.select.noMatch')
+        return this.t("i.select.noMatch");
       } else {
-        return this.notFoundText
+        return this.notFoundText;
       }
     },
     localeLoadingText() {
       if (this.loadingText === undefined) {
-        return this.t('i.select.loading')
+        return this.t("i.select.loading");
       } else {
-        return this.loadingText
+        return this.loadingText;
       }
     },
     dropVisible() {
-      let status = true
-      const options = this.baseDate || []
-      if (!this.loading && this.remote && this.query === '' && !options.length) status = false
-      return this.visible && status
+      let status = true;
+      const options = this.baseDate || [];
+      if (!this.loading && this.remote && this.query === "" && !options.length)
+        status = false;
+      return this.visible && status;
     },
     transitionName() {
-      const bottomPlaced = this.fPlacement.match(/^bottom/)
-      return bottomPlaced ? 'slide-up' : 'slide-down'
+      const bottomPlaced = this.fPlacement.match(/^bottom/);
+      return bottomPlaced ? "slide-up" : "slide-down";
       // return this.placement === 'bottom' ? 'slide-up' : 'slide-down';
     },
     multiplestyle() {
       return {
-        width: `${this.width}px`,
-      }
+        width: `${this.width}px`
+      };
     }
   },
-  methods:{
+  methods: {
     /* 下拉树输入时进行过滤 */
-    handleTreeFilter (val,data,node) {
-      return val == '' || node.title.indexOf(val)!==-1
+    handleTreeFilter(val, data, node) {
+      return val == "" || node.title.indexOf(val) !== -1;
     },
-    handleclick(e){
-      e.stopPropagation()
+    handleclick(e) {
+      e.stopPropagation();
     },
-    keyup(event){
-      if (this.disabled || this.readonly||!this.editable) {
-        return false
+    keyup(event) {
+      if (this.disabled || this.readonly || !this.editable) {
+        return false;
       }
-      if (event.keyCode == 9) {//tab
-        this.toggleMenu()
-      }
-    },
-    keydown(event){
       if (event.keyCode == 9) {
-        this.hideMenu()
+        //tab
+        this.toggleMenu();
+      }
+    },
+    keydown(event) {
+      if (event.keyCode == 9) {
+        this.hideMenu();
       }
     },
     handleArrowUp() {
-      this.focusIndex = this.findFocus('prev')
-      this.setFocus(this.focusIndex)
+      this.focusIndex = this.findFocus("prev");
+      this.setFocus(this.focusIndex);
     },
     handleArrowDown() {
-      this.focusIndex = this.findFocus('next')
-      this.setFocus(this.focusIndex)
+      this.focusIndex = this.findFocus("next");
+      this.setFocus(this.focusIndex);
     },
     handleEnter() {
-      const filterData = this.filterData
-      const focusIndex = this.focusIndex
+      const filterData = this.filterData;
+      const focusIndex = this.focusIndex;
       if (filterData.length > focusIndex && filterData.length > 0) {
-        this.nodeSelect(filterData[focusIndex])
+        this.nodeSelect(filterData[focusIndex]);
       }
     },
     /**
      * 设置节点focus状态
      */
     setFocus(focusIndex) {
-      const nodes = this.$refs.tree.flatState
-      nodes.forEach((data) => {
-        this.$set(data.node, 'focus', false)
-      })
-      if (focusIndex < 0) return
-      const filterData = this.filterData
+      const nodes = this.$refs.tree.flatState;
+      nodes.forEach(data => {
+        this.$set(data.node, "focus", false);
+      });
+      if (focusIndex < 0) return;
+      const filterData = this.filterData;
       if (filterData.length > focusIndex) {
-        this.$set(filterData[focusIndex], 'focus', true)
+        this.$set(filterData[focusIndex], "focus", true);
         this.$nextTick(() => {
-          let focusItem = this.$refs.tree.$el.querySelector('.h-tree-title-focus')
+          let focusItem = this.$refs.tree.$el.querySelector(
+            ".h-tree-title-focus"
+          );
           if (focusItem && this.dropVisible) {
-            let top = focusItem.offsetTop
+            let top = focusItem.offsetTop;
             if (this.showBottom) {
-              top = top - 30
+              top = top - 30;
             }
-            this.$refs.list.scrollTop = top
+            this.$refs.list.scrollTop = top;
           }
-        })
+        });
       }
     },
     findFocus(dir) {
-      const filterData = this.filterData
-      const startIndex = this.focusIndex
-      let searchData
-      if (dir === 'next') {
-        searchData = filterData.concat(filterData)
+      const filterData = this.filterData;
+      const startIndex = this.focusIndex;
+      let searchData;
+      if (dir === "next") {
+        searchData = filterData.concat(filterData);
       } else {
-        searchData = filterData.reverse().concat(filterData)
-        filterData.reverse()
+        searchData = filterData.reverse().concat(filterData);
+        filterData.reverse();
       }
-      let node
-      searchData.slice((dir === 'next' ? startIndex : filterData.length - 1 - startIndex) + 1)
+      let node;
+      searchData
+        .slice(
+          (dir === "next" ? startIndex : filterData.length - 1 - startIndex) + 1
+        )
         .some(d => {
-          if (d.disabled + '' !== 'true' && d.disableCheckbox + '' !== 'true') {
-            node = d
-            return true
+          if (d.disabled + "" !== "true" && d.disableCheckbox + "" !== "true") {
+            node = d;
+            return true;
           }
-          return false
-        })
-      let idx = -1
+          return false;
+        });
+      let idx = -1;
       if (node) {
         filterData.some((d, i) => {
           if (d.nodeKey === node.nodeKey) {
-            idx = i
-            return true
+            idx = i;
+            return true;
           }
-          return false
-        })
+          return false;
+        });
       }
-      return idx
+      return idx;
     },
     nodeSelect(node) {
       // 如果node 不存在，直接返回（当前节点disable的情况）
-      if (!node) return 
+      if (!node) return;
       if (this.showCheckbox) {
         this.$refs.tree.handleCheck({
           checked: !node.checked,
           nodeKey: node.nodeKey
-        })
+        });
       } else {
-        this.$refs.tree.handleSelect(node.nodeKey)
+        this.$refs.tree.handleSelect(node.nodeKey);
       }
     },
-    offsetArrow(){
-      if (!this.showCheckbox) return
-      if (navigator.userAgent.indexOf('Firefox') >= 0) return//firefox scrollBar bug
-      let el = this.$refs.reference
-      if (el.scrollHeight>el.clientHeight) {
-        if (this.$refs.close) this.$refs.close.$el.style.right='22px'
-        if (this.$refs.arrowb) this.$refs.arrowb.$el.style.right='22px'
-      }else{
-        if (this.$refs.close) this.$refs.close.$el.style.right='8px'
-        if (this.$refs.arrowb) this.$refs.arrowb.$el.style.right='8px'
+    offsetArrow() {
+      if (!this.showCheckbox) return;
+      if (navigator.userAgent.indexOf("Firefox") >= 0) return; //firefox scrollBar bug
+      let el = this.$refs.reference;
+      if (el.scrollHeight > el.clientHeight) {
+        if (this.$refs.close) this.$refs.close.$el.style.right = "22px";
+        if (this.$refs.arrowb) this.$refs.arrowb.$el.style.right = "22px";
+      } else {
+        if (this.$refs.close) this.$refs.close.$el.style.right = "8px";
+        if (this.$refs.arrowb) this.$refs.arrowb.$el.style.right = "8px";
       }
     },
     toggleMenu() {
-      if (this.disabled || this.readonly ||!this.editable) {
-        return false
+      if (this.disabled || this.readonly || !this.editable) {
+        return false;
       }
-      this.visible = !this.visible
-      this.isFocus = true
+      this.visible = !this.visible;
+      this.isFocus = true;
     },
     hideMenu() {
-      this.visible = false
+      this.visible = false;
       if (this.filterable) {
-        this.clearFilter()
+        this.clearFilter();
       }
-      this.broadcast('Option', 'on-select-close')
+      this.broadcast("Option", "on-select-close");
     },
     //对外暴露收起弹出框fold方法
     fold() {
-      this.visible = false
+      this.visible = false;
     },
     handleClose() {
-      this.hideMenu()
+      this.hideMenu();
       if (this.isFocus) {
         // 点击其他地方时触发blur校验
-        if (this.showCheckbox){
+        if (this.showCheckbox) {
           // 多选返回数组
-          this.dispatch('FormItem', 'on-form-blur', this.selectedMultiple)
+          this.dispatch("FormItem", "on-form-blur", this.selectedMultiple);
         } else {
           // 单选返回字符串
-          this.dispatch('FormItem', 'on-form-blur', this.selectedSingle)
+          this.dispatch("FormItem", "on-form-blur", this.selectedSingle);
         }
-        this.isFocus = false
+        this.isFocus = false;
       }
     },
-    selectChange(val){
-      let strModel = this.formatValue
+    selectChange(val) {
+      let strModel = this.formatValue;
       if (this.visible) {
-        this.$emit('on-select-change', val)
+        this.$emit("on-select-change", val);
       }
       if (!this.showCheckbox) {
-        this.selectedSingle=val.length!=0?val[0].title:''
-        if (this.filterable&&!this.showBottom) {
-          this.query = this.selectedSingle
+        this.selectedSingle = val.length != 0 ? val[0].title : "";
+        if (this.filterable && !this.showBottom) {
+          this.query = this.selectedSingle;
         }
-        if(!this.filterable){
-          this.query =''
+        if (!this.filterable) {
+          this.query = "";
         }
         // this.query = this.filterable?this.selectedSingle:'';
-        this.model = val.length!=0?val[0][strModel]:''
-        this.hideMenu()
+        this.model = val.length != 0 ? val[0][strModel] : "";
+        this.hideMenu();
       }
     },
     /**
      * 清除过滤高亮
      */
     clearFilter() {
-      this.findQuery(this.baseDate,'')
-      this.filterData = []
-      this.setFocus(this.focusIndex = -1)
+      this.findQuery(this.baseDate, "");
+      this.filterData = [];
+      this.setFocus((this.focusIndex = -1));
     },
-    checkChange(val){
-      let strModel = this.formatValue
-      this.lastquery = this.query
+    checkChange(val) {
+      let strModel = this.formatValue;
+      this.lastquery = this.query;
       if (this.filterable && !this.showBottom) {
-        this.query=''
+        this.query = "";
       }
-      let arr=[]
-      let arrModel = []
-      val.forEach(item=>{
+      let arr = [];
+      let arrModel = [];
+      val.forEach(item => {
         if (this.onlyChild && !this.checkStrictly) {
-          if (!item.children || item.children.length==0) {
-            arr.push(item.title)
-            arrModel.push(item[strModel])
+          if (!item.children || item.children.length == 0) {
+            arr.push(item.title);
+            arrModel.push(item[strModel]);
           }
-        }else {
-          arr.push(item.title)
-          arrModel.push(item[strModel])
+        } else {
+          arr.push(item.title);
+          arrModel.push(item[strModel]);
         }
-      })
-      if(this.checkIndeter && !this.checkStrictly){
-        let interArr = this.$refs.tree.getIndeterminateNodes()
-        interArr.forEach((ite)=>{
-          arr.push(ite.title)
-          arrModel.push(ite[strModel])
-        })
+      });
+      if (this.checkIndeter && !this.checkStrictly) {
+        let interArr = this.$refs.tree.getIndeterminateNodes();
+        interArr.forEach(ite => {
+          arr.push(ite.title);
+          arrModel.push(ite[strModel]);
+        });
       }
-      this.model=arrModel
-      this.selectedMultiple=arr
-      this.$emit('on-check-change', val)
+      this.model = arrModel;
+      this.selectedMultiple = arr;
+      this.$emit("on-check-change", val);
     },
-    toggleExpand(val){
-      this.$emit('on-toggle-expand', val)
+    toggleExpand(val) {
+      this.$emit("on-toggle-expand", val);
     },
     clearSingleSelect() {
-      let _this = this
-      if (this.disabled || this.readonly || !this.editable) return false
+      let _this = this;
+      if (this.disabled || this.readonly || !this.editable) return false;
       if (this.showCloseIcon) {
-        resetDate(this.baseDate)
+        resetDate(this.baseDate);
         if (!this.showCheckbox) {
-          this.model=''
-        }else{
-          this.model=[]
-          this.selectedMultiple=[]
+          this.model = "";
+        } else {
+          this.model = [];
+          this.selectedMultiple = [];
         }
-        if (this.filterable&& !this.showBottom) {
-          this.query = ''
-          this.clearFilter()
+        if (this.filterable && !this.showBottom) {
+          this.query = "";
+          this.clearFilter();
         }
         if (this.remote) {
-          this.lastquery = ''
+          this.lastquery = "";
         }
-        this.isFocus = true
+        this.isFocus = true;
       }
       function resetDate(data) {
-        data.forEach((col,i)=>{
+        data.forEach((col, i) => {
           if (col.checked) {
-            _this.$set(col,'checked',false)
+            _this.$set(col, "checked", false);
           }
-          if(col.selected){
-            _this.$set(col,'selected',false)
+          if (col.selected) {
+            _this.$set(col, "selected", false);
           }
-          if(col.indeterminate){
-            _this.$set(col,'indeterminate',false)
+          if (col.indeterminate) {
+            _this.$set(col, "indeterminate", false);
           }
-          if (col.children && col.children.length>0) {
-            resetDate(col.children)
+          if (col.children && col.children.length > 0) {
+            resetDate(col.children);
           }
-        })
+        });
       }
     },
-    handleFocus(){
-      this.$emit('on-focus')
-      this.dispatch('FormItem', 'on-form-focus')
+    handleFocus() {
+      this.$emit("on-focus");
+      this.dispatch("FormItem", "on-form-focus");
     },
     handleBlur() {
       // 单选，回填input值
       // 添加对viewValue是否为null 的判断
-      if (this.viewValue && this.query !== this.viewValue && !this.showCheckbox && !this.showBottom) {
-        if (this.query === '') {
-          this.model = ''
+      if (
+        this.viewValue &&
+        this.query !== this.viewValue &&
+        !this.showCheckbox &&
+        !this.showBottom
+      ) {
+        if (this.query === "") {
+          this.model = "";
           if (this.remote) {
-            this.lastquery = ''
+            this.lastquery = "";
           }
         } else {
-          this.query = this.viewValue
+          this.query = this.viewValue;
         }
       }
-      this.$emit('on-blur')
+      this.$emit("on-blur");
     },
     handleInputDown() {
-      var val = this.query
-      this.lastquery = this.query
+      var val = this.query;
+      this.lastquery = this.query;
       if (this.remote && this.remoteMethod) {
-        this.visible = val == '' ? false : true
+        this.visible = val == "" ? false : true;
       } else {
-        this.findQuery(this.baseDate,val)
-        this.filterData = this.$refs.tree.getFilterNodes()
-        this.focusIndex = -1
-        this.setFocus(this.focusIndex = this.findFocus('next'))
+        this.findQuery(this.baseDate, val);
+        this.filterData = this.$refs.tree.getFilterNodes();
+        this.focusIndex = -1;
+        this.setFocus((this.focusIndex = this.findFocus("next")));
       }
     },
-    findQuery(data,val,parentKey){
-      var that = this
-      data.forEach((col,i)=>{
-        that.$set(col, 'filterable', false)
-        if (val!=''&&!!col.title&& col.title.indexOf(val)!=-1) {
-          that.$set(col, 'filterable', true)
-          that.expandParent(that.baseDate,parentKey)
+    findQuery(data, val, parentKey) {
+      var that = this;
+      data.forEach((col, i) => {
+        that.$set(col, "filterable", false);
+        if (val != "" && !!col.title && col.title.indexOf(val) != -1) {
+          that.$set(col, "filterable", true);
+          that.expandParent(that.baseDate, parentKey);
         }
-        if (col.children && col.children.length>0) {
-          this.findQuery(col.children,val,col.nodeKey)
+        if (col.children && col.children.length > 0) {
+          this.findQuery(col.children, val, col.nodeKey);
         }
-      })
+      });
     },
-    expandParent(data,nodekey,parentKey){
-      var that = this
-      data.forEach((col,i)=>{
-        if (col.nodeKey==nodekey) {
-          that.$set(col, 'expand', true)
-          if(parentKey=='undefined') return
-          that.expandParent(that.baseDate,parentKey)
+    expandParent(data, nodekey, parentKey) {
+      var that = this;
+      data.forEach((col, i) => {
+        if (col.nodeKey == nodekey) {
+          that.$set(col, "expand", true);
+          if (parentKey == "undefined") return;
+          that.expandParent(that.baseDate, parentKey);
         }
-        if (col.children && col.children.length>0) {
-          that.expandParent(col.children,nodekey,col.nodeKey)
+        if (col.children && col.children.length > 0) {
+          that.expandParent(col.children, nodekey, col.nodeKey);
         }
-      })
+      });
     },
     handleInputDelete() {
-      if (this.multiple && this.model.length && this.query === '') {
+      if (this.multiple && this.model.length && this.query === "") {
         // 无匹配方法，故先注释
         // this.removeTag(this.model.length - 1)
       }
     },
     handleKeydown(e) {
       if (this.visible) {
-        const keyCode = e.keyCode
+        const keyCode = e.keyCode;
         // Esc slide-up
         if (keyCode === 27) {
-          e.preventDefault()
-          this.hideMenu()
+          e.preventDefault();
+          this.hideMenu();
         }
       }
     },
-    strtoArr(val){
+    strtoArr(val) {
       if (this.showCheckbox && this.isString) {
-        if (val==''||val==' '||val == null||val == undefined) {
-          return []
-        }else if(val.length>0&&val.indexOf(',')==-1){
-          return new Array(val)
-        }else{
-          return val.split(',')
+        if (val == "" || val == " " || val == null || val == undefined) {
+          return [];
+        } else if (val.length > 0 && val.indexOf(",") == -1) {
+          return new Array(val);
+        } else {
+          return val.split(",");
         }
-      }else{
-        return val
+      } else {
+        return val;
       }
     },
-    arrtoStr(val){
-      if (this.showCheckbox && this.isString && typeOf(val) == 'array') {
+    arrtoStr(val) {
+      if (this.showCheckbox && this.isString && typeOf(val) == "array") {
         if (val.length == 0) {
-          return ''
-        }else{
-          return val.join(',')
+          return "";
+        } else {
+          return val.join(",");
         }
-      }else{
-        return val
+      } else {
+        return val;
       }
     },
-    setInit(data,value){
-      let _this = this
-      function findDown(tdata,curValue){
-        tdata.forEach((item)=>{
-          ['expand','disabled','disableCheckbox','selected','checked'].forEach(col=>{
-            if(item[col]&&item[col]=='false'){
-              item[col] =false
+    setInit(data, value) {
+      let _this = this;
+      function findDown(tdata, curValue) {
+        tdata.forEach(item => {
+          [
+            "expand",
+            "disabled",
+            "disableCheckbox",
+            "selected",
+            "checked"
+          ].forEach(col => {
+            if (item[col] && item[col] == "false") {
+              item[col] = false;
             }
-            if(item[col]&&item[col]=='true'){
-              item[col] =true
+            if (item[col] && item[col] == "true") {
+              item[col] = true;
             }
-          })
-          if ((typeOf(curValue) == 'string'||typeOf(curValue) == 'number')&&item[_this.formatValue] == curValue) {
-            _this.$set(item,'selected',true)
-          }else if(typeOf(curValue) == 'array'&&curValue.indexOf(item[_this.formatValue])!=-1){
-            _this.$set(item,'checked',true)
-          }else{
-            _this.$set(item,'selected',false)
-            _this.$set(item,'checked',false)
+          });
+          if (
+            (typeOf(curValue) == "string" || typeOf(curValue) == "number") &&
+            item[_this.formatValue] == curValue
+          ) {
+            _this.$set(item, "selected", true);
+          } else if (
+            typeOf(curValue) == "array" &&
+            curValue.indexOf(item[_this.formatValue]) != -1
+          ) {
+            _this.$set(item, "checked", true);
+          } else {
+            _this.$set(item, "selected", false);
+            _this.$set(item, "checked", false);
           }
-          if (item.children&&item.children.length>0) {
-            findDown(item.children,curValue)
+          if (item.children && item.children.length > 0) {
+            findDown(item.children, curValue);
           }
-        })
+        });
       }
-      findDown(data,value)
-      this.$nextTick(()=>{
-        let tree = this.$refs.tree
-        if (typeOf(value) == 'string'||typeOf(value) == 'number') {
-          this.selectChange(tree.getSelectedNodes())
-        }else{
-          this.checkChange(tree.getCheckedNodes())
+      findDown(data, value);
+      this.$nextTick(() => {
+        let tree = this.$refs.tree;
+        if (typeOf(value) == "string" || typeOf(value) == "number") {
+          this.selectChange(tree.getSelectedNodes());
+        } else {
+          this.checkChange(tree.getCheckedNodes());
         }
-      })
+      });
     },
-    expandLevels(data){
-      let index = 0
-      let _this = this
-      function findDown(tdata){
-        index =index+1
-        tdata.forEach((item)=>{
+    expandLevels(data) {
+      let index = 0;
+      let _this = this;
+      function findDown(tdata) {
+        index = index + 1;
+        tdata.forEach(item => {
           // _this.$set(item,'expand',true);
-          item.expand = true
-          if (item.children&&item.children.length>0 && index<_this.expanLevel) {
-            findDown(item.children)
+          item.expand = true;
+          if (
+            item.children &&
+            item.children.length > 0 &&
+            index < _this.expanLevel
+          ) {
+            findDown(item.children);
           }
-        })
+        });
       }
-      if (index<_this.expanLevel) {
-        findDown(data)
+      if (index < _this.expanLevel) {
+        findDown(data);
       }
-      return data
+      return data;
     },
-    searchStyle(){
+    searchStyle() {
       if (this.filterable && this.showBottom) {
-        let width =this.dropWidth>0?this.dropWidth:parseInt(getStyle(this.$el, 'width'))
-        width = width-getScrollBarSize()+'px'
-        this.$refs.search.style.width = width
+        let width =
+          this.dropWidth > 0
+            ? this.dropWidth
+            : parseInt(getStyle(this.$el, "width"));
+        width = width - getScrollBarSize() + "px";
+        this.$refs.search.style.width = width;
       }
     },
-    focus(){
-      if (this.disabled || this.readonly) return
-      this.$nextTick(()=>{
-        this.isFocus = true
-        this.visible = true
+    focus() {
+      if (this.disabled || this.readonly) return;
+      this.$nextTick(() => {
+        this.isFocus = true;
+        this.visible = true;
         if (this.filterable) {
-          this.$refs.input.focus()
-        }else{
-          this.$refs.reference.focus()
+          this.$refs.input.focus();
+        } else {
+          this.$refs.reference.focus();
         }
-      })
+      });
     },
-    blur(){
-      this.isFocus = false
-      this.visible = false
+    blur() {
+      this.isFocus = false;
+      this.visible = false;
       if (this.filterable) {
-        this.$refs.input.blur()
-      }else{
-        this.$refs.reference.blur()
+        this.$refs.input.blur();
+      } else {
+        this.$refs.reference.blur();
       }
     },
     select() {
       if (this.filterable) {
-        this.$refs.input.select()
+        this.$refs.input.select();
       }
     }
   },
-  watch:{
-    firstValue:{
-      immediate:true,
-      handler(val){
-        if (val && val != ' ' && val != []) {
-          this.$nextTick(()=>{
-            if(this.baseDate.length>0){
-              this.setInit(this.baseDate,val)
+  watch: {
+    firstValue: {
+      immediate: true,
+      handler(val) {
+        if (val && val != " " && val != []) {
+          this.$nextTick(() => {
+            if (this.baseDate.length > 0) {
+              this.setInit(this.baseDate, val);
             }
-          })
+          });
         }
       }
     },
-    value(val){
-      this.model = this.strtoArr(val)
+    value(val) {
+      this.model = this.strtoArr(val);
     },
     query(val) {
-      let query = val || this.lastquery
+      let query = val || this.lastquery;
       // 输入框的长度需要与query同步增长--多选
-      this.inputLength = val && val.length ? val.length * 5 + 20 : 20
+      this.inputLength = val && val.length ? val.length * 5 + 20 : 20;
       //  query改变时触发remote，兼容check选中后（lastquery有值）重复触发
-      if (this.remote && this.remoteMethod && (!this.model || this.model.length == 0)) {
-        this.remoteMethod(query)
+      if (
+        this.remote &&
+        this.remoteMethod &&
+        (!this.model || this.model.length == 0)
+      ) {
+        this.remoteMethod(query);
       } else if (this.isTreeFilter) {
-        this.$refs.tree.filter(val, true)
+        this.$refs.tree.filter(val, true);
       }
-      this.$nextTick(()=>{
-        let firstItem = this.$refs.tree.$el.querySelectorAll('.h-tree-title-filterable')[0]
+      this.$nextTick(() => {
+        let firstItem = this.$refs.tree.$el.querySelectorAll(
+          ".h-tree-title-filterable"
+        )[0];
         if (firstItem && this.dropVisible) {
-          let top = firstItem.offsetTop
+          let top = firstItem.offsetTop;
           if (this.showBottom) {
-            top = top -30
+            top = top - 30;
           }
-          this.$refs.list.scrollTop = top
+          this.$refs.list.scrollTop = top;
           // scrollAnimate(this.$refs.list,this.$refs.list.scrollTop,top)
-        }else{
-          this.$refs.list.scrollTop = 0
+        } else {
+          this.$refs.list.scrollTop = 0;
         }
-      })
+      });
     },
     model() {
-      let backModel = this.arrtoStr(this.model)
+      let backModel = this.arrtoStr(this.model);
       // this.$emit('input', this.model);
-      this.$emit('input', backModel)
+      this.$emit("input", backModel);
       // 初次会执行
       if (this.isFirst) {
-        this.dispatch('FormItem', 'on-form-change', this.model)
+        this.dispatch("FormItem", "on-form-change", this.model);
       }
       if (!this.model || this.model.length == 0) {
-        this.$nextTick(()=>{
-          this.setInit(this.baseDate,'')
-        })
+        this.$nextTick(() => {
+          this.setInit(this.baseDate, "");
+        });
       }
-      this.isFirst = true
+      this.isFirst = true;
     },
-    selectedMultiple(val){
-      this.viewValue = val
-      this.$nextTick(()=>{
-        this.offsetArrow()
-      })
+    selectedMultiple(val) {
+      this.viewValue = val;
+      this.$nextTick(() => {
+        this.offsetArrow();
+      });
     },
-    visible(val){
+    visible(val) {
       if (val) {
-        this.broadcast('Drop', 'on-update-popper')
+        this.broadcast("Drop", "on-update-popper");
         // remote下，query设值时会自动触发监听搜索，若query无值且model存在时，下拉搜索用lastDataCopy
-        if (this.remote && this.query == '') this.baseDate = this.lastquery != '' ?  this.lastDataCopy : []
+        if (this.remote && this.query == "")
+          this.baseDate = this.lastquery != "" ? this.lastDataCopy : [];
         setTimeout(() => {
-          this.dispatch('Msgbox', 'on-esc-real-close', false)
-        }, 0)
+          this.dispatch("Msgbox", "on-esc-real-close", false);
+        }, 0);
       } else {
         if (this.filterable) {
           if (this.showBottom || this.showCheckbox) {
-            this.query = ''
+            this.query = "";
           }
           if (this.remote) {
-            this.query = ''
+            this.query = "";
             // model为空是清空lastquery(model有值时关闭后无法打开)
             if (!this.model || this.model.length == 0) {
-              this.lastquery = ''
+              this.lastquery = "";
             } else {
               // model有值时保存当前数组
-              this.lastDataCopy = deepCopy(this.baseDate)
+              this.lastDataCopy = deepCopy(this.baseDate);
             }
           }
         }
         setTimeout(() => {
-          this.dispatch('Msgbox', 'on-esc-real-close', true)
-        }, 0)
+          this.dispatch("Msgbox", "on-esc-real-close", true);
+        }, 0);
         // this.broadcast('Drop', 'on-destroy-popper');
       }
     },
-    data : {
+    data: {
       deep: true,
       handler: function(cur) {
-        if (cur&&cur.length!=0) {
-          this.baseDate = this.expandLevels(deepCopy(cur))
-        }else{
-          this.baseDate =deepCopy(cur)
+        if (cur && cur.length != 0) {
+          this.baseDate = this.expandLevels(deepCopy(cur));
+        } else {
+          this.baseDate = deepCopy(cur);
         }
-        if (this.model===this.firstValue) {
-          this.$nextTick(()=>{
-            this.setInit(this.baseDate,this.firstValue)
-          })
+        if (this.model === this.firstValue) {
+          this.$nextTick(() => {
+            this.setInit(this.baseDate, this.firstValue);
+          });
         }
       }
     },
-    placement(val){
-      this.fPlacement = val
+    placement(val) {
+      this.fPlacement = val;
     },
-    selectedSingle(val){
-      this.viewValue = val
-    },
-  },
-  mounted(){
-    if (this.data &&this.data.length!=0) {
-      this.baseDate = this.expandLevels(deepCopy(this.data))
+    selectedSingle(val) {
+      this.viewValue = val;
     }
-    this.$nextTick(()=>{
-      let tree = this.$refs.tree
+  },
+  mounted() {
+    if (this.data && this.data.length != 0) {
+      this.baseDate = this.expandLevels(deepCopy(this.data));
+    }
+    this.$nextTick(() => {
+      let tree = this.$refs.tree;
       if (this.showCheckbox) {
-        this.checkChange(tree.getCheckedNodes())
-      }else{
-        this.selectChange(tree.getSelectedNodes())
+        this.checkChange(tree.getCheckedNodes());
+      } else {
+        this.selectChange(tree.getSelectedNodes());
       }
-      this.offsetArrow()
-      this.searchStyle()
-    })
-    document.addEventListener('keydown', this.handleKeydown)
+      this.offsetArrow();
+      this.searchStyle();
+    });
+    document.addEventListener("keydown", this.handleKeydown);
     if (this.disabled) {
-      this.tabIndex = -1
+      this.tabIndex = -1;
     }
-
   },
-  beforeDestroy(){
-    document.removeEventListener('keydown', this.handleKeydown)
-    this.broadcast('Drop', 'on-destroy-popper')
+  beforeDestroy() {
+    document.removeEventListener("keydown", this.handleKeydown);
+    this.broadcast("Drop", "on-destroy-popper");
   }
-}
+};
 </script>

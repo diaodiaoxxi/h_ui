@@ -44,8 +44,8 @@
 
     <h1>setNull设置空值为0.xxx</h1>
     <h-typefield v-model="value10" integerNum="2" placeholder="金额" setNull></h-typefield>
-    <h-typefield integerNum="2" type="money" placeholder="金额" ></h-typefield>
-    <h-typefield integerNum="2" type="money" placeholder="金额" ></h-typefield>
+    <!-- <h-typefield v-model="value10" integerNum="2" type="money" placeholder="金额" setNull ></h-typefield>
+    <h-typefield v-model="value10" integerNum="2" type="money" placeholder="金额" ></h-typefield> -->
     <p>未开启四舍五入 整数位3位，小数位3为</p>
     <h-typefield integerNum="3" suffixNum="3" type="money" placeholder="金额" bigTips setNull></h-typefield>
     <h-typefield integerNum="3" suffixNum="2" type="money" placeholder="金额" readonly setNull></h-typefield>

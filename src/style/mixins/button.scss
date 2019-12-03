@@ -315,7 +315,8 @@
 
 // Text
 @mixin btn-text() {
-  @include button-variant($btn-ghost-color, $btn-ghost-bg, transparent);
+  // @include button-variant($btn-ghost-color, $btn-ghost-bg, transparent);
+  @include button-variant($btn-ghost-color, transparent, transparent);  // （已与ued沟通） TS:201911140525 h-button text模式下背景颜色存在问题，应该为透明
 
   // for disabled
   &.disabled,
@@ -326,26 +327,21 @@
     &:focus,
     &:active,
     &.active {
-      @include button-color($btn-disable-color, $btn-ghost-bg, transparent);
+      // @include button-color($btn-disable-color, $btn-ghost-bg, transparent);
+      @include button-color($btn-disable-color, transparent, transparent);  // （已与ued沟通）TS:201911140525 h-button text模式下背景颜色存在问题，应该为透明
     }
   }
 
   &:hover
       //&:focus
  {
-    @include button-color(
-      darken($primary-color, 10%),
-      $btn-ghost-bg,
-      transparent
-    );
+    // @include button-color( darken($primary-color, 10%), $btn-ghost-bg, transparent );
+    @include button-color( darken($primary-color, 10%), transparent, transparent );   // （已与ued沟通）TS:201911140525 h-button text模式下背景颜色存在问题，应该为透明
   }
   &:active,
   &.active {
-    @include button-color(
-      darken($primary-color, 5%),
-      $btn-ghost-bg,
-      transparent
-    );
+    // @include button-color( darken($primary-color, 5%), $btn-ghost-bg, transparent );
+    @include button-color( darken($primary-color, 5%), transparent, transparent );   //（已与ued沟通）TS:201911140525 h-button text模式下背景颜色存在问题，应该为透明
   }
 }
 

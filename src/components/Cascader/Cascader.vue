@@ -587,6 +587,11 @@
           this.handleClose();
         }
       });
+      // console.log('load---->', this.loadData)
+      // if (this.loadData && this.value && this.value.length > 0) {
+      //   console.log(11111)
+        
+      // }
     },
     mounted () {
       this.updateSelected(true);
