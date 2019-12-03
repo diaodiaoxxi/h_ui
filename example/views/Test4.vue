@@ -1,7 +1,7 @@
 <template>
 <div>
     <!-- <h-cascader ref="cascader" v-model="value" :data="data4" multiple :load-data="loadData"></h-cascader> -->
-    <h-cascader ref="cascader" v-model="value1" :load-data="loadData" multiple :data="data4" ></h-cascader>
+    <h-cascader ref="cascader" v-model="value1" :load-data="loadData"  :data="data4" ></h-cascader>
 </div>
 </template>
 <script>
