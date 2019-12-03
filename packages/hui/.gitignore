@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+npm-debug.log
+coverage
+demo
+dist
+.bak
+yarn.lock
+dist.rar
+.idea
