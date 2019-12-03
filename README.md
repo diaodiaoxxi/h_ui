@@ -1,4 +1,4 @@
-# h_ui
+# h_ui - a component library based on vue
 
 ## Usage
 
