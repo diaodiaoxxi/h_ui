@@ -1753,6 +1753,16 @@ export default {
       return filters
     },
     handleSort(_index, type) {
+      // 清除表格所有的排序
+      if (_index == 'all') {
+        this.rebuildData = this.makeDataWithFilter()
+        this.cloneColumns.forEach((col, i) => {
+          this.cloneColumns[i]._sortType = type
+        })
+        this.$refs.body.scrollTop = 0
+        this.updateVisibleData(0)
+        return
+      }
       // 传入cloneColumns的_index,考虑hiddenCol时与实际的index不匹配，导致有hiddenCol时，排序错乱（作用于另外一个列）
       let index = 0
       if (this.cloneColumns && this.cloneColumns.length > 0) {
