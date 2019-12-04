@@ -26,8 +26,11 @@
       </template>
       <template v-if="renderType === 'normal'">
         {{preLabel}}
-        <span v-html="normalDate"
+        <span v-if="column.html" v-html="normalDate"
               :title="column.showTooltip ? normalDate : ''">
+        </span>
+        <span v-else v-text="normalDate"
+          :title="column.showTooltip ? normalDate : ''">
         </span>
         {{rearLabel}}
       </template>
