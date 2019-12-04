@@ -1,38 +1,61 @@
 <template>
 <div>
-    <h-progress ref="process" :percent="percent" :status="status" @on-status-change="statusChange"></h-progress>
-    <h-button-group size="large">
-        <h-button icon="addition" @click="add"></h-button>
-        <h-button icon="offline" @click="minus"></h-button>
-        <h-button @click="$refs.process.currentStatus = 'wrong'">set worng</h-button>
-        <h-button @click="status = 'wrong'">set worng</h-button>
-    </h-button-group>
+    <h-cascader :data="data" v-model="value1" multiple></h-cascader>
 </div>
 </template>
 <script>
     export default {
         data () {
             return {
-                percent: 0,
-                status: 'wrong'
-            }
-        },
-        methods: {
-            add () {
-                if (this.percent >= 100) {
-                    return false;
-                }
-                this.percent += 10;
-            },
-            minus () {
-                if (this.percent <= 0) {
-                    return false;
-                }
-                this.percent -= 10;
-            },
-            statusChange(val) {
-                console.log(val)
-                this.status = val
+                // value1: [  ['beijing', 'gugong'], ['beijing', 'tiantan']],
+                value1: [ ['jiangsu', 'nanjing', 'fuzimiao'], ['beijing', 'gugong'], ['beijing', 'tiantan'], ['jiangsu', 'suzhou', 'shizilin']],
+                data: [{
+                    value: 'beijing',
+                    label: '北京',
+                    children: [
+                        {
+                            value: 'gugong',
+                            label: '故宫'
+                        },
+                        {
+                            value: 'tiantan',
+                            label: '天坛'
+                        },
+                        {
+                            value: 'wangfujing',
+                            label: '王府井'
+                        }
+                    ]
+                }, {
+                    value: 'jiangsu',
+                    label: '江苏',
+                    children: [
+                        {
+                            value: 'nanjing',
+                            label: '南京',
+                            children: [
+                                {
+                                    value: 'fuzimiao',
+                                    label: '夫子庙',
+                                }
+                            ]
+                        },
+                        {
+                            value: 'suzhou',
+                            label: '苏州',
+                            children: [
+                                {
+                                    value: 'zhuozhengyuan',
+                                    label: '拙政园',
+                                },
+                                {
+                                    value: 'shizilin',
+                                    label: '狮子林',
+                                }
+                            ]
+                        }
+                    ],
+                }]
             }
         }
     }

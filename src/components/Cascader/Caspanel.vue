@@ -60,7 +60,7 @@ export default {
     }
   },
   methods: {
-    handleCheck(item) {
+    handleCheck(item) {  // _checked  选中  _indeterminate  表示不全部选中
       let checked;
       checked = !item._checked && !item._indeterminate;
       item._checked = checked;
@@ -130,6 +130,7 @@ export default {
         !item.disabled && ((target.tagName === "INPUT" &&
         target.attributes.type.value === "checkbox") || !item.children)
       ) {
+        console.log('handleCheck')
         check = true;
         this.handleCheck(item);
       }
@@ -210,20 +211,42 @@ export default {
     this.$on("on-find-selected", params => {
       const val = params.value;
       let value = [...val];
-      for (let i = 0; i < value.length; i++) {
-        for (let j = 0; j < this.data.length; j++) {
-          if (value[i] === this.data[j].value) {
-            this.handleTriggerItem(this.data[j], true);
-            value.splice(0, 1);
-            this.$nextTick(() => {
-              this.broadcast("Caspanel", "on-find-selected", {
-                value: value
+      console.log('val---->', val)
+      // if (!this.multiple) {
+        for (let i = 0; i < value.length; i++) {
+          for (let j = 0; j < this.data.length; j++) {
+            if (value[i] === this.data[j].value) {
+              this.handleTriggerItem(this.data[j], true);
+              value.splice(0, 1);
+              this.$nextTick(() => {
+                this.broadcast("Caspanel", "on-find-selected", {
+                  value: value
+                });
               });
-            });
-            return false;
+              return false;
+            }
           }
-        }
-      }
+        }        
+      // } else {
+
+      // }
+
+
+
+      // function isSame() {
+      //   for (let j = 0; j < this.data.length; j++) {
+      //     if (value === this.data[j].value) {
+      //       this.handleTriggerItem(this.data[j], true);
+      //       value.splice(0, 1);
+      //       this.$nextTick(() => {
+      //         this.broadcast("Caspanel", "on-find-selected", {
+      //           value: value
+      //         });
+      //       });
+      //       return false;
+      //     }
+      //   }
+      // }
     });
     // deep for #1553
     this.$on("on-clear", (deep = false) => {

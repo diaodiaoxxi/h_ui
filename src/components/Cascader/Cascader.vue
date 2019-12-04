@@ -342,7 +342,8 @@
         this.tmpSelected = result;
       },
       updateSelected (init = false) {
-        if ((!this.changeOnSelect || init) && !this.multiple) {
+        if ((!this.changeOnSelect || init)) {
+        // if ((!this.changeOnSelect || init) && !this.multiple) {
           this.broadcast('Caspanel', 'on-find-selected', {
             value: this.currentValue
           });
