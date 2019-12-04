@@ -342,8 +342,7 @@
         this.tmpSelected = result;
       },
       updateSelected (init = false) {
-        if ((!this.changeOnSelect || init)) {
-        // if ((!this.changeOnSelect || init) && !this.multiple) {
+        if ((!this.changeOnSelect || init) && !this.multiple) {
           this.broadcast('Caspanel', 'on-find-selected', {
             value: this.currentValue
           });
@@ -553,9 +552,26 @@
           }
         }
         this.iconCls = [prefixCls + '-arrow'];
+      },
+      updateData(arr, data) {
+        if ( arr.length === 0 ) return
+        arr = JSON.parse(JSON.stringify(arr))
+        let value = arr.shift()
+        data.forEach(v => { 
+            if (value !== v.value) return
+            if ( v.children && v.children.length === 0 ) {
+                this.loadData(v, () => this.updateData(arr, v.children))
+            } else {
+                this.updateData(arr, v.children)
+            }
+        })
       }
     },
     created () {
+      // 异步请求数据时，多选multiple条件下，支持初始化回显
+      if (this.loadData && this.value && this.value.length > 0 && this.multiple) {
+        this.value.map( item => this.updateData(item, this.data) )
+      }
       this.validDataStr = JSON.stringify(this.getValidData(this.data));
       this.updateCheck();
       this.$on('on-result-change', (params) => {
@@ -588,11 +604,6 @@
           this.handleClose();
         }
       });
-      // console.log('load---->', this.loadData)
-      // if (this.loadData && this.value && this.value.length > 0) {
-      //   console.log(11111)
-        
-      // }
     },
     mounted () {
       this.updateSelected(true);

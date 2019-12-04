@@ -7,8 +7,8 @@
     export default {
         data () {
             return {
-                value1: [  ['beijing', 'gugong']],
-                // value1: [ ['jiangsu', 'nanjing', 'fuzimiao'], ['beijing', 'gugong'], ['beijing', 'tiantan'], ['jiangsu', 'suzhou', 'shizilin']],
+                // value1: [  ['beijing', 'gugong']],
+                value1: [ ['jiangsu', 'nanjing', 'fuzimiao'], ['beijing', 'gugong'], ['beijing', 'tiantan'], ['jiangsu', 'suzhou', 'shizilin']],
                 data: [{
                     value: 'beijing',
                     label: '北京',
