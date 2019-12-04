@@ -559,10 +559,15 @@
         let value = arr.shift()
         data.forEach(v => { 
             if (value !== v.value) return
-            if ( v.children && v.children.length === 0 ) {
-                this.loadData(v, () => this.updateData(arr, v.children))
+            //  console.log(value)
+            if ( !v.children || v.children.length === 0 ) {
+              this.loadData(v, () =>  {
+                setTimeout(() => {
+                  this.updateData(arr, v.children)
+                }, 10); 
+              })
             } else {
-                this.updateData(arr, v.children)
+              this.updateData(arr, v.children)
             }
         })
       }
@@ -655,6 +660,7 @@
       data: {
         deep: true,
         handler () {
+          // console.log(JSON.stringify(this.data))
           const validDataStr = JSON.stringify(this.getValidData(this.getRawData()));
           if (validDataStr !== this.validDataStr) {
             this.validDataStr = validDataStr;

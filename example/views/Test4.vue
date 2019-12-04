@@ -8,8 +8,10 @@
         data () {
             return {
                 value: [ 
+                    // ['beijing', 'sina', 'sina1'],
                     ['beijing', 'talkingdata', 'talkingdata1'],
-                    ['beijing', 'talkingdata', 'talkingdata2'],
+                    ['beijing', 'sina', 'sina1'],
+                    // ['beijing', 'talkingdata', 'talkingdata2'],
                     ['hangzhou', 'ali']
                 ],
                 value1: ['beijing', 'talkingdata', 'talkingdata1'],
@@ -39,7 +41,7 @@
                                 {
                                     value: 'talkingdata',
                                     label: 'TalkingData',
-                                    children: [],
+                                    // children: [],
                                     loading: false,
                                 },
                                 {
@@ -49,7 +51,7 @@
                                 {
                                     value: 'sina',
                                     label: '新浪',
-                                    children: [],
+                                    // children: [],
                                     loading: false,
                                 }
                             ];
@@ -67,6 +69,7 @@
                             ];
                         }
                         if (item.value === 'talkingdata') {
+                            // console.log('-----talkingdata-----', item)
                             item.children = [
                                 {
                                     value: 'talkingdata1',
@@ -77,8 +80,10 @@
                                     label: 'talkingdata2'
                                 },
                             ]
+                            // console.log(this.data)
                         }
                         if (item.value === 'sina') {
+                            // console.log('-----sina-----')
                             item.children = [
                                 {
                                     value: 'sina1',
@@ -90,9 +95,10 @@
                                 },
                             ]
                         }
-                        item.loading = false;   
+                        item.loading = false; 
+                        // console.log('------->', item.children)
                         callback && callback() 
-                    }, 10000);                    
+                    }, 3000);                    
 
             },
             updateData(arr, data) {
