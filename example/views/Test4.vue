@@ -1,7 +1,6 @@
 <template>
 <div>
     <h-cascader ref="cascader" v-model="value" :data="data"  multiple :load-data="loadData"></h-cascader>
-    <!-- <h-cascader ref="cascader" v-model="value1" :load-data="loadData"  :data="data" ></h-cascader> -->
 </div>
 </template>
 <script>
@@ -93,7 +92,7 @@
                         }
                         item.loading = false;   
                         callback && callback() 
-                    }, 1000);                    
+                    }, 10000);                    
 
             },
             updateData(arr, data) {

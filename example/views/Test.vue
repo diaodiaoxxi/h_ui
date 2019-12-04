@@ -1,45 +1,79 @@
 <template>
-<div style="background: #eee;">
-    <h-tree :data="baseData1" show-checkbox multiple selectToCheck ref="tree1"></h-tree>
-    <h-select-tree v-model="val1" style="width:200px" selectToCheck :data="baseData1" showCheckbox></h-select-tree>
-    <p>----- button ------</p>
-    <h-button type="text">text</h-button>
-</div>
+  <div style="background: #eee;">
+      <h-select-tree
+      v-model="val1"
+      style="width:200px"
+      selectToCheck
+      @on-select-change="selectChange"
+      @on-check-change="checkChange"
+      :data="baseData1"
+      showCheckbox
+      checkStrictly
+    ></h-select-tree>
+    <!-- <h-select-tree
+      v-model="val1"
+      style="width:200px"
+      selectToCheck
+      @on-select-change="selectChange"
+      @on-check-change="checkChange"
+      :data="baseData1"
+    ></h-select-tree> -->
+    <div style="background: #eee;">
+      <h-button type="primary">Primary</h-button>
+      <h-button type="ghost">Ghost</h-button>
+      <h-button type="dashed">Dashed</h-button>
+      <h-button type="text">Text</h-button>
+    </div>
+  </div>
 </template>
 <script>
-    // import Code from '../../code/selectTree';
-    export default {
-        data () {
-            return {
-                val1: [],         
-                baseData1: [
-                  {
-                    title: 'parent',
-                    id: '1-0',
-                    expand: true,
-                    children: [
-                      {
-                        title: 'child1',
-                        id: '1-1',
-                        expand: true,
-                        children: [
-                          {
-                            title: 'child1-1-1',
-                            id: '1-1-1'
-                          },
-                          {
-                            title: 'child1-1-2',
-                            id: '1-1-2'
-                          }
-                        ]
-                      },
-                      {
-                        title: 'child2',
-                        id: '1-2',
-                        children: []
-                      }
-                    ] }
-                ]}
-        } 
+export default {
+  data() {
+    return {
+      val1: [],
+      baseData1: [
+        {
+          title: "parent",
+          id: "1-0",
+          expand: true,
+          children: [
+            {
+              title: "child1",
+              id: "1-1",
+              expand: true,
+              children: [
+                {
+                  title: "child1-1-1",
+                  id: "1-1-1",
+                  // disableCheckbox: false,
+                  // disabled: true,
+                  // selected: true,
+                  checked: true
+                },
+                {
+                  title: "child1-1-2",
+                  id: "1-1-2",
+                  checked: true
+                }
+              ]
+            },
+            {
+              title: "child2",
+              id: "1-2",
+              children: []
+            }
+          ]
+        }
+      ]
+    };
+  },
+  methods: {
+    selectChange(item) {
+      console.log('触发了 select change', item)
+    },
+    checkChange(item) {
+      console.log('触发了 check change', item)
     }
+  }
+};
 </script>
