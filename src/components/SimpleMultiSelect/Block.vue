@@ -5,15 +5,19 @@
     <!-- main content -->
     <ul ref="content" :class="[prefixCls+'block-content']">
       <li
-        v-for="(item, inx) in visualData"
+        v-for="item in visualData"
         v-show="!item.hidden"
-        :key="item.value === undefined ? inx : item.value"
+        :key="item.uniqueKey"
         :class="genItemCls(item)"
         @click.stop="onItemClick(item)"
       >
         <slot>
-          <span :title="item.label || ''" :class="{itemcol: showCol.length > 0}" :style="showCol.length ? colStyle[0] : 'width: 100px;'">
-            <checkbox size="large" :value="item.selected" :disabled="item.disabled"></checkbox>
+          <span
+            :title="item.label || ''"
+            :class="{itemcol: showCol.length > 0}"
+            :style="showCol.length ? colStyle[0] : 'width: 100px;'"
+          >
+            <checkbox size="large" :value="item.selected" :key="item.uniqueKey" :disabled="item.disabled"></checkbox>
             {{item.label || item.value}}
           </span>
         </slot>
@@ -89,7 +93,9 @@ export default {
           ...item,
           _index: index,
           focus: false,
-          hidden: false
+          hidden: false,
+          selected: false,
+          uniqueKey: _.uniqueId("unique_")
         }));
 
         this.updateVisualData();
@@ -149,6 +155,7 @@ export default {
           const specialItemIndex = this.blockData.findIndex(item => item.value === this.specialVal);
           if (specialItemIndex >= 0 && this.blockData[specialItemIndex]["selected"]) {
             this.$set(this.blockData[specialItemIndex], "selected", false);
+            this.$set(this.blockData[specialItemIndex], "uniqueKey", _.uniqueId("unique_"));
             this.emit(-2, "on-cancel-selected", _.deepCloneAs(this.blockData[specialItemIndex], ["label", "value"]));
           }
         }
@@ -156,6 +163,9 @@ export default {
 
       this.$set(this.blockData[_index], "selected", !selected);
       this.emit(-2, selected ? "on-cancel-selected" : "on-selected", _.deepCloneAs(item, ["label", "value", ...item]));
+
+      // the checkbox inside item has render problem, so I force to render it again by modifying it's key. but believe me, I don't wanna do this, you know why
+      this.$set(this.blockData[_index], "uniqueKey", _.uniqueId("unique_"));
     },
 
     onQuery(keyword = "") {
@@ -165,9 +175,9 @@ export default {
         if (keyword === "") {
           this.$set(this.blockData[_index], "hidden", false);
         } else {
-          if(label1 !== '') {
-            this.$set(this.blockData[_index], "hidden", !new RegExp(keyword, "i").test(label1) && !new RegExp(keyword, "i").test(label) && !new RegExp(keyword, "i").test(value))
-          }else {
+          if (label1 !== "") {
+            this.$set(this.blockData[_index], "hidden", !new RegExp(keyword, "i").test(label1) && !new RegExp(keyword, "i").test(label) && !new RegExp(keyword, "i").test(value));
+          } else {
             this.$set(this.blockData[_index], "hidden", !new RegExp(keyword, "i").test(label) && !new RegExp(keyword, "i").test(value));
           }
         }
@@ -258,7 +268,8 @@ export default {
       _index: index,
       focus: false,
       hidden: false,
-      selected: false
+      selected: false,
+      uniqueKey: _.uniqueId("unique_")
     }));
 
     // initialize
@@ -271,12 +282,12 @@ export default {
       })
     );
 
-    if(this.showCol.length) {
-      this.colStyle = []
+    if (this.showCol.length) {
+      this.colStyle = [];
       for (let i = 0; i < this.showCol.length + 1; i++) {
-        let style = {}
-        style.width = this.colWidth[i] ? this.colWidth[i]+'px' : '100px'
-        this.colStyle.push(style)
+        let style = {};
+        style.width = this.colWidth[i] ? this.colWidth[i] + "px" : "100px";
+        this.colStyle.push(style);
       }
     }
   }
