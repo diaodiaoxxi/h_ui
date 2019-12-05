@@ -161,6 +161,10 @@
       multiple: {
         type: Boolean,
         default: false
+      },
+      initDataMultiple: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
@@ -559,8 +563,8 @@
         let value = arr.shift()
         data.forEach(v => { 
             if (value !== v.value) return
-            //  console.log(value)
-            if ( !v.children || v.children.length === 0 ) {
+            // console.log(v.loading, v.children)
+            if (v.loading !== undefined && v.children && v.children.length === 0 ) {
               this.loadData(v, () =>  {
                 setTimeout(() => {
                   this.updateData(arr, v.children)
@@ -574,8 +578,8 @@
     },
     created () {
       // 异步请求数据时，多选multiple条件下，支持初始化回显
-      if (this.loadData && this.value && this.value.length > 0 && this.multiple) {
-        this.value.map( item => this.updateData(item, this.data) )
+      if (this.loadData && this.value && this.value.length > 0 && this.multiple && this.initDataMultiple) {
+        this.value.map( item => this.updateData(item, this.data))
       }
       this.validDataStr = JSON.stringify(this.getValidData(this.data));
       this.updateCheck();
@@ -660,7 +664,6 @@
       data: {
         deep: true,
         handler () {
-          // console.log(JSON.stringify(this.data))
           const validDataStr = JSON.stringify(this.getValidData(this.getRawData()));
           if (validDataStr !== this.validDataStr) {
             this.validDataStr = validDataStr;

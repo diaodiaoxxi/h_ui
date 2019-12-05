@@ -1,6 +1,7 @@
 <template>
 <div>
-    <h-cascader ref="cascader" v-model="value" :data="data"  multiple :load-data="loadData"></h-cascader>
+    <h-cascader initDataMultiple ref="cascader" v-model="value" :data="data"  multiple :load-data="loadData"></h-cascader>
+    <h-button @click="getViewValue">获得回显数据</h-button>
 </div>
 </template>
 <script>
@@ -8,13 +9,13 @@
         data () {
             return {
                 value: [ 
-                    // ['beijing', 'sina', 'sina1'],
-                    ['beijing', 'talkingdata', 'talkingdata1'],
+                    ['beijing', 'talkingdata', 'talkingdata1', 'talkingdata1-1'],
+                    ['beijing', 'talkingdata', 'talkingdata2', 'talkingdata2-2' ],
+                    ['beijing', 'baidu'],
                     ['beijing', 'sina', 'sina1'],
-                    // ['beijing', 'talkingdata', 'talkingdata2'],
+                    ['beijing', 'sina', 'sina2'],
                     ['hangzhou', 'ali']
                 ],
-                value1: ['beijing', 'talkingdata', 'talkingdata1'],
                 data: [
                     {
                         value: 'beijing',
@@ -29,7 +30,6 @@
                         loading:false
                     }
                 ],
-                promiseAll: []
             }
         },
         methods: {
@@ -41,7 +41,7 @@
                                 {
                                     value: 'talkingdata',
                                     label: 'TalkingData',
-                                    // children: [],
+                                    children: [],
                                     loading: false,
                                 },
                                 {
@@ -51,7 +51,7 @@
                                 {
                                     value: 'sina',
                                     label: '新浪',
-                                    // children: [],
+                                    children: [],
                                     loading: false,
                                 }
                             ];
@@ -69,63 +69,70 @@
                             ];
                         }
                         if (item.value === 'talkingdata') {
-                            // console.log('-----talkingdata-----', item)
                             item.children = [
                                 {
                                     value: 'talkingdata1',
-                                    label: 'TalkingData1'
+                                    label: 'TalkingData1',
+                                    children: [],
+                                    loading: false,
                                 },
                                 {
                                     value: 'talkingdata2',
-                                    label: 'talkingdata2'
+                                    label: 'talkingdata2',
+                                    children: [],
+                                    loading: false,
                                 },
                             ]
-                            // console.log(this.data)
                         }
                         if (item.value === 'sina') {
-                            // console.log('-----sina-----')
                             item.children = [
                                 {
                                     value: 'sina1',
-                                    label: 'sina1'
+                                    label: 'sina1',
                                 },
                                 {
                                     value: 'sina2',
-                                    label: 'sina2'
+                                    label: 'sina2',
+                                },
+                            ]
+                        }
+                        if (item.value === 'talkingdata1') {
+                            item.children = [
+                                {
+                                    value: 'talkingdata1-1',
+                                    label: 'TalkingData1-1'
+                                },
+                                {
+                                   value: 'talkingdata1-2',
+                                   label: 'TalkingData1-2'
+                                },
+                            ]
+                        }
+                        if (item.value === 'talkingdata2') {
+                            item.children = [
+                                {
+                                    value: 'talkingdata2-1',
+                                    label: 'TalkingData2-1'
+                                },
+                                {
+                                    value: 'talkingdata2-2',
+                                    label: 'talkingdata2-2'
                                 },
                             ]
                         }
                         item.loading = false; 
-                        // console.log('------->', item.children)
                         callback && callback() 
-                    }, 3000);                    
 
+                    }, 2000);
             },
-            updateData(arr, data) {
-                if ( arr.length === 0 ) return
-                arr = JSON.parse(JSON.stringify(arr))
-                let value = arr.shift()
-                data.forEach(v => { 
-                    if (value !== v.value) return
-                    if ( v.children && v.children.length === 0 ) {
-                        this.loadData(v, () => {
-                            this.updateData(arr, v.children)
-                        })
-                    } else {
-                        this.updateData(arr, v.children)
-                    }
-                })
+            getViewValue() {
+                let arr = this.$refs.cascader.multipleValue.map(v => v.label)
+                console.log(arr)
             }
         },
         mounted() {
-            // console.log(this.$refs.cascader)
-            // this.$refs.cascader.displayRender = '杭州 / 阿里巴巴'
-            // this.value.map(item => {
-            //     this.updateData(item, this.data)
-            // })
-            // Promise.all(this.promiseAll).then(res => {
-            //     console.log('wancheng')
-            // })
         }
     }
 </script>
+
+

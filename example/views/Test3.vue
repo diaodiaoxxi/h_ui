@@ -21,7 +21,8 @@
                     },
                     {
                         title: '年龄',
-                        key: 'age'
+                        key: 'age',
+                        sortable: true
                     },
                     {
                         title: '地址',
@@ -81,6 +82,7 @@
         methods: {
           onExpand(row, status, index) {
             console.log(row, status, index)
+            console.log(this.data9[index].name)
           }
         }
     }
