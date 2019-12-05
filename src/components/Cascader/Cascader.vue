@@ -568,6 +568,7 @@
               this.loadData(v, () =>  {
                 setTimeout(() => {
                   this.updateData(arr, v.children)
+                  this.updateIconCls();
                 }, 10); 
               })
             } else {
@@ -615,6 +616,7 @@
       });
     },
     mounted () {
+      this.updateIconCls();
       this.updateSelected(true);
       on(document,'keydown',this.handleKeydown)
     },
