@@ -36,7 +36,10 @@
       </template>
       <template v-if="renderType === 'text'">
         <h-input v-model="columnText"
-                  ref="input-edit-gird"
+                 ref="input-edit-gird"
+                 :maxlength="column.maxlength"
+                 :byteNum="column.byteNum"
+                 :lengthByByte = "column.lengthByByte"
                  :placeholder="column.placeholder"
                  :icon="column.icon"
                  :filterRE="column.filterRE"
@@ -50,6 +53,9 @@
         <textarea :value="columnArea"
                   :placeholder="column.placeholder"
                   :rows="column.rows"
+                  :maxlength="column.maxlength"
+                  :lengthByByte="column.lengthByByte"
+                  :byteNum="column.byteNum"
                   :class="areaClass"
                   @input="editAreaChange"
                   @blur="editAreaBlur"></textarea>
