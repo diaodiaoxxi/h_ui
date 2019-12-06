@@ -4,6 +4,7 @@ import Vue from "vue";
 import App from "./App";
 import router from "./router/index";
 import Venus from "../src/index.js";
+import HCharts from 'h_charts'
 /* h_ui 发布包 */
 // import Venus from 'h_ui'
 // import '../src/style/icon/iconfont.js'
@@ -15,6 +16,7 @@ import Venus from "../src/index.js";
 // import hello_npm from 'venus_hello_npm'
 // import HFileImport from '../src/components/FileImport'
 Vue.use(Venus);
+Vue.use(HCharts)
 // Vue.component('h-file-import', HFileImport)
 // Vue.component('h-upload',Upload)
 // Vue.component('h-button',Button)

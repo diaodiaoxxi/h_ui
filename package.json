@@ -30,8 +30,10 @@
     "bignumber.js": "9.0.0",
     "core-js": "^2.4.1",
     "deepmerge": "^1.4.3",
+    "echarts": "^4.5.0",
     "element-resize-detector": "^1.1.15",
     "encoding": "0.1.12",
+    "h_charts": "^1.0.1-20180709",
     "iconv-lite": "0.4.24",
     "js-calendar": "^1.2.3"
   },

@@ -12,38 +12,74 @@
       @mouseup="handleBlur(false)">
       <slot></slot>
     </div>
-    <transition name="fade">
-      <div 
-        :class="[prefixCls + '-popper']" 
-        :style="styles" 
-        ref="popper" 
-        v-show="visible"
-        @click="handleTransferClick"
-        @mouseenter="handleMouseenter"
-        @mouseleave="handleMouseleave"
-        :data-transfer="transfer"
-        v-transfer-dom>
-        <div :class="[prefixCls + '-content']">
-          <div :class="[prefixCls + '-arrow']"></div>
-          <div :class="[prefixCls + '-inner']" v-if="confirm">
-            <div :class="[prefixCls + '-body']">
-              <icon name="android-alert"></icon>
-              <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
+    <template v-if="!isNotCache">
+      <transition name="fade">
+        <div 
+          :class="[prefixCls + '-popper']" 
+          :style="styles" 
+          ref="popper" 
+          v-show="visible"
+          @click="handleTransferClick"
+          @mouseenter="handleMouseenter"
+          @mouseleave="handleMouseleave"
+          :data-transfer="transfer"
+          v-transfer-dom>
+          <div :class="[prefixCls + '-content']">
+            <div :class="[prefixCls + '-arrow']"></div>
+            <div :class="[prefixCls + '-inner']" v-if="confirm">
+              <div :class="[prefixCls + '-body']">
+                <icon name="android-alert"></icon>
+                <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
+              </div>
+              <div :class="[prefixCls + '-footer']">
+                <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
+                <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
+              </div>
             </div>
-            <div :class="[prefixCls + '-footer']">
-              <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
-              <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
-            </div>
-          </div>
-          <div :class="[prefixCls + '-inner']" v-if="!confirm">
-            <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
-            <div :class="[prefixCls + '-body']">
-                <div :class="[prefixCls + '-body-content']"><slot name="content"><div :class="[prefixCls + '-body-content-inner']">{{ content }}</div></slot></div>
+            <div :class="[prefixCls + '-inner']" v-if="!confirm">
+              <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
+              <div :class="[prefixCls + '-body']">
+                  <div :class="[prefixCls + '-body-content']"><slot name="content"><div :class="[prefixCls + '-body-content-inner']">{{ content }}</div></slot></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </transition>
+      </transition>
+    </template>
+     <template v-if="isNotCache">
+      <transition name="fade">
+        <div 
+          :class="[prefixCls + '-popper']" 
+          :style="styles" 
+          ref="popper" 
+          v-if="visible"
+          @click="handleTransferClick"
+          @mouseenter="handleMouseenter"
+          @mouseleave="handleMouseleave"
+          :data-transfer="transfer"
+          v-transfer-dom>
+          <div :class="[prefixCls + '-content']">
+            <div :class="[prefixCls + '-arrow']"></div>
+            <div :class="[prefixCls + '-inner']" v-if="confirm">
+              <div :class="[prefixCls + '-body']">
+                <icon name="android-alert"></icon>
+                <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
+              </div>
+              <div :class="[prefixCls + '-footer']">
+                <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
+                <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
+              </div>
+            </div>
+            <div :class="[prefixCls + '-inner']" v-if="!confirm">
+              <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
+              <div :class="[prefixCls + '-body']">
+                  <div :class="[prefixCls + '-body-content']"><slot name="content"><div :class="[prefixCls + '-body-content-inner']">{{ content }}</div></slot></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </template>
   </div>
 </template>
 <script>
@@ -63,6 +99,10 @@ export default {
   directives: { clickoutside,TransferDom},
   components: { hButton,Icon},
   props: {
+    isNotCache: {
+      type: Boolean,
+      default: false
+    },
     trigger: {
       validator (value) {
         return oneOf(value, ['click', 'focus', 'hover']);
