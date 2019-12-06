@@ -1,10 +1,13 @@
 <template>
+<div class="test-all">
   <h-poptip isNotCache placement="bottom">
         <a>click 激活</a>
         <div class="test" slot="content">
           <h-ring :data="chartData"></h-ring>
         </div>
-  </h-poptip>
+  </h-poptip> 
+</div>
+
 </template>
 
 <script>
@@ -27,6 +30,9 @@
   }
 </script>
 <style  scoped>
+.test-all{
+  text-align: center;
+}
 .test{
   width: 300px;
   height: 300px;
