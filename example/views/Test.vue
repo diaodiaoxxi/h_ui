@@ -1,12 +1,10 @@
 <template>
-  <h-poptip isNotCache>
+  <h-poptip isNotCache placement="bottom">
         <a>click 激活</a>
-        <!-- <div slot="title"><i>自定义标题</i></div> -->
         <div class="test" slot="content">
           <h-ring :data="chartData"></h-ring>
         </div>
   </h-poptip>
-  <!-- <h-ring :data="chartData"></h-ring> -->
 </template>
 
 <script>
@@ -31,5 +29,6 @@
 <style  scoped>
 .test{
   width: 300px;
+  height: 300px;
 }
 </style>

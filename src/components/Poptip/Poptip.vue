@@ -12,74 +12,50 @@
       @mouseup="handleBlur(false)">
       <slot></slot>
     </div>
-    <template v-if="!isNotCache">
-      <transition name="fade">
-        <div 
-          :class="[prefixCls + '-popper']" 
-          :style="styles" 
-          ref="popper" 
-          v-show="visible"
-          @click="handleTransferClick"
-          @mouseenter="handleMouseenter"
-          @mouseleave="handleMouseleave"
-          :data-transfer="transfer"
-          v-transfer-dom>
-          <div :class="[prefixCls + '-content']">
-            <div :class="[prefixCls + '-arrow']"></div>
-            <div :class="[prefixCls + '-inner']" v-if="confirm">
-              <div :class="[prefixCls + '-body']">
-                <icon name="android-alert"></icon>
-                <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
-              </div>
-              <div :class="[prefixCls + '-footer']">
-                <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
-                <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
-              </div>
+    <transition name="fade">
+      <div 
+        :class="[prefixCls + '-popper']" 
+        :style="styles" 
+        ref="popper" 
+        v-show="visible"
+        @click="handleTransferClick"
+        @mouseenter="handleMouseenter"
+        @mouseleave="handleMouseleave"
+        :data-transfer="transfer"
+        v-transfer-dom>
+        <div :class="[prefixCls + '-content']">
+          <div :class="[prefixCls + '-arrow']"></div>
+          <div :class="[prefixCls + '-inner']" v-if="confirm">
+            <div :class="[prefixCls + '-body']">
+              <icon name="android-alert"></icon>
+              <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
             </div>
-            <div :class="[prefixCls + '-inner']" v-if="!confirm">
-              <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
-              <div :class="[prefixCls + '-body']">
-                  <div :class="[prefixCls + '-body-content']"><slot name="content"><div :class="[prefixCls + '-body-content-inner']">{{ content }}</div></slot></div>
-              </div>
+            <div :class="[prefixCls + '-footer']">
+              <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
+              <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
+            </div>
+          </div>
+          <div :class="[prefixCls + '-inner']" v-if="!confirm">
+            <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
+            <div :class="[prefixCls + '-body']">
+                <div :class="[prefixCls + '-body-content']">
+                  <template v-if="!isNotCache">
+                    <slot name="content" >
+                      <div :class="[prefixCls + '-body-content-inner']">{{ content }}</div>
+                    </slot> 
+                  </template>
+                  <template v-if="isNotCache">
+                    <slot name="content" v-if="visible">
+                      <div :class="[prefixCls + '-body-content-inne']">{{ content }}</div>
+                    </slot> 
+                  </template>
+                  
+                </div>
             </div>
           </div>
         </div>
-      </transition>
-    </template>
-     <template v-if="isNotCache">
-      <transition name="fade">
-        <div 
-          :class="[prefixCls + '-popper']" 
-          :style="styles" 
-          ref="popper" 
-          v-if="visible"
-          @click="handleTransferClick"
-          @mouseenter="handleMouseenter"
-          @mouseleave="handleMouseleave"
-          :data-transfer="transfer"
-          v-transfer-dom>
-          <div :class="[prefixCls + '-content']">
-            <div :class="[prefixCls + '-arrow']"></div>
-            <div :class="[prefixCls + '-inner']" v-if="confirm">
-              <div :class="[prefixCls + '-body']">
-                <icon name="android-alert"></icon>
-                <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
-              </div>
-              <div :class="[prefixCls + '-footer']">
-                <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
-                <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
-              </div>
-            </div>
-            <div :class="[prefixCls + '-inner']" v-if="!confirm">
-              <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
-              <div :class="[prefixCls + '-body']">
-                  <div :class="[prefixCls + '-body-content']"><slot name="content"><div :class="[prefixCls + '-body-content-inner']">{{ content }}</div></slot></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </transition>
-    </template>
+      </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -99,7 +75,7 @@ export default {
   directives: { clickoutside,TransferDom},
   components: { hButton,Icon},
   props: {
-    isNotCache: {
+    isNotCache: {  // false:  表示渲染的内容通过v-show来控制 true: 表示内容通过v-if来控制,每次点击都要重新渲染内容
       type: Boolean,
       default: false
     },

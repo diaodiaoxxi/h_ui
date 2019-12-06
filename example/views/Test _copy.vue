@@ -1,128 +1,292 @@
 <template>
-<div>
-    <h-cascader ref="cascader" v-model="value1" :data="data" :load-data="loadData"></h-cascader>
-    <h-button @click="getViewValue">点击获得回显值</h-button>
-</div>
+  <div
+    :class="classes"
+    @mouseenter="handleMouseenter"
+    @mouseleave="handleMouseleave"
+    v-clickoutside="handleClose" >
+    <div
+      :class="[prefixCls + '-rel']"
+      ref="reference"
+      @click="handleClick"
+      @mousedown="handleFocus(false)"
+      @mouseup="handleBlur(false)">
+      <slot></slot>
+    </div>
+    <template v-if="!isNotCache">
+      <transition name="fade">
+        <div 
+          :class="[prefixCls + '-popper']" 
+          :style="styles" 
+          ref="popper" 
+          v-show="visible"
+          @click="handleTransferClick"
+          @mouseenter="handleMouseenter"
+          @mouseleave="handleMouseleave"
+          :data-transfer="transfer"
+          v-transfer-dom>
+          <div :class="[prefixCls + '-content']">
+            <div :class="[prefixCls + '-arrow']"></div>
+            <div :class="[prefixCls + '-inner']" v-if="confirm">
+              <div :class="[prefixCls + '-body']">
+                <icon name="android-alert"></icon>
+                <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
+              </div>
+              <div :class="[prefixCls + '-footer']">
+                <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
+                <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
+              </div>
+            </div>
+            <div :class="[prefixCls + '-inner']" v-if="!confirm">
+              <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
+              <div :class="[prefixCls + '-body']">
+                  <div :class="[prefixCls + '-body-content']"><slot name="content"><div :class="[prefixCls + '-body-content-inner']">{{ content }}</div></slot></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </template>
+     <template v-if="isNotCache">
+      <transition name="fade">
+        <div 
+          :class="[prefixCls + '-popper']" 
+          :style="styles" 
+          ref="popper" 
+          v-if="visible"
+          @click="handleTransferClick"
+          @mouseenter="handleMouseenter"
+          @mouseleave="handleMouseleave"
+          :data-transfer="transfer"
+          v-transfer-dom>
+          <div :class="[prefixCls + '-content']">
+            <div :class="[prefixCls + '-arrow']"></div>
+            <div :class="[prefixCls + '-inner']" v-if="confirm">
+              <div :class="[prefixCls + '-body']">
+                <icon name="android-alert"></icon>
+                <div :class="[prefixCls + '-body-message']"><slot name="title">{{ title }}</slot></div>
+              </div>
+              <div :class="[prefixCls + '-footer']">
+                <h-button type="text" size="small" @click.native="cancel">{{ localeCancelText }}</h-button>
+                <h-button type="primary" size="small" @click.native="ok">{{ localeOkText }}</h-button>
+              </div>
+            </div>
+            <div :class="[prefixCls + '-inner']" v-if="!confirm">
+              <div :class="[prefixCls + '-title']" v-if="showTitle" ref="title"><slot name="title"><div :class="[prefixCls + '-title-inner']">{{ title }}</div></slot></div>
+              <div :class="[prefixCls + '-body']">
+                  <div :class="[prefixCls + '-body-content']"><slot name="content"><div :class="[prefixCls + '-body-content-inner']">{{ content }}</div></slot></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </template>
+  </div>
 </template>
 <script>
-    export default {
-        data () {
-            return {
-                value1: ['beijing', 'talkingdata', 'talkingdata1', 'talkingdata1-1'],
-                data: [
-                    {
-                        value: 'beijing',
-                        label: '北京',
-                        children: [],
-                        loading: false
-                    },
-                    {
-                        value: 'hangzhou',
-                        label: '杭州',
-                        children: [],
-                        loading:false
-                    }
-                ],
-            }
-        },
-        methods: {
-            loadData (item, callback) {
-                    item.loading = true;
-                    setTimeout(() => {
-                        if (item.value === 'beijing') {
-                            item.children = [
-                                {
-                                    value: 'talkingdata',
-                                    label: 'TalkingData',
-                                    children: [],
-                                    loading: false,
-                                },
-                                {
-                                    value: 'baidu',
-                                    label: '百度'
-                                },
-                                {
-                                    value: 'sina',
-                                    label: '新浪',
-                                    children: [],
-                                    loading: false,
-                                }
-                            ];
-                        } 
-                        if (item.value === 'hangzhou') {
-                            item.children = [
-                                {
-                                    value: 'ali',
-                                    label: '阿里巴巴'
-                                },
-                                {
-                                    value: '163',
-                                    label: '网易'
-                                }
-                            ];
-                        }
-                        if (item.value === 'talkingdata') {
-                            item.children = [
-                                {
-                                    value: 'talkingdata1',
-                                    label: 'TalkingData1',
-                                    children: [],
-                                    loading: false,
-                                },
-                                {
-                                    value: 'talkingdata2',
-                                    label: 'talkingdata2',
-                                    children: [],
-                                    loading: false,
-                                },
-                            ]
-                        }
-                        if (item.value === 'sina') {
-                            item.children = [
-                                {
-                                    value: 'sina1',
-                                    label: 'sina1',
-                                },
-                                {
-                                    value: 'sina2',
-                                    label: 'sina2',
-                                },
-                            ]
-                        }
-                        if (item.value === 'talkingdata1') {
-                            item.children = [
-                                {
-                                    value: 'talkingdata1-1',
-                                    label: 'TalkingData1-1'
-                                },
-                                {
-                                   value: 'talkingdata1-2',
-                                   label: 'TalkingData1-2'
-                                },
-                            ]
-                        }
-                        if (item.value === 'talkingdata2') {
-                            item.children = [
-                                {
-                                    value: 'talkingdata2-1',
-                                    label: 'TalkingData2-1'
-                                },
-                                {
-                                    value: 'talkingdata2-2',
-                                    label: 'talkingdata2-2'
-                                },
-                            ]
-                        }
-                        item.loading = false; 
-                        callback()
-                    }, 1000);
-            },
-            getViewValue() {
-                console.log(this.$refs.cascader.displayInputRender)
-            }
-        },
-        mounted() {
+import Popper from '../Notice/popper';
+import hButton from '../Button/Button.vue';
+import Icon from '../Icon/Icon.vue';
+import clickoutside from '../../directives/clickoutside';
+import TransferDom from '../../directives/transfer-dom';
+import { oneOf } from '../../util/tools';
+import Locale from '../../mixins/locale';
 
-        }
+const prefixCls = 'h-poptip';
+
+export default {
+  name: 'Poptip',
+  mixins: [ Popper, Locale ],
+  directives: { clickoutside,TransferDom},
+  components: { hButton,Icon},
+  props: {
+    isNotCache: {
+      type: Boolean,
+      default: false
+    },
+    trigger: {
+      validator (value) {
+        return oneOf(value, ['click', 'focus', 'hover']);
+      },
+      default: 'click'
+    },
+    placement: {
+      validator (value) {
+        return oneOf(value, ['top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left', 'left-start', 'left-end', 'right', 'right-start', 'right-end']);
+      },
+      default: 'top'
+    },
+    title: {
+      type: [String, Number]
+    },
+    content: {
+      type: [String, Number],
+      default: ''
+    },
+    width: {
+      type: [String, Number]
+    },
+    confirm: {
+      type: Boolean,
+      default: false
+    },
+    okText: {
+      type: String
+    },
+    cancelText: {
+      type: String
+    },
+    transfer: {
+      type: Boolean,
+      default: false
+    },
+    closeOutClick:{
+      type: Boolean,
+      default: false
+    },
+    notResponding:{
+      type: Boolean,
+      default: false
     }
+
+  },
+  data () {
+    return {
+      prefixCls: prefixCls,
+      showTitle: true,
+      isInput: false,
+      disableCloseUnderTransfer: false,  // transfer 模式下，点击 slot 也会触发关闭
+    };
+  },
+  computed: {
+    classes () {
+      return [
+        `${prefixCls}`,
+        {
+          [`${prefixCls}-confirm`]: this.confirm
+        }
+      ];
+    },
+    styles () {
+      let style = {};
+
+      if (this.width) {
+          style.width = `${this.width}px`;
+      }
+      return style;
+    },
+    localeOkText () {
+      if (this.okText === undefined) {
+          return this.t('i.poptip.okText');
+      } else {
+          return this.okText;
+      }
+    },
+    localeCancelText () {
+      if (this.cancelText === undefined) {
+          return this.t('i.poptip.cancelText');
+      } else {
+          return this.cancelText;
+      }
+    }
+  },
+  methods: {
+    handleClick () {
+      if(this.notResponding) {
+        return false;
+      }
+      if (this.confirm) {
+        this.visible = !this.visible;
+        return true;
+      }
+      if (this.trigger !== 'click') {
+        return false;
+      }
+      this.visible = !this.visible;
+    },
+    handleTransferClick () {
+      if (this.transfer) this.disableCloseUnderTransfer = true;
+    },
+    handleClose () {
+      if(this.closeOutClick || this.notResponding)return;
+      if (this.disableCloseUnderTransfer) {
+        this.disableCloseUnderTransfer = false;
+        return false;
+      }
+      if (this.confirm) {
+        this.visible = false;
+        return true;
+      }
+      if (this.trigger !== 'click') {
+        return false;
+      }
+      this.visible = false;
+    },
+    handleFocus (fromInput = true) {
+      if (this.trigger !== 'focus' || this.confirm || (this.isInput && !fromInput) || this.notResponding) {
+        return false;
+      }
+      this.visible = true;
+    },
+    handleBlur (fromInput = true) {
+      if (this.trigger !== 'focus' || this.confirm || (this.isInput && !fromInput) || this.notResponding) {
+        return false;
+      }
+      this.visible = false;
+    },
+    handleMouseenter () {
+      if (this.trigger !== 'hover' || this.confirm || this.notResponding) {
+        return false;
+      }
+      this.visible = true;
+    },
+    handleMouseleave () {
+      if (this.trigger !== 'hover' || this.confirm || this.notResponding) {
+        return false;
+      }
+      this.visible = false;
+    },
+    cancel () {
+      this.visible = false;
+      this.$emit('on-cancel');
+    },
+    ok () {
+      this.visible = false;
+      this.$emit('on-ok');
+    },
+    getInputChildren () {
+      const $input = this.$refs.reference.querySelectorAll('input');
+      const $textarea = this.$refs.reference.querySelectorAll('textarea');
+      let $children = null;
+
+      if ($input.length) {
+        $children = $input[0];
+      } else if ($textarea.length) {
+        $children = $textarea[0];
+      }
+      return $children;
+    }
+  },
+  mounted () {
+    if (!this.confirm) {
+    //this.showTitle = this.$refs.title.innerHTML != `<div class="${prefixCls}-title-inner"></div>`;
+      this.showTitle = (this.$slots.title !== undefined)||this.title;
+    }
+    // if trigger and children is input or textarea,listen focus & blur event
+    if (this.trigger === 'focus') {
+      const $children = this.getInputChildren();
+      if ($children) {
+        $children.addEventListener('focus', this.handleFocus, false);
+        $children.addEventListener('blur', this.handleBlur, false);
+        this.isInput = true;
+      }
+    }
+  },
+  beforeDestroy () {
+    const $children = this.getInputChildren();
+    if ($children) {
+      $children.removeEventListener('focus', this.handleFocus, false);
+      $children.removeEventListener('blur', this.handleBlur, false);
+    }
+  }
+};
 </script>
