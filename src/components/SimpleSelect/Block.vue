@@ -25,7 +25,7 @@
           <slot>
             <span :style="showCol.length ? styleArr[0] : ''"
                   :class="showCol.length ? 'itemcol' : ''"
-                  :title="showCol.length || hideMult ? showLabel(item) : ''">
+                  :title="showTitle ? showLabel(item) : ''">
               <checkbox v-show="multiple&&!hideMult"
                         size="large"
                         :value="item.selected"
@@ -40,7 +40,7 @@
               v-for="(col, index) in showCol"
               :key="col"
               :style="styleArr[index + 1]"
-              :title="item[col]">{{item[col]}}</span>
+              :title="showTitle ? item[col] : ''">{{item[col]}}</span>
       </li>
       <!-- <li v-if="showEmpty" :class="[prefixCls+'-empty']">{{localeNoMatch}}</li> -->
     </ul>
@@ -150,6 +150,9 @@ export default {
     },
     loading() {
       return this.$parent.$parent.loading;
+    },
+    showTitle() {
+      return this.$parent.$parent.showTitle
     }
   },
   methods: {
