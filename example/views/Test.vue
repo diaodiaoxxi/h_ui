@@ -3,7 +3,7 @@
   <h-poptip isNotCache placement="bottom">
         <a>click 激活</a>
         <div class="test" slot="content">
-          <h-ring :data="chartData"></h-ring>
+          <h-ring :data="chartData" height="300px"></h-ring>
         </div>
   </h-poptip> 
 </div>
